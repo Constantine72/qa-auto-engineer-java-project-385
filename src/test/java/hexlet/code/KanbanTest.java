@@ -9,6 +9,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.Map;
@@ -583,6 +586,7 @@ public class KanbanTest {
 
         );
     }
+
     @Test
     public void testCreateNewTask() {
 
@@ -602,11 +606,13 @@ public class KanbanTest {
 
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String taskTitle = "SomeTask_" + uniqueId;
+        String taskStatus = "2";
+        String taskValue = "1";
 
-        String targetColumn = "Draft";
+        String targetColumn = "To Review";
         String assignee = "michael@example.com";
 
-        tasksPage.fillAndSubmitTaskForm("test task", "8", "1");
+        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue);
 
         try {
             Thread.sleep(2000);
@@ -618,6 +624,169 @@ public class KanbanTest {
         assertTrue(tasksPage.isTaskInColumn(taskTitle, targetColumn),
                 "task '" + taskTitle + "' is not found in column '" + targetColumn + "'");
     }
+
+    @Test
+    public void testTaskViewingAndFiltering() {
+
+
+        driver.get(baseurl);
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        int totalTasks = tasksPage.getVisibleTasksCount();
+
+        Assertions.assertEquals(totalTasks, 15, "Expected 15 cards, but loaded" + totalTasks);
+
+        tasksPage.applyStatusFilter("2");
+
+        tasksPage.waitForTasksUpdate(15);
+
+        int draftTasks = tasksPage.getVisibleTasksCount();
+        Assertions.assertTrue(draftTasks < 15, "Filter failed");
+        Assertions.assertTrue(draftTasks > 0, "No cards left");
+
+
+        tasksPage.clearAllFilters();
+
+        tasksPage.waitForTasksUpdate(draftTasks);
+
+        int resetTasks = tasksPage.getVisibleTasksCount();
+        Assertions.assertEquals(resetTasks, 15, "After filter the amount of cards is not 15");
+
+        tasksPage.applyAssigneeFilter("2");
+
+        tasksPage.waitForTasksUpdate(15);
+
+        int assigneeTasks = tasksPage.getVisibleTasksCount();
+        Assertions.assertTrue(assigneeTasks < 15, "improper number of tasks");
+        Assertions.assertTrue(assigneeTasks > 0, "no cards displayed");
+
+        tasksPage.clearAllFilters();
+        tasksPage.waitForTasksUpdate(assigneeTasks);
+
+        Assertions.assertEquals(tasksPage.getVisibleTasksCount(), 15, "The number of cards is not 15");
+
+
+        tasksPage.applyLabelFilter("2");
+        tasksPage.waitForTasksUpdate(15);
+
+        int labelTasks = tasksPage.getVisibleTasksCount();
+        Assertions.assertTrue(labelTasks < 15, "filter has not been applied");
+        Assertions.assertTrue(labelTasks > 0, "no cards displayed");
+
+        tasksPage.clearAllFilters();
+        tasksPage.waitForTasksUpdate(labelTasks);
+
+        Assertions.assertEquals(tasksPage.getVisibleTasksCount(), 15, "not 15 cardsz`");
+
+
+    }
+
+    @Test
+    public void testEditTask() {
+
+        driver.get(baseurl);
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        String originalName = "Task 11";
+        String updatedName = "Brand new task" + System.currentTimeMillis();
+
+        tasksPage.openTaskForEditing(originalName);
+
+        tasksPage.updateTaskName(updatedName);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='" +
+                updatedName + "']");
+
+        WebElement newCard = wait.until(ExpectedConditions.presenceOfElementLocated(newCardLocator));
+
+        Assertions.assertTrue(newCard.isDisplayed(), "changes haven't been applied: new card name is missing");
+
+
+    }
+
+    @Test
+    public void testMoveTaskToAnotherStatus() {
+
+        driver.get(baseurl);
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        String taskToMove = "Task 11";
+        String newStatusId = "2";
+
+        tasksPage.openTaskForEditing(taskToMove);
+
+        tasksPage.changeTaskStatus(newStatusId);
+
+        tasksPage.waitForTasksUpdate(5);
+
+        tasksPage.selectDropdownOption(By.xpath("//div[@data-source='status_id']"), newStatusId);
+
+        tasksPage.waitForTasksUpdate(5);
+
+        By moveCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='" + taskToMove +
+                "']");
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        WebElement moveCard = wait.until(ExpectedConditions.presenceOfElementLocated(moveCardLocator));
+
+        Assertions.assertTrue(moveCard.isDisplayed(), "The task hasn't been moved to another status");
+
+        tasksPage.clearAllFilters();
+    }
+    @Test
+    public void testDeleteTask() {
+
+        driver.get(baseurl);
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        String taskToDelete = "Task 5";
+
+        tasksPage.openTaskForEditing(taskToDelete);
+
+        tasksPage.clickDelete();
+
+        tasksPage.waitForTasksUpdate(5);
+
+        int currentTasksCount = tasksPage.getVisibleTasksCount();
+
+        Assertions.assertEquals(currentTasksCount, 14, "The number of tasks hasn't changed");
+
+        By deleteCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='" +
+                taskToDelete + "']");
+
+        boolean istaskGone = driver.findElements(deleteCardLocator).isEmpty();
+
+        Assertions.assertTrue(istaskGone, "Error: a deleted task is still present");
+    }
 }
-
-

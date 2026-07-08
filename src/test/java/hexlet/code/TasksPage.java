@@ -15,10 +15,18 @@ public class TasksPage {
     private WebDriverWait wait;
 
     private final By createTaskButton = By.xpath("//*[contains(text(), 'Create')]");
-    //private final By assigneeDropdown = By.xpath("//div[.//span[contains(text(), 'Assignee')]]//*[@role='combobox']");
+    private final By assigneeDropdown = By.xpath("//div[.//span[contains(text(), 'Assignee')]]//*[@role='combobox']");
     private final By titleInput = By.name("title");
-    private final By statusDropdown = By.partialLinkText("Statu");
+    private final By titleInEditForm = By.xpath("//input[@name='title']");
+    private final By statusDropdown = By.cssSelector("[class*='status_id'] div");
     private final By saveButton = By.xpath("//*[contains(text(), 'Save')]");
+    private final By filterStatusDropdown = By.xpath("//div[@data-source='status_id']");
+    private final By addFilterButton = By.xpath("//*[contains(text(), 'Add filter')]");
+    private final By removeAllFiltersOption = By.xpath("//*[contains(text(), 'Remove all filters')]");
+    private final By assigneeStatusDropdown = By.xpath("//div[@data-source='assignee_id']");
+    private final By labelStatusDropdown = By.xpath("//div[@data-source='label_id']");
+    private final By formStatusDropdown = By.cssSelector("[class*='status_id'] div");
+    private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
 
     public TasksPage(WebDriver driver) {
 
@@ -32,9 +40,9 @@ public class TasksPage {
 
     public boolean isTaskFormDisplayed() {
         try {
-            //wait.until(ExpectedConditions.visibilityOfElementLocated(assigneeDropdown));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(assigneeDropdown));
             wait.until(ExpectedConditions.presenceOfElementLocated(titleInput));
-           wait.until(ExpectedConditions.visibilityOfElementLocated(statusDropdown));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(statusDropdown));
             return true;
         } catch (Exception e) {
             return false;
@@ -44,15 +52,16 @@ public class TasksPage {
     public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue) {
         wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
 
-       // selectDropdownOption(assigneeDropdown, assigneeValue);
-       selectDropdownOption(statusDropdown, statusValue);
+        selectDropdownOption(assigneeDropdown, assigneeValue);
+        selectDropdownOption(statusDropdown, statusValue);
+
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
 
     public boolean isTaskInColumn(String taskTitle, String columnName) {
-        String taskInColumnXPath = "//div[contains(@class, 'column') and contains(., '" +
+        String taskInColumnXPath = "//div[contains(@class, 'MuiBox-root') and contains(., '" +
                 columnName + "')]//*[contains(text(), '" + taskTitle + "')]";
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(taskInColumnXPath)));
@@ -69,8 +78,10 @@ public class TasksPage {
         combobox.click();
 
 
-
-        try { Thread.sleep(500); } catch (InterruptedException ignored) {}
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ignored) {
+        }
 
         String optionXPath = "//*[@role='option' and @data-value='" + dataValue + "']";
 
@@ -78,9 +89,66 @@ public class TasksPage {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", option);
 
     }
+
     public void forceGoToTasks() {
-        By usersIcon = By.xpath("(//*[@data-testid='ViewListIcon'])[3]");
+        By usersIcon = By.xpath("(//*[@data-testid='ViewListIcon'])[1]");
 
         wait.until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
+    }
+
+    private final By taskCards = By.cssSelector(".RaList-content .MuiCard-root");
+
+    public int getVisibleTasksCount() {
+        return driver.findElements(taskCards).size();
+    }
+
+    public void applyStatusFilter(String statusName) {
+        selectDropdownOption(filterStatusDropdown, statusName);
+    }
+public void waitForTasksUpdate(int initialCount) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        wait.until(d -> getVisibleTasksCount() != initialCount);
+}
+public void clearAllFilters() {
+        driver.findElement(addFilterButton).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        WebElement removeBtn = wait.until(ExpectedConditions.elementToBeClickable(removeAllFiltersOption));
+        removeBtn.click();
+}
+    public void applyAssigneeFilter(String assigneeName) {
+        selectDropdownOption(assigneeStatusDropdown, assigneeName);
+    }
+    public void applyLabelFilter(String labelName) {
+        selectDropdownOption(labelStatusDropdown, labelName);
+    }
+    public void openTaskForEditing(String taskName) {
+        String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
+    }
+    public void updateTaskName(String newName) {
+
+           WebElement input = driver.findElement(titleInEditForm);
+
+           input.click();
+           input.sendKeys(Keys.CONTROL + "a");
+           input.sendKeys(Keys.BACK_SPACE);
+           input.sendKeys(newName);
+
+
+
+        driver.findElement(saveButton).click();
+    }
+    public void changeTaskStatus(String statusId) {
+        selectDropdownOption(formStatusDropdown, statusId);
+
+        driver.findElement(By.xpath("//*[contains(text(), 'Save')]")).click();
+    }
+
+    public void clickDelete() {
+        WebDriverWait wait =  new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
     }
 }
