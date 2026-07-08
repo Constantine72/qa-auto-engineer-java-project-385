@@ -15,13 +15,13 @@ An automated UI testing framework for a Kanban Board
 
 ## Architecture
 
-**1. Page Objects
+Page Objects
 * **`LoginPage.java`:** Handles user authentication, credential inputs, session management
 * **`KanbanPage.java` & `TasksPage.java`:** Core pages for board interaction
 * **`StatusesPage.java` & `LabelsPage.java`:** Manage board metadata
 * **`UsersPage.java`:** Handles assignee data and user management interface
 
-**1. Tests
+Tests
 * **`KanbanTest.java`:** Contains end-to-end test scenarios
 
 ## Test Coverage
