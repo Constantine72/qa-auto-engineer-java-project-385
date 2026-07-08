@@ -17,6 +17,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.seleniumhq.selenium:selenium-java:4.40.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.testng:testng:7.10.2")
 }
 
 tasks.test {

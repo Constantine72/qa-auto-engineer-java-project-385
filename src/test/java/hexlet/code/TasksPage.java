@@ -1,12 +1,12 @@
 package hexlet.code;
 
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.json.JsonOutput;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.security.PublicKey;
 import java.time.Duration;
 
 public class TasksPage {
@@ -31,7 +31,7 @@ public class TasksPage {
     public TasksPage(WebDriver driver) {
 
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
 
     public void clickCreateTask() {
@@ -106,13 +106,13 @@ public class TasksPage {
         selectDropdownOption(filterStatusDropdown, statusName);
     }
 public void waitForTasksUpdate(int initialCount) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
 
         wait.until(d -> getVisibleTasksCount() != initialCount);
 }
 public void clearAllFilters() {
         driver.findElement(addFilterButton).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+
         WebElement removeBtn = wait.until(ExpectedConditions.elementToBeClickable(removeAllFiltersOption));
         removeBtn.click();
 }
@@ -124,7 +124,7 @@ public void clearAllFilters() {
     }
     public void openTaskForEditing(String taskName) {
         String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
     }
     public void updateTaskName(String newName) {
@@ -147,7 +147,6 @@ public void clearAllFilters() {
     }
 
     public void clickDelete() {
-        WebDriverWait wait =  new WebDriverWait(driver, Duration.ofSeconds(5));
 
         wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
     }

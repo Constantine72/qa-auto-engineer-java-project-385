@@ -38,7 +38,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            //driver.quit();
+            driver.quit();
         }
     }
 
