@@ -33,8 +33,16 @@ public class KanbanPage {
     }
 
     public boolean isWelcomeTitleDisplayed() {
+//        try {
+//            return driver.findElement(title).isDisplayed();
+//        } catch (Exception e) {
+//            return false;
+//        }
+        //changing the method with the one with WAIT 42-48
         try {
-            return driver.findElement(title).isDisplayed();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(title));
+            return true;
         } catch (Exception e) {
             return false;
         }

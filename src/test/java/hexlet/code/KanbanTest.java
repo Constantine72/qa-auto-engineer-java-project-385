@@ -32,16 +32,19 @@ public class KanbanTest {
             baseurl = "http://localhost:5173";
         }
 
-        //new code for testing headless mode in CI 36-41
+        //new code for testing headless mode in CI 36-40 and 45
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");
+        options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--window-size=1920,1080");
+
+
         driver = new ChromeDriver(options);
 
+        driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
 
-        driver.manage().window().maximize();
+        //driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.get(baseurl);
     }
