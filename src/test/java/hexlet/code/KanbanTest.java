@@ -8,6 +8,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -30,7 +31,16 @@ public class KanbanTest {
         if (baseurl == null || baseurl.trim().isEmpty()) {
             baseurl = "http://localhost:5173";
         }
-        driver = new ChromeDriver();
+
+        //new code for testing headless mode in CI 36-41
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless=new");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--window-size=1920,1080");
+        driver = new ChromeDriver(options);
+
+
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.get(baseurl);
