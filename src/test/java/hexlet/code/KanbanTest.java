@@ -33,6 +33,7 @@ public class KanbanTest {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.get(baseurl);
     }
 
     @AfterEach
@@ -44,7 +45,7 @@ public class KanbanTest {
 
     @Test
     public void testSuccessfulLogin() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -55,7 +56,7 @@ public class KanbanTest {
 
     @Test
     public void testSuccessfulLogout() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -75,7 +76,6 @@ public class KanbanTest {
         String testLastName = "user";
 
 
-        driver.get(baseurl);
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -98,7 +98,7 @@ public class KanbanTest {
     @Test
     public void testUserListLoadingAndFields() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -115,7 +115,7 @@ public class KanbanTest {
 
     @Test
     public void testEditUserAndValidation() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -173,7 +173,7 @@ public class KanbanTest {
 
     @Test
     public void testDeleteUser() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -218,7 +218,7 @@ public class KanbanTest {
 
     @Test
     public void testDeleteAllUsers() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -248,7 +248,7 @@ public class KanbanTest {
 
     @Test
     public void testCreateNewStatus() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -278,7 +278,7 @@ public class KanbanTest {
 
     @Test
     public void testDefaultStatusesArePresent() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -306,7 +306,7 @@ public class KanbanTest {
     @Test
     public void testStatusesListView() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -320,12 +320,13 @@ public class KanbanTest {
         assertTrue(statusesPage.isStatusRowCorrect("Draft", "draft"), "improper order");
 
         int rowsCount = statusesPage.getRowsCount();
+
         assertTrue(rowsCount > 0, "Labels page is empty or data are not loaded");
     }
 
     @Test
     public void testEditStatus() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -379,7 +380,7 @@ public class KanbanTest {
     @Test
     public void testDeleteStatus() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -421,7 +422,7 @@ public class KanbanTest {
 
     @Test
     public void testDeleteAllStatuses() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -449,7 +450,7 @@ public class KanbanTest {
 
     @Test
     public void testCreateNewLabel() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -477,7 +478,7 @@ public class KanbanTest {
     @Test
     public void testLabelsListView() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -494,7 +495,7 @@ public class KanbanTest {
 
     @Test
     public void testEditLabel() {
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -548,7 +549,7 @@ public class KanbanTest {
     @Test
     public void testDeleteLabel() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -591,7 +592,6 @@ public class KanbanTest {
     public void testCreateNewTask() {
 
 
-        driver.get(baseurl);
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -629,7 +629,6 @@ public class KanbanTest {
     public void testTaskViewingAndFiltering() {
 
 
-        driver.get(baseurl);
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -691,7 +690,6 @@ public class KanbanTest {
     @Test
     public void testEditTask() {
 
-        driver.get(baseurl);
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -723,7 +721,7 @@ public class KanbanTest {
     @Test
     public void testMoveTaskToAnotherStatus() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -757,10 +755,11 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
     }
+
     @Test
     public void testDeleteTask() {
 
-        driver.get(baseurl);
+
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");

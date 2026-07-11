@@ -22,7 +22,11 @@ public class StatusesPage {
     private final By statusesListContainer = By.className("list-page");
     private final By nameHeader = By.xpath("//*[contains(text(), 'Name')]");
     private final By slugHeader = By.xpath("//*[contains(text(), 'Slug')]");
-    private final By tableRows = By.cssSelector("MuiTableBody-root datagrid-body RaDatagrid-tbody");
+
+//    private final By tableRows = By.cssSelector("MuiTableBody-root datagrid-body RaDatagrid-tbody");
+
+    private final By tableRows = By.cssSelector("table tbody tr");
+
     private final By nameInput = By.name("//*[contains(text(), 'Name')]");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
