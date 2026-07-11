@@ -52,7 +52,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+           driver.quit();
         }
     }
 
@@ -84,9 +84,10 @@ public class KanbanTest {
 
     @Test
     public void testCreateNewUser() {
-        String testEmail = "test@mail.com";
-        String testFirstName = "test";
-        String testLastName = "user";
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String testEmail = "test@mail.com" + uniqueId;
+        String testFirstName = "test" + uniqueId;
+        String testLastName = "user" + uniqueId;
 
 
         LoginPage loginPage = new LoginPage(driver);
@@ -105,7 +106,7 @@ public class KanbanTest {
 
         kanbanPage.goToUsers();
 
-        assertTrue(usersPage.isUserInList(testFirstName), "Created user " + testFirstName + "not found");
+        assertTrue(usersPage.isUserInList(testFirstName, testLastName, testEmail), "Created user " + testFirstName + "not found");
     }
 
     @Test
@@ -148,7 +149,7 @@ public class KanbanTest {
 
         usersPage.forceGoToUsers();
 
-        assertTrue(usersPage.isUserInList(originalFirstName), "User for edit has not been created");
+        assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "User for edit has not been created");
 
         try {
             Thread.sleep(1000);
@@ -179,8 +180,8 @@ public class KanbanTest {
 
         usersPage.fillAndSubmitUserForm(newEmail, newFirstName, newLastName);
 
-        assertTrue(usersPage.isUserInList(newFirstName));
-        assertFalse(usersPage.isUserInList(originalFirstName), "old userName is still on the list");
+        assertTrue(usersPage.isUserInList(newFirstName, newLastName, newEmail));
+        assertFalse(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "old userName is still on the list");
 
     }
 
@@ -206,7 +207,7 @@ public class KanbanTest {
 
         usersPage.forceGoToUsers();
 
-        assertTrue(usersPage.isUserInList(userToDeleteFirstName), "User for edit has not been created");
+        assertTrue(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail), "User for edit has not been created");
 
         try {
             Thread.sleep(1000);
@@ -226,7 +227,7 @@ public class KanbanTest {
 
         usersPage.forceGoToUsers();
 
-        assertFalse(usersPage.isUserInList(userToDeleteFirstName), "Error: the user to delete is still there");
+        assertFalse(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail), "Error: the user to delete is still there");
     }
 
     @Test
@@ -503,6 +504,7 @@ public class KanbanTest {
         assertTrue(labelsPage.areHeaderDisplayed(), "Name is missing");
 
         int rowsCount = labelsPage.getRowsCount();
+
         assertTrue(rowsCount > 0, "Labels page is empty or data are not loaded");
     }
 

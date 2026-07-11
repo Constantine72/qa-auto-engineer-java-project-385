@@ -65,12 +65,21 @@ public class UsersPage {
         }
     }
 
-    public boolean isUserInList(String expectedName) {
+    public boolean isUserInList(String expectedFirstName, String expectedLastName, String expectedEmail) {
         try {
             By userListContainer = By.className("list-page");
             wait.until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
 
-            By userCard = By.xpath("//*[contains(text(), '" + expectedName + "')]");
+
+
+           // By userCard = By.xpath("//*[contains(text(), '" + expectedFirstName + "')]");
+
+            //creating a mix of firstname, lastname and email
+            String xpathQuery = String.format(
+                    "//*[contains(., '%s') and contains(., '%s')]", expectedFirstName, expectedLastName, expectedEmail);
+            By userCard = By.xpath(xpathQuery);
+
+
 
             wait.until(ExpectedConditions.visibilityOf(driver.findElement(userCard)));
 
