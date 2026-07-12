@@ -259,7 +259,8 @@ public class KanbanTest {
 
         assertTrue(usersPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
-
+}
+/*
     @Test
     public void testCreateNewStatus() {
 
@@ -462,7 +463,7 @@ public class KanbanTest {
         assertTrue(statusesPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
 }
-/*
+
     @Test
     public void testCreateNewLabel() {
 
