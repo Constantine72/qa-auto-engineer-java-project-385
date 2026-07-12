@@ -40,12 +40,10 @@ public class KanbanPage {
 //        }
         //changing the method with the one with WAIT 42-48
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             wait.until(ExpectedConditions.visibilityOfElementLocated(title));
             return true;
         } catch (Exception e) {
-            System.out.println("where i fail " + driver.getCurrentUrl());
-            System.out.println("what i see " + driver.getPageSource());
             return false;
         }
     }

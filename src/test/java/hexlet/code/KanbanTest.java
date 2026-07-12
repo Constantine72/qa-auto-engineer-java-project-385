@@ -64,7 +64,7 @@ public class KanbanTest {
         loginPage.login("admin", "admin");
 
         KanbanPage kanbanPage = new KanbanPage(driver);
-        assertTrue(kanbanPage.isWelcomeTitleDisplayed(), "The page is not loaded");
+        assertTrue(kanbanPage.isWelcomeTitleDisplayed(), "The page is not loaded! Current URL in browser " + driver.getCurrentUrl());
     }
 }
 /*
