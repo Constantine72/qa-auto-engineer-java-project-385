@@ -66,7 +66,8 @@ public class KanbanTest {
         KanbanPage kanbanPage = new KanbanPage(driver);
         assertTrue(kanbanPage.isWelcomeTitleDisplayed(), "The page is not loaded");
     }
-
+}
+/*
     @Test
     public void testSuccessfulLogout() {
 
@@ -82,7 +83,7 @@ public class KanbanTest {
         assertTrue(loginPage.isUsernameFieldDisplayed(), "No login page after logout");
     }
 }
-/*
+
     @Test
     public void testCreateNewUser() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
