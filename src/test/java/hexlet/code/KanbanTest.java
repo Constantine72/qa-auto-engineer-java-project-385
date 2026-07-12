@@ -44,7 +44,6 @@ public class KanbanTest {
 
         driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
 
-        //driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.get(baseurl);
     }
@@ -52,7 +51,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-           driver.quit();
+            driver.quit();
         }
     }
 
@@ -280,7 +279,7 @@ public class KanbanTest {
 
         statusesPage.forceGoToStatuses();
 
-        assertTrue(statusesPage.isStatusInList(name), "User for edit has not been created");
+        assertTrue(statusesPage.isStatusInList(name), "Status has not been created");
 
         try {
             Thread.sleep(1000);
@@ -335,7 +334,7 @@ public class KanbanTest {
 
         int rowsCount = statusesPage.getRowsCount();
 
-        assertTrue(rowsCount > 0, "Labels page is empty or data are not loaded");
+        assertTrue(rowsCount > 0, "Statuses page is empty or data are not loaded");
     }
 
     @Test
@@ -623,9 +622,8 @@ public class KanbanTest {
         String taskTitle = "SomeTask_" + uniqueId;
         String taskStatus = "2";
         String taskValue = "1";
-
         String targetColumn = "To Review";
-        String assignee = "michael@example.com";
+        String assigneeName = "john@google.com";
 
         tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue);
 
@@ -638,6 +636,10 @@ public class KanbanTest {
 
         assertTrue(tasksPage.isTaskInColumn(taskTitle, targetColumn),
                 "task '" + taskTitle + "' is not found in column '" + targetColumn + "'");
+
+        tasksPage.openTaskForEditing(taskTitle);
+        assertTrue(tasksPage.isAssigneeCorrectInDetails(assigneeName), "assignee hasn't been saved");
+        assertTrue(tasksPage.isColumnCorrectInDetails(targetColumn), "column name hasn't been saved");
     }
 
     @Test

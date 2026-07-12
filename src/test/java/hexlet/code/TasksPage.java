@@ -61,8 +61,8 @@ public class TasksPage {
     }
 
     public boolean isTaskInColumn(String taskTitle, String columnName) {
-        String taskInColumnXPath = "//div[contains(@class, 'MuiBox-root') and contains(., '" +
-                columnName + "')]//*[contains(text(), '" + taskTitle + "')]";
+        String taskInColumnXPath = String.format("//div[contains(@class, 'MuiBox-root') and contains(., '%s')]//div[contains(., '%s')]",
+                columnName, taskTitle);
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(taskInColumnXPath)));
             return true;
@@ -105,41 +105,47 @@ public class TasksPage {
     public void applyStatusFilter(String statusName) {
         selectDropdownOption(filterStatusDropdown, statusName);
     }
-public void waitForTasksUpdate(int initialCount) {
+
+    public void waitForTasksUpdate(int initialCount) {
 
 
         wait.until(d -> getVisibleTasksCount() != initialCount);
-}
-public void clearAllFilters() {
+    }
+
+    public void clearAllFilters() {
         driver.findElement(addFilterButton).click();
 
         WebElement removeBtn = wait.until(ExpectedConditions.elementToBeClickable(removeAllFiltersOption));
         removeBtn.click();
-}
+    }
+
     public void applyAssigneeFilter(String assigneeName) {
         selectDropdownOption(assigneeStatusDropdown, assigneeName);
     }
+
     public void applyLabelFilter(String labelName) {
         selectDropdownOption(labelStatusDropdown, labelName);
     }
+
     public void openTaskForEditing(String taskName) {
         String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
     }
+
     public void updateTaskName(String newName) {
 
-           WebElement input = driver.findElement(titleInEditForm);
+        WebElement input = driver.findElement(titleInEditForm);
 
-           input.click();
-           input.sendKeys(Keys.CONTROL + "a");
-           input.sendKeys(Keys.BACK_SPACE);
-           input.sendKeys(newName);
-
+        input.click();
+        input.sendKeys(Keys.CONTROL + "a");
+        input.sendKeys(Keys.BACK_SPACE);
+        input.sendKeys(newName);
 
 
         driver.findElement(saveButton).click();
     }
+
     public void changeTaskStatus(String statusId) {
         selectDropdownOption(formStatusDropdown, statusId);
 
@@ -149,5 +155,26 @@ public void clearAllFilters() {
     public void clickDelete() {
 
         wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
+    }
+
+    public boolean isAssigneeCorrectInDetails(String assigneeName) {
+        try {
+            String assigneeXPath = String.format("//*[contains(., '%s')]", assigneeName);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(assigneeXPath)));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public boolean isColumnCorrectInDetails(String columnName) {
+        try {
+            String assigneeXPath = String.format("//*[contains(., '%s')]", columnName);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(assigneeXPath)));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
