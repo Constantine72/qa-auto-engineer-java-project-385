@@ -13,7 +13,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import  java.util.List;
+
+import java.util.List;
 
 import java.time.Duration;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+           driver.quit();
         }
     }
 
@@ -64,10 +65,9 @@ public class KanbanTest {
         loginPage.login("admin", "admin");
 
         KanbanPage kanbanPage = new KanbanPage(driver);
-        assertTrue(kanbanPage.isWelcomeTitleDisplayed(), "The page is not loaded! Current URL in browser " + driver.getCurrentUrl());
+        assertTrue(kanbanPage.isWelcomeTitleDisplayed(), "The page is not loaded");
     }
-}
-/*
+
     @Test
     public void testSuccessfulLogout() {
 
@@ -82,7 +82,6 @@ public class KanbanTest {
 
         assertTrue(loginPage.isUsernameFieldDisplayed(), "No login page after logout");
     }
-}
 
     @Test
     public void testCreateNewUser() {
@@ -147,7 +146,6 @@ public class KanbanTest {
         String originalEmail = "old" + uniqueId + "@example.com";
 
         usersPage.clickCreateUser();
-
         usersPage.fillAndSubmitUserForm(originalEmail, originalFirstName, originalLastName);
 
         usersPage.forceGoToUsers();
@@ -262,7 +260,6 @@ public class KanbanTest {
 
         assertTrue(usersPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
-}
 
     @Test
     public void testCreateNewStatus() {
@@ -465,7 +462,6 @@ public class KanbanTest {
 
         assertTrue(statusesPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
-}
 
     @Test
     public void testCreateNewLabel() {
@@ -726,6 +722,9 @@ public class KanbanTest {
         String originalName = "Task 11";
         String updatedName = "Brand new task" + System.currentTimeMillis();
 
+        String expectedDescription = "Description of task 11";
+        String expectedAssignee = "john@google.com";
+
         tasksPage.openTaskForEditing(originalName);
 
         tasksPage.updateTaskName(updatedName);
@@ -746,6 +745,16 @@ public class KanbanTest {
 
         Assertions.assertTrue(newCard.isDisplayed(), "changes haven't been applied: new card name is missing");
         Assertions.assertTrue(oldcards.isEmpty(), "old task " + originalName + " is still displayed");
+
+        tasksPage.openTaskForEditing(updatedName);
+
+        String actualDescription = tasksPage.getDescriptionInputValue();
+        String actualAssignee = tasksPage.getAssigneeDropdownValue();
+
+        System.out.println(expectedDescription + " vs " + actualDescription);
+        System.out.println(expectedAssignee + " vs " + actualAssignee);
+        Assertions.assertEquals(expectedDescription, actualDescription, "the description is missing");
+        Assertions.assertEquals(expectedAssignee, actualAssignee, "the description is missing");
 
     }
 
@@ -820,4 +829,3 @@ public class KanbanTest {
         Assertions.assertTrue(istaskGone, "Error: a deleted task is still present");
     }
 }
-*/

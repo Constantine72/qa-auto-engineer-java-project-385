@@ -187,4 +187,10 @@ public class TasksPage {
             return false;
         }
     }
+    public String getDescriptionInputValue() {
+        return driver.findElement(By.name("content")).getAttribute("value");
+    }
+    public String getAssigneeDropdownValue() {
+        return driver.findElement(assigneeDropdown).getText();
+    }
 }
