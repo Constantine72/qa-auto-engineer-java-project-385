@@ -44,6 +44,8 @@ public class KanbanPage {
             wait.until(ExpectedConditions.visibilityOfElementLocated(title));
             return true;
         } catch (Exception e) {
+            System.out.println("where i fail " + driver.getCurrentUrl());
+            System.out.println("what i see " + driver.getPageSource());
             return false;
         }
     }
