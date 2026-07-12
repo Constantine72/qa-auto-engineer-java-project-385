@@ -44,6 +44,9 @@ public class UsersPage {
     public boolean isUserFormDisplayed() {
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(emailField));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(saveButton));
             return true;
         } catch (Exception e) {
             return false;

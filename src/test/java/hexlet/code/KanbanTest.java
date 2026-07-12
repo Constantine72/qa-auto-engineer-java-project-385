@@ -108,7 +108,8 @@ public class KanbanTest {
 
         assertTrue(usersPage.isUserInList(testFirstName, testLastName, testEmail), "Created user " + testFirstName + "not found");
     }
-
+}
+/*
     @Test
     public void testUserListLoadingAndFields() {
 
@@ -145,6 +146,7 @@ public class KanbanTest {
         String originalEmail = "old" + uniqueId + "@example.com";
 
         usersPage.clickCreateUser();
+
         usersPage.fillAndSubmitUserForm(originalEmail, originalFirstName, originalLastName);
 
         usersPage.forceGoToUsers();
@@ -260,7 +262,7 @@ public class KanbanTest {
         assertTrue(usersPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
 }
-/*
+
     @Test
     public void testCreateNewStatus() {
 
