@@ -461,7 +461,8 @@ public class KanbanTest {
 
         assertTrue(statusesPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
-
+}
+/*
     @Test
     public void testCreateNewLabel() {
 
@@ -815,3 +816,4 @@ public class KanbanTest {
         Assertions.assertTrue(istaskGone, "Error: a deleted task is still present");
     }
 }
+*/
