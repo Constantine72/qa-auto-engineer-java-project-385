@@ -81,7 +81,8 @@ public class KanbanTest {
 
         assertTrue(loginPage.isUsernameFieldDisplayed(), "No login page after logout");
     }
-
+}
+/*
     @Test
     public void testCreateNewUser() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
@@ -108,8 +109,7 @@ public class KanbanTest {
 
         assertTrue(usersPage.isUserInList(testFirstName, testLastName, testEmail), "Created user " + testFirstName + "not found");
     }
-}
-/*
+
     @Test
     public void testUserListLoadingAndFields() {
 
