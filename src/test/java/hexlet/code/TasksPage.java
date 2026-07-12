@@ -177,4 +177,14 @@ public class TasksPage {
             return false;
         }
     }
+    public boolean isTaskCorrectInDetails(String taskTitle) {
+        try {
+            String assigneeXPath = String.format("//*[contains(., '%s')]", taskTitle);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(assigneeXPath)));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

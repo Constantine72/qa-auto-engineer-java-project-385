@@ -13,6 +13,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import  java.util.List;
 
 import java.time.Duration;
 import java.util.Map;
@@ -639,6 +640,7 @@ public class KanbanTest {
 
         tasksPage.openTaskForEditing(taskTitle);
         assertTrue(tasksPage.isAssigneeCorrectInDetails(assigneeName), "assignee hasn't been saved");
+        assertTrue(tasksPage.isTaskCorrectInDetails(taskTitle), "assignee hasn't been saved");
         assertTrue(tasksPage.isColumnCorrectInDetails(targetColumn), "column name hasn't been saved");
     }
 
@@ -728,10 +730,17 @@ public class KanbanTest {
         By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='" +
                 updatedName + "']");
 
+        By oldCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='" +
+                originalName + "']");
+
+        List<WebElement> oldcards = driver.findElements(oldCardLocator);
+
+
         WebElement newCard = wait.until(ExpectedConditions.presenceOfElementLocated(newCardLocator));
 
-        Assertions.assertTrue(newCard.isDisplayed(), "changes haven't been applied: new card name is missing");
 
+        Assertions.assertTrue(newCard.isDisplayed(), "changes haven't been applied: new card name is missing");
+        Assertions.assertTrue(oldcards.isEmpty(), "old task " + originalName + " is still displayed");
 
     }
 
