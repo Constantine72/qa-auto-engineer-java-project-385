@@ -53,7 +53,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-           driver.quit();
+            driver.quit();
         }
     }
 
@@ -765,8 +765,6 @@ public class KanbanTest {
         String actualDescription = tasksPage.getDescriptionInputValue();
         String actualAssignee = tasksPage.getAssigneeDropdownValue();
 
-        System.out.println(expectedDescription + " vs " + actualDescription);
-        System.out.println(expectedAssignee + " vs " + actualAssignee);
         Assertions.assertEquals(expectedDescription, actualDescription, "the description is missing");
         Assertions.assertEquals(expectedAssignee, actualAssignee, "the description is missing");
 
@@ -842,4 +840,42 @@ public class KanbanTest {
 
         Assertions.assertTrue(istaskGone, "Error: a deleted task is still present");
     }
+
+    @Test
+    public void testShowTask() {
+
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        tasksPage.clickCreateTask();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String taskTitle = "test task " + uniqueId;
+        String taskDesc = "DescriptionFor " + uniqueId;
+        String taskStatus = "2";
+        String taskValue = "1";
+
+        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, taskDesc);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+
+        tasksPage.forceGoToTasks();
+
+        tasksPage.openTaskForViewing(taskTitle);
+
+        Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task " + taskTitle + " is not displayed");
+
+        Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task description " + taskDesc + " is not displayed");
+    }
+
 }

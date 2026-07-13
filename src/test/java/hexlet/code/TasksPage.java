@@ -7,6 +7,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
 
 public class TasksPage {
@@ -27,6 +28,7 @@ public class TasksPage {
     private final By labelStatusDropdown = By.xpath("//div[@data-source='label_id']");
     private final By formStatusDropdown = By.cssSelector("[class*='status_id'] div");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
+    private final By contentInput = By.name("content");
 
     public TasksPage(WebDriver driver) {
 
@@ -167,6 +169,7 @@ public class TasksPage {
             return false;
         }
     }
+
     public boolean isColumnCorrectInDetails(String columnName) {
         try {
             String assigneeXPath = String.format("//*[contains(., '%s')]", columnName);
@@ -177,6 +180,7 @@ public class TasksPage {
             return false;
         }
     }
+
     public boolean isTaskCorrectInDetails(String taskTitle) {
         try {
             String assigneeXPath = String.format("//*[contains(., '%s')]", taskTitle);
@@ -187,10 +191,54 @@ public class TasksPage {
             return false;
         }
     }
+
     public String getDescriptionInputValue() {
         return driver.findElement(By.name("content")).getAttribute("value");
     }
+
     public String getAssigneeDropdownValue() {
         return driver.findElement(assigneeDropdown).getText();
     }
+
+    public void openTaskForViewing(String taskName) {
+
+        String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Show')]", taskName);
+
+        By showIconLocator = By.xpath(xpath);
+
+        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showIconLocator));
+
+        showButton.click();
+    }
+
+    public boolean isTextPresentOnViewPage(String expectedText) {
+        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
+
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
+            return element.isDisplayed();
+        } catch (Exception e) {
+            return false;
+
+        }
+    }
+
+    public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue, String description) {
+
+
+        wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
+
+        wait.until(ExpectedConditions.elementToBeClickable(contentInput)).sendKeys(description);
+
+        selectDropdownOption(assigneeDropdown, assigneeValue);
+        selectDropdownOption(statusDropdown, statusValue);
+
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
 }
+
+
+
+
