@@ -69,6 +69,20 @@ public class KanbanTest {
     }
 
     @Test
+    public void testLoginWithEmptyFields() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("", "");
+
+        String actualUsernameError = loginPage.getUsernameErrorMessage();
+        Assertions.assertTrue(actualUsernameError.contains("Required"), "No error message displayed");
+
+        String actualPasswordError = loginPage.getPasswordErrorMessage();
+        Assertions.assertTrue(actualPasswordError.contains("Required"), "No error message displayed");
+    }
+
+    @Test
     public void testSuccessfulLogout() {
 
         LoginPage loginPage = new LoginPage(driver);

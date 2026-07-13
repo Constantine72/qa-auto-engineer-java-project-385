@@ -8,15 +8,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+
 public class LoginPage {
     private final WebDriver driver;
 
     private final By usernameField = By.name("username");
     private final By passwordField = By.name("password");
     private final By signInButton = By.cssSelector("button");
+    private final By usernameErrorLocator = By.xpath("//input[@name='username']/ancestor::div[contains(@class, 'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
+    private final By passwordErrorLocator = By.xpath("//input[@name='password']/ancestor::div[contains(@class, 'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
+
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+
     }
 
     public void login(String username, String password) {
@@ -49,6 +54,22 @@ public class LoginPage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getUsernameErrorMessage() {
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameErrorLocator));
+        return error.getText();
+    }
+
+    public String getPasswordErrorMessage() {
+
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordErrorLocator));
+        return error.getText();
     }
 }
 
