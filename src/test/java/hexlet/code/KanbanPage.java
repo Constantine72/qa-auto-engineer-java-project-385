@@ -14,10 +14,10 @@ public class KanbanPage {
 
 
     private final By burger = By.cssSelector("[data-testid='MenuIcon']");
-    private final By title = By.xpath("//*[contains(text(), 'Welcome')]");
+    private final By title = By.xpath("//*[contains(text(), 'Welcome to the administration')]");
     private final By toggle = By.cssSelector("[data-testid='Brightness7Icon']");
     private final By avatarButton = By.xpath("//*[contains(text(), 'Jane Doe')]");
-    private final By searchField = By.xpath("//*[contains(text(), 'dolor')]");
+    private final By searchField = By.xpath("//*[contains(text(), 'Lorem ipsum sic dolor amet...')]");
     private final By sidebar = By.className("RaSidebar-fixed");
     private final By logoutButton = By.cssSelector("[data-testid='PowerSettingsNewIcon']");
     private final By dashboardButton = By.xpath("//*[contains(text(), 'Dashboard')]");
@@ -43,6 +43,9 @@ public class KanbanPage {
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             wait.until(ExpectedConditions.visibilityOfElementLocated(title));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(searchField));
+            wait.until(ExpectedConditions.visibilityOfElementLocated(dashboardButton));
+
             return true;
         } catch (Exception e) {
             return false;

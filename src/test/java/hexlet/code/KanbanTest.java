@@ -896,6 +896,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task description " + taskDesc + " is not displayed");
     }
+
     @Test
     public void testShowUser() {
 
@@ -933,6 +934,7 @@ public class KanbanTest {
 
         Assertions.assertFalse(driver.getCurrentUrl().contains("/show"), "Show page is still displayed");
     }
+
     @Test
     public void testShowStatus() {
 
@@ -967,6 +969,7 @@ public class KanbanTest {
 
         Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
     }
+
     @Test
     public void testShowLabel() {
 
@@ -1002,9 +1005,30 @@ public class KanbanTest {
         labelsPage.clickUpperEditButton();
 
         Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
+    }
+    @Test
+    public void testCreateUserValidation() {
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        usersPage.clickCreateUser();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+
+        String testLastName = "Smith " + uniqueId;
+        String testEmail = "user" + uniqueId + "@test.com";
 
 
+        usersPage.fillAndSubmitUserForm(testEmail, "", testLastName);
 
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
+        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
     }
 }

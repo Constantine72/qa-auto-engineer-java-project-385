@@ -234,6 +234,16 @@ public class UsersPage {
             return false;
         }
     }
+    public boolean isRequiredErrorDisplayed() {
+        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
+
+        try {
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }
 
 
