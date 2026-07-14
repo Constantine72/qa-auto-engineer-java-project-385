@@ -733,13 +733,32 @@ public class KanbanTest {
 
         TasksPage tasksPage = new TasksPage((driver));
 
-        String originalName = "Task 11";
-        String updatedName = "Brand new task" + System.currentTimeMillis();
 
-        String expectedDescription = "Description of task 11";
+        String updatedName = "new task" + System.currentTimeMillis();
+
+        String expectedDescription = "Description of task 15";
         String expectedAssignee = "john@google.com";
 
-        tasksPage.openTaskForEditing(originalName);
+        tasksPage.clickCreateTask();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String taskTitle = "SomeTask_" + uniqueId;
+        String taskStatus = "2";
+        String taskValue = "1";
+
+
+        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+
+        tasksPage.forceGoToTasks();
+
+
+        tasksPage.openTaskForEditing(taskTitle);
+
 
         tasksPage.updateTaskName(updatedName);
 
@@ -749,7 +768,7 @@ public class KanbanTest {
                 updatedName + "']");
 
         By oldCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='" +
-                originalName + "']");
+                taskTitle + "']");
 
         List<WebElement> oldcards = driver.findElements(oldCardLocator);
 
@@ -758,7 +777,7 @@ public class KanbanTest {
 
 
         Assertions.assertTrue(newCard.isDisplayed(), "changes haven't been applied: new card name is missing");
-        Assertions.assertTrue(oldcards.isEmpty(), "old task " + originalName + " is still displayed");
+        Assertions.assertTrue(oldcards.isEmpty(), "old task " + taskTitle + " is still displayed");
 
         tasksPage.openTaskForEditing(updatedName);
 

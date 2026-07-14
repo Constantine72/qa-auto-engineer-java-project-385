@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -139,10 +140,19 @@ public class TasksPage {
 
         WebElement input = driver.findElement(titleInEditForm);
 
-        input.click();
-        input.sendKeys(Keys.CONTROL + "a");
-        input.sendKeys(Keys.BACK_SPACE);
-        input.sendKeys(newName);
+//        input.click();
+//        input.sendKeys(Keys.CONTROL + "a");
+//        input.sendKeys(Keys.BACK_SPACE);
+//        input.sendKeys(newName);
+
+        Actions actions = new Actions(driver);
+        actions.click(input)
+        .keyDown(Keys.CONTROL)
+                .sendKeys("a")
+                        .keyUp(Keys.CONTROL)
+                                .sendKeys(Keys.BACK_SPACE)
+                                        .sendKeys(newName)
+                                                .perform();
 
 
         driver.findElement(saveButton).click();
