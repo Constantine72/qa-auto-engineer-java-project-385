@@ -187,4 +187,23 @@ public class StatusesPage {
         }
         return false;
     }
+    public boolean isTextPresentOnViewPage(String expectedText) {
+        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
+            return element.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public void clickUpperShowButton() {
+        By showButtonLocator = By.xpath("//a[contains(@href, '/show')]");
+        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
+        showButton.click();
+    }
+    public void clickUpperEditButton() {
+        By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
+        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
+        showButton.click();
+    }
 }

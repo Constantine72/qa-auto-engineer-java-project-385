@@ -877,5 +877,115 @@ public class KanbanTest {
 
         Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task description " + taskDesc + " is not displayed");
     }
+    @Test
+    public void testShowUser() {
 
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String testFirstName = "John " + uniqueId;
+        String testLastName = "Smith " + uniqueId;
+        String testEmail = "user" + uniqueId + "@test.com";
+
+        usersPage.clickCreateUser();
+
+        usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+
+        kanbanPage.goToUsers();
+
+        usersPage.clickEditUser(testFirstName);
+
+        usersPage.clickUpperShowButton();
+
+        Assertions.assertTrue(usersPage.isTextPresentOnViewPage(testFirstName), "Username is not displayed");
+
+        Assertions.assertTrue(usersPage.isTextPresentOnViewPage(testEmail), "Email is not displayed");
+
+        Assertions.assertTrue(usersPage.isTextPresentOnViewPage(testLastName), "Last is not displayed");
+
+        usersPage.clickUpperEditButton();
+
+        Assertions.assertFalse(driver.getCurrentUrl().contains("/show"), "Show page is still displayed");
+    }
+    @Test
+    public void testShowStatus() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        StatusesPage statusesPage = new StatusesPage(driver);
+        statusesPage.forceGoToStatuses();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String statusName = "Status " + uniqueId;
+        String slugName = "Slug " + uniqueId;
+
+        statusesPage.clickCreateStatus();
+        statusesPage.fillAndSubmitEditForm(statusName, slugName);
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+        }
+
+        statusesPage.forceGoToStatuses();
+
+        statusesPage.clickEditStatus(statusName);
+
+        statusesPage.clickUpperShowButton();
+
+        Assertions.assertTrue(statusesPage.isTextPresentOnViewPage(statusName), "No status name on Show page");
+
+        statusesPage.clickUpperEditButton();
+
+        Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
+    }
+    @Test
+    public void testShowLabel() {
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String labelName = "Label " + uniqueId;
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        LabelsPage labelsPage = new LabelsPage(driver);
+
+        labelsPage.forceGoToLabels();
+
+
+        labelsPage.clickCreateLabel();
+
+        labelsPage.fillAndSubmitLabelForm(labelName);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+
+        labelsPage.forceGoToLabels();
+
+        labelsPage.clickEditLabel(labelName);
+
+        labelsPage.clickUpperShowButton();
+
+        Assertions.assertTrue(labelsPage.isTextPresentOnViewPage(labelName), "Labelname is not displayed on Show page");
+
+        labelsPage.clickUpperEditButton();
+
+        Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
+
+
+
+
+    }
 }

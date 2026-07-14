@@ -2,6 +2,7 @@ package hexlet.code;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -75,6 +76,7 @@ public class KanbanPage {
 
         driver.findElement(logoutButton).click();
     }
+
     public void goToLabels() {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
@@ -84,6 +86,7 @@ public class KanbanPage {
         wait.until(ExpectedConditions.elementToBeClickable(labelsButton)).click();
 
     }
+
     public void goToTasks() {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
@@ -93,7 +96,6 @@ public class KanbanPage {
         wait.until(ExpectedConditions.elementToBeClickable(tasksButton)).click();
 
     }
-
 }
 
 

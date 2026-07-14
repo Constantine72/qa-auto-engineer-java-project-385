@@ -5,6 +5,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+
 import java.security.PublicKey;
 import java.time.Duration;
 
@@ -24,6 +25,7 @@ public class LabelsPage {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
+
     public void clickCreateLabel() {
         wait.until(ExpectedConditions.elementToBeClickable(createLabelButton)).click();
     }
@@ -36,8 +38,9 @@ public class LabelsPage {
             return false;
         }
     }
+
     public void fillAndSubmitLabelForm(String labelName) {
-      wait.until(ExpectedConditions.elementToBeClickable(nameField)).sendKeys(labelName);
+        wait.until(ExpectedConditions.elementToBeClickable(nameField)).sendKeys(labelName);
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
@@ -75,6 +78,7 @@ public class LabelsPage {
 
         }
     }
+
     public int getRowsCount() {
         try {
             wait.until(webDriver -> webDriver.findElements(tableRows).size() > 0);
@@ -83,12 +87,14 @@ public class LabelsPage {
             return 0;
         }
     }
+
     public void clickEditLabel(String labelName) {
         String rowXPath = "//*[contains(text(), '" + labelName + "')]/ancestor::tr";
         WebElement row = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(rowXPath)));
 
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", row);
     }
+
     private void clearAndType(By fieldLocator, String text) {
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fieldLocator));
 
@@ -101,12 +107,14 @@ public class LabelsPage {
                 .sendKeys(text)
                 .perform();
     }
+
     public void fillAndSubmitEditForm(String newName) {
         clearAndType(nameField, newName);
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public boolean isLabelsRowCorrect(String expectedLabelName) {
         String complexRowXPath = "//tr[contains(., '" + expectedLabelName + "')";
 
@@ -120,8 +128,30 @@ public class LabelsPage {
 
         }
     }
+
     public void clickDeleteButton() {
         wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
     }
 
+
+    public boolean isTextPresentOnViewPage(String expectedText) {
+        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
+            return element.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void clickUpperShowButton() {
+        By showButtonLocator = By.xpath("//a[contains(@href, '/show')]");
+        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
+        showButton.click();
+    }
+    public void clickUpperEditButton() {
+        By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
+        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
+        showButton.click();
+    }
 }
