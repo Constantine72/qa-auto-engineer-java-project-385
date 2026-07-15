@@ -246,4 +246,11 @@ public class StatusesPage {
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+    public void clearSlugField() {
+        By slugLocator = By.name("slug");
+        WebElement slugInput = wait.until(ExpectedConditions.elementToBeClickable(slugLocator));
+        slugInput.click();
+        slugInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        slugInput.sendKeys(Keys.BACK_SPACE);
+    }
 }

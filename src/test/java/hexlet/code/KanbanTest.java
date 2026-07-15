@@ -1170,4 +1170,309 @@ public class KanbanTest {
 
         Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
     }
+
+    @Test
+    public void testEditUserValidationWithoutFirstName() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String testFirstName = "John " + uniqueId;
+        String testLastName = "Smith " + uniqueId;
+        String testEmail = "user" + uniqueId + "@test.com";
+
+        usersPage.clickCreateUser();
+
+        usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+
+        kanbanPage.goToUsers();
+
+        usersPage.clickEditUser(testFirstName);
+
+        usersPage.clearFirstNameField();
+
+        usersPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o first name was saved");
+
+        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+    }
+
+    @Test
+    public void testEditUserValidationWithoutLastName() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String testFirstName = "John " + uniqueId;
+        String testLastName = "Smith " + uniqueId;
+        String testEmail = "user" + uniqueId + "@test.com";
+
+        usersPage.clickCreateUser();
+
+        usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+
+        kanbanPage.goToUsers();
+
+        usersPage.clickEditUser(testFirstName);
+
+        usersPage.clearLastNameField();
+
+        usersPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
+
+        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+    }
+
+    @Test
+    public void testEditUserValidationWithoutEmail() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String testFirstName = "John " + uniqueId;
+        String testLastName = "Smith " + uniqueId;
+        String testEmail = "user" + uniqueId + "@test.com";
+
+        usersPage.clickCreateUser();
+
+        usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+
+        kanbanPage.goToUsers();
+
+        usersPage.clickEditUser(testFirstName);
+
+        usersPage.clearEmailField();
+
+        usersPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
+
+        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+    }
+
+    @Test
+    public void testEditUserValidationWithIncorrectEmail() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String testFirstName = "John " + uniqueId;
+        String testLastName = "Smith " + uniqueId;
+        String testEmail = "user" + uniqueId + "@test.com";
+        String testIncorrectEmail = "user" + uniqueId + "test.com";
+
+        usersPage.clickCreateUser();
+
+        usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+
+        kanbanPage.goToUsers();
+
+        usersPage.clickEditUser(testFirstName);
+
+        usersPage.clearEmailField();
+
+        usersPage.fillEmailField(testIncorrectEmail);
+
+        usersPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
+
+        Assertions.assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "no error message for improper email");
+
+    }
+
+    @Test
+    public void testEditTaskWithoutTitle() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        String expectedDescription = "Description of task 15";
+
+
+        tasksPage.clickCreateTask();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String taskTitle = "SomeTask_" + uniqueId;
+        String taskStatus = "2";
+        String taskValue = "1";
+
+
+        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+        }
+
+        tasksPage.forceGoToTasks();
+
+
+        tasksPage.openTaskForEditing(taskTitle);
+
+        tasksPage.clearTitleField();
+
+        tasksPage.clickSaveButton();
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/tasks"), "task w/o title was saved");
+
+        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "no required message");
+    }
+
+    @Test
+    public void testEditLabelWithoutName() {
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String labelName = "Label " + uniqueId;
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        LabelsPage labelsPage = new LabelsPage(driver);
+
+        labelsPage.forceGoToLabels();
+
+
+        labelsPage.clickCreateLabel();
+
+        labelsPage.fillAndSubmitLabelForm(labelName);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+
+        labelsPage.forceGoToLabels();
+
+        labelsPage.clickEditLabel(labelName);
+
+        labelsPage.clearLabelField();
+
+        labelsPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/labels"), "label w/o title was saved");
+
+        Assertions.assertTrue(labelsPage.isRequiredErrorDisplayed(), "no required message");
+
+    }
+
+    @Test
+    public void testEditStatusWithoutName() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        StatusesPage statusesPage = new StatusesPage(driver);
+
+        statusesPage.forceGoToStatuses();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String initialName = "ToEdit_" + uniqueId;
+        String initialSlug = "to-edit" + uniqueId;
+
+        statusesPage.clickCreateStatus();
+
+        statusesPage.fillAndSubmitStatusForm(initialName, initialSlug);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+
+        statusesPage.forceGoToStatuses();
+
+        statusesPage.clickEditStatus(initialName);
+
+        statusesPage.clearNameField();
+
+        statusesPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/statuses"), "status w/o name was saved");
+
+        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
+    }
+    @Test
+    public void testEditStatusWithoutSlug() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        StatusesPage statusesPage = new StatusesPage(driver);
+
+        statusesPage.forceGoToStatuses();
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String initialName = "ToEdit_" + uniqueId;
+        String initialSlug = "to-edit" + uniqueId;
+
+        statusesPage.clickCreateStatus();
+
+        statusesPage.fillAndSubmitStatusForm(initialName, initialSlug);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+
+        statusesPage.forceGoToStatuses();
+
+        statusesPage.clickEditStatus(initialName);
+
+        statusesPage.clearSlugField();
+
+        statusesPage.clickSaveButton();
+
+
+        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/statuses"), "status w/o slug was saved");
+
+        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
+    }
 }

@@ -177,4 +177,11 @@ public class LabelsPage {
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+    public void clearLabelField() {
+        By labelLocator = By.name("name");
+        WebElement labelInput = wait.until(ExpectedConditions.elementToBeClickable(labelLocator));
+        labelInput.click();
+        labelInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        labelInput.sendKeys(Keys.BACK_SPACE);
+    }
 }

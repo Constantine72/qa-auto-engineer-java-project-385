@@ -286,6 +286,13 @@ public class TasksPage {
             return false;
         }
     }
+    public void clearTitleField() {
+        By titleLocator = By.name("title");
+        WebElement titleInput = wait.until(ExpectedConditions.elementToBeClickable(titleLocator));
+        titleInput.click();
+        titleInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        titleInput.sendKeys(Keys.BACK_SPACE);
+    }
 }
 
 
