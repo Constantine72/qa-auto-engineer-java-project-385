@@ -5,6 +5,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 
@@ -70,6 +73,17 @@ public class LoginPage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordErrorLocator));
         return error.getText();
+    }
+    public boolean isRequiredErrorDisplayed() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
+
+        try {
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
 

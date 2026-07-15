@@ -83,6 +83,26 @@ public class KanbanTest {
     }
 
     @Test
+    public void testLoginWithEmptyFieldsConsecutively() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("qwe", "");
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Enter happened with password");
+
+        Assertions.assertTrue(loginPage.isRequiredErrorDisplayed());
+
+        driver.navigate().refresh();
+
+        loginPage.login("", "ASD");
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Enter happened with password");
+
+        Assertions.assertTrue(loginPage.isRequiredErrorDisplayed());
+    }
+
+    @Test
     public void testSuccessfulLogout() {
 
         LoginPage loginPage = new LoginPage(driver);
