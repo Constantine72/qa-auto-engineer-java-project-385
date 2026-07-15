@@ -53,6 +53,7 @@ public class TasksPage {
     }
 
     public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue) {
+
         wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
 
         selectDropdownOption(assigneeDropdown, assigneeValue);
@@ -246,6 +247,44 @@ public class TasksPage {
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
+
+    public void selectAssignee(String assigneeValue) {
+
+        selectDropdownOption(assigneeDropdown, assigneeValue);
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
+    public void selectStatus(String statusValue) {
+
+        selectDropdownOption(statusDropdown, statusValue);
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
+    public void fillTaskTitle(String title) {
+
+        wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
+
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
+    public void clickSaveButton() {
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
+    public boolean isRequiredErrorDisplayed() {
+        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
+
+        try {
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
 

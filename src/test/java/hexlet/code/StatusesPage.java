@@ -187,6 +187,7 @@ public class StatusesPage {
         }
         return false;
     }
+
     public boolean isTextPresentOnViewPage(String expectedText) {
         By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
         try {
@@ -196,14 +197,53 @@ public class StatusesPage {
             return false;
         }
     }
+
     public void clickUpperShowButton() {
         By showButtonLocator = By.xpath("//a[contains(@href, '/show')]");
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
         showButton.click();
     }
+
     public void clickUpperEditButton() {
         By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
         showButton.click();
+    }
+
+    public boolean isRequiredErrorDisplayed() {
+        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
+
+        try {
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public void fillNameField(String name) {
+        By nameLocator = By.name("name");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        nameInput.sendKeys(name);
+    }
+
+    public void fillSlugField(String slug) {
+        By slugLocator = By.name("slug");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(slugLocator));
+        nameInput.sendKeys(slug);
+    }
+
+    public void clearNameField() {
+        By nameLocator = By.name("name");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        nameInput.click();
+        nameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        nameInput.sendKeys(Keys.BACK_SPACE);
+    }
+
+    public void clickSaveButton() {
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
 }

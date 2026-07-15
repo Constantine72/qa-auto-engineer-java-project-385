@@ -74,14 +74,12 @@ public class UsersPage {
             wait.until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
 
 
-
-           // By userCard = By.xpath("//*[contains(text(), '" + expectedFirstName + "')]");
+            // By userCard = By.xpath("//*[contains(text(), '" + expectedFirstName + "')]");
 
             //creating a mix of firstname, lastname and email
             String xpathQuery = String.format(
                     "//*[contains(., '%s') and contains(., '%s')]", expectedFirstName, expectedLastName, expectedEmail);
             By userCard = By.xpath(xpathQuery);
-
 
 
             wait.until(ExpectedConditions.visibilityOf(driver.findElement(userCard)));
@@ -204,27 +202,31 @@ public class UsersPage {
         }
         return false;
     }
+
     public boolean isStatusPresent(String statusName) {
         String rowXPath = "//*[contains(text(), '" + statusName + "')]";
 
         try {
-            WebDriverWait shortWait =  new WebDriverWait(driver, Duration.ofSeconds(2));
+            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(2));
             shortWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(rowXPath)));
             return true;
         } catch (Exception e) {
             return false;
         }
     }
+
     public void clickUpperShowButton() {
         By showButtonLocator = By.xpath("//a[contains(@href, '/show')]");
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
         showButton.click();
     }
+
     public void clickUpperEditButton() {
         By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
         showButton.click();
     }
+
     public boolean isTextPresentOnViewPage(String expectedText) {
         By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
         try {
@@ -234,6 +236,7 @@ public class UsersPage {
             return false;
         }
     }
+
     public boolean isRequiredErrorDisplayed() {
         By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
 
@@ -243,6 +246,56 @@ public class UsersPage {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public void clearFirstNameField() {
+        By locator = By.name("firstName");
+        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        input.click();
+        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.BACK_SPACE);
+    }
+
+    public void clearLastNameField() {
+        By locator = By.name("lastName");
+        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        input.click();
+        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.BACK_SPACE);
+    }
+
+    public void clearEmailField() {
+        By locator = By.name("email");
+        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        input.click();
+        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.BACK_SPACE);
+    }
+
+    public boolean isInvalidEmailErrorDisplayed() {
+        By errorLocator = By.xpath("//*[contains(text(), 'Incorrect email format')]");
+
+        try {
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public void fillFirstNameField(String firstName) {
+        By nameLocator = By.name("firstName");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        nameInput.sendKeys(firstName);
+    }
+    public void fillLastNameField(String lastName) {
+        By nameLocator = By.name("lastName");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        nameInput.sendKeys(lastName);
+    }
+    public void fillEmailField(String email) {
+        By nameLocator = By.name("email");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        nameInput.sendKeys(email);
     }
 }
 

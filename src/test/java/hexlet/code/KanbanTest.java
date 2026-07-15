@@ -1006,6 +1006,7 @@ public class KanbanTest {
 
         Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
     }
+
     @Test
     public void testCreateUserValidation() {
         LoginPage loginPage = new LoginPage(driver);
@@ -1019,16 +1020,134 @@ public class KanbanTest {
 
         usersPage.clickCreateUser();
 
-        String uniqueId = String.valueOf(System.currentTimeMillis());
-
-        String testLastName = "Smith " + uniqueId;
-        String testEmail = "user" + uniqueId + "@test.com";
-
-
-        usersPage.fillAndSubmitUserForm(testEmail, "", testLastName);
+        usersPage.fillLastNameField("Smith");
+        usersPage.fillEmailField("newemail@test.com");
+        usersPage.clickSaveButton();
 
         Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
         Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
+
+        usersPage.fillFirstNameField("John");
+        usersPage.clearLastNameField();
+        usersPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+
+        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
+
+        usersPage.fillLastNameField("Smith");
+        usersPage.clearEmailField();
+        usersPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+
+        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
+
+        usersPage.fillEmailField("notAnEmail");
+        usersPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+
+        Assertions.assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "Incorrect email error is not shown");
+
+    }
+
+    @Test
+    public void testCreateLabelValidation() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        LabelsPage labelsPage = new LabelsPage(driver);
+
+        labelsPage.forceGoToLabels();
+        labelsPage.clickCreateLabel();
+        labelsPage.triggerValidationOnNameField();
+        labelsPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty label has been created");
+
+        Assertions.assertTrue(labelsPage.isRequiredErrorDisplayed(), "No required error is displayed");
+    }
+
+    @Test
+    public void testCreateStatusValidation() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        StatusesPage statusesPage = new StatusesPage(driver);
+
+
+        statusesPage.forceGoToStatuses();
+        statusesPage.clickCreateStatus();
+
+        statusesPage.fillNameField("Temp status name");
+        statusesPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty slug has been created");
+
+        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+        statusesPage.clearNameField();
+        statusesPage.fillSlugField("Temp slug name");
+        statusesPage.clickSaveButton();
+
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty slug has been created");
+
+        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+    }
+
+    @Test
+    public void testCreateTaskValidation() {
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String taskTitle = "SomeTask_" + uniqueId;
+        String taskStatus = "2";
+        String assigneeName = "1";
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+        tasksPage.clickCreateTask();
+
+        tasksPage.selectAssignee(assigneeName);
+        tasksPage.selectStatus(taskStatus);
+        tasksPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty task has been created");
+
+        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+        driver.navigate().refresh();
+
+        tasksPage.fillTaskTitle(taskTitle);
+        tasksPage.selectStatus(taskStatus);
+
+        tasksPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "task has been created w/o assignee");
+
+        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+        driver.navigate().refresh();
+
+        tasksPage.fillTaskTitle(taskTitle);
+        tasksPage.selectAssignee(assigneeName);
+        tasksPage.clickSaveButton();
+
+        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "task has been created w/o status");
+
+        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
     }
 }

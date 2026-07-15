@@ -154,4 +154,27 @@ public class LabelsPage {
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
         showButton.click();
     }
+    public boolean isRequiredErrorDisplayed() {
+        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
+
+        try {
+            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            return errorMessage.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public void triggerValidationOnNameField() {
+        By nameLocator = By.name("name");
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+
+        nameInput.click();
+        nameInput.sendKeys("a");
+        nameInput.sendKeys(Keys.BACK_SPACE);
+    }
+    public void clickSaveButton() {
+
+        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+    }
 }
