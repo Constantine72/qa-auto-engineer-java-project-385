@@ -4,12 +4,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
+
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
+
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class KanbanTest {
     private WebDriver driver;
     private String baseurl;
+    private WebDriverWait wait;
 
     @BeforeEach
     public void setUp() {
@@ -45,7 +46,8 @@ public class KanbanTest {
         driver = new ChromeDriver(options);
 
         driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
-
+        //added wait to fix pagination test
+        wait = new WebDriverWait(driver, Duration.ofSeconds(7));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.get(baseurl);
     }
@@ -53,7 +55,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+           driver.quit();
         }
     }
 
@@ -1606,29 +1608,28 @@ public class KanbanTest {
 
         Assertions.assertTrue(usersPage.getTableRowsCount() > 0, "the table is empty");
 
-        String initialUrl = driver.getCurrentUrl();
+        By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
 
         usersPage.changeRowsPerPage("5");
 
-        System.out.println(initialUrl);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
 
         Assertions.assertTrue(usersPage.isNextPageButtonEnabled(), "pagination arrow right is not clickable");
 
-        String urlBeforeNext = driver.getCurrentUrl();
         usersPage.clickNextPageButton();
 
-        System.out.println(urlBeforeNext);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "6-"));
 
         String urlPage2 = driver.getCurrentUrl();
-        System.out.println(urlPage2);
 
         Assertions.assertTrue(urlPage2.contains("page=2") || (urlPage2.contains("page%22%3A2")), "next page hasn't been opened");
 
         usersPage.clickPreviousPageButton();
 
-        System.out.println(urlPage2);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
 
         String finalUrl = driver.getCurrentUrl();
+
         Assertions.assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"), "page 1 hasn't been opened");
     }
 }

@@ -4,15 +4,13 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.WebDriver;
 
 import org.openqa.selenium.JavascriptExecutor;
 import java.time.Duration;
 
 
 public class UsersPage extends BasePage {
-
-//    private final WebDriver driver;
-//    private final WebDriverWait wait;
 
     private final By createUserButton = By.xpath("//*[contains(text(), 'Create')]");
 
