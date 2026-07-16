@@ -5,13 +5,14 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.security.PublicKey;
+import org.openqa.selenium.JavascriptExecutor;
 import java.time.Duration;
 
-public class UsersPage {
 
-    private final WebDriver driver;
-    private final WebDriverWait wait;
+public class UsersPage extends BasePage {
+
+//    private final WebDriver driver;
+//    private final WebDriverWait wait;
 
     private final By createUserButton = By.xpath("//*[contains(text(), 'Create')]");
 
@@ -32,8 +33,7 @@ public class UsersPage {
 
     public UsersPage(WebDriver driver) {
 
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        super(driver);
     }
 
     public void clickCreateUser() {
@@ -237,16 +237,16 @@ public class UsersPage {
         }
     }
 
-    public boolean isRequiredErrorDisplayed() {
-        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
-
-        try {
-            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
-            return errorMessage.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
+//    public boolean isRequiredErrorDisplayed() {
+//        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
+//
+//        try {
+//            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+//            return errorMessage.isDisplayed();
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
     public void clearFirstNameField() {
         By locator = By.name("firstName");
@@ -297,6 +297,28 @@ public class UsersPage {
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(email);
     }
+    public void selectFirstRowCheckbox() {
+
+        By firstRowCheckbox = By.cssSelector("tbody .PrivateSwitchBase-input");
+
+        WebElement checkbox = wait.until(ExpectedConditions.presenceOfElementLocated(firstRowCheckbox));
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
+    }
+//    public int getTableRowsCount() {
+//        By rowsLocator = By.xpath("//tbody/tr");
+//        try {
+//            wait.until(ExpectedConditions.presenceOfElementLocated(rowsLocator));
+//        } catch (Exception e) {
+//            return 0;
+//        }
+//        return driver.findElements(rowsLocator).size();
+//    }
+//    public void clickBulkDeleteButton() {
+//        By bulkDeleteLocator = By.xpath("//button[@aria-label='Delete']");
+//        WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(bulkDeleteLocator));
+//        deleteButton.click();
+//    }
 }
 
 

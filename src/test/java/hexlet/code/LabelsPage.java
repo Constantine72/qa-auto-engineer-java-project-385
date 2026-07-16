@@ -9,9 +9,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.security.PublicKey;
 import java.time.Duration;
 
-public class LabelsPage {
-    private WebDriver driver;
-    private WebDriverWait wait;
+public class LabelsPage extends BasePage {
+//    private WebDriver driver;
+//    private WebDriverWait wait;
 
     private final By createLabelButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By nameField = By.cssSelector("input[name='name']");
@@ -22,8 +22,7 @@ public class LabelsPage {
 
     public LabelsPage(WebDriver driver) {
 
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+      super(driver);
     }
 
     public void clickCreateLabel() {

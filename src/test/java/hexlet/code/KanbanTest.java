@@ -914,7 +914,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task " + taskTitle + " is not displayed");
 
-        Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task description " + taskDesc + " is not displayed");
+        Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskDesc), "the task description " + taskDesc + " is not displayed");
     }
 
     @Test
@@ -1474,5 +1474,161 @@ public class KanbanTest {
         Assertions.assertFalse(driver.getCurrentUrl().endsWith("/statuses"), "status w/o slug was saved");
 
         Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
+    }
+    @Test
+    public void testBulkDeleteUser() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        int initialRowCount = usersPage.getTableRowsCount();
+        Assertions.assertTrue(initialRowCount > 0, "The table is empty");
+        System.out.println(initialRowCount);
+        usersPage.selectFirstRowCheckbox();
+
+        usersPage.clickBulkDeleteButton();
+
+        int finalRowsCount = usersPage.getTableRowsCount();
+
+        Assertions.assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
+    }
+    @Test
+    public void testBulkDeleteLabel() {
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        LabelsPage labelsPage = new LabelsPage(driver);
+
+        labelsPage.forceGoToLabels();
+
+        int initialRowCount = labelsPage.getRowsCount();
+        Assertions.assertTrue(initialRowCount > 0, "Labels table is empty");
+
+        labelsPage.selectFirstRowCheckbox();
+        labelsPage.clickBulkDeleteButton();
+
+        int finalRowCount = labelsPage.getTableRowsCount();
+        Assertions.assertEquals(initialRowCount - 1, finalRowCount, "The row count hasn't changed");
+    }
+    @Test
+    public void testBulkDeleteStatus() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        StatusesPage statusesPage = new StatusesPage(driver);
+
+        statusesPage.forceGoToStatuses();
+
+        int initialRowCount = statusesPage.getTableRowsCount();
+        Assertions.assertTrue(initialRowCount > 0, "Table is empty");
+
+        statusesPage.selectFirstRowCheckbox();
+
+        statusesPage.clickBulkDeleteButton();
+
+        int finalRowCount = statusesPage.getTableRowsCount();
+        System.out.println(initialRowCount);
+        Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
+
+    }
+    @Test
+    public void testCancelLabelCheckboxSelection() {
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        LabelsPage labelsPage = new LabelsPage(driver);
+
+        labelsPage.forceGoToLabels();
+
+        Assertions.assertTrue(labelsPage.getTableRowsCount() > 0, "Labels table is empty");
+
+        labelsPage.selectFirstRowCheckbox();
+        labelsPage.clickUnselectCrossButton();
+
+        Assertions.assertTrue(labelsPage.isSelectionTextHidden(), "1 item selected is still displayed");
+    }
+    @Test
+    public void testCancelUserCheckboxSelection() {
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        Assertions.assertTrue(usersPage.getTableRowsCount() > 0, "Labels table is empty");
+
+        usersPage.selectFirstRowCheckbox();
+        usersPage.clickUnselectCrossButton();
+
+        Assertions.assertTrue(usersPage.isSelectionTextHidden(), "1 item selected is still displayed");
+    }
+    @Test
+    public void testCancelStatusCheckboxSelection() {
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        StatusesPage statusesPage = new StatusesPage(driver);
+
+        statusesPage.forceGoToStatuses();
+
+        Assertions.assertTrue(statusesPage.getTableRowsCount() > 0, "Labels table is empty");
+
+        statusesPage.selectFirstRowCheckbox();
+        statusesPage.clickUnselectCrossButton();
+
+        Assertions.assertTrue(statusesPage.isSelectionTextHidden(), "1 item selected is still displayed");
+    }
+    @Test
+    public void testPaginationFullFlow() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        Assertions.assertTrue(usersPage.getTableRowsCount() > 0, "the table is empty");
+
+        String initialUrl = driver.getCurrentUrl();
+
+        usersPage.changeRowsPerPage("5");
+
+        System.out.println(initialUrl);
+
+        Assertions.assertTrue(usersPage.isNextPageButtonEnabled(), "pagination arrow right is not clickable");
+
+        String urlBeforeNext = driver.getCurrentUrl();
+        usersPage.clickNextPageButton();
+
+        System.out.println(urlBeforeNext);
+
+        String urlPage2 = driver.getCurrentUrl();
+        System.out.println(urlPage2);
+
+        Assertions.assertTrue(urlPage2.contains("page=2") || (urlPage2.contains("page%22%3A2")), "next page hasn't been opened");
+
+        usersPage.clickPreviousPageButton();
+
+        System.out.println(urlPage2);
+
+        String finalUrl = driver.getCurrentUrl();
+        Assertions.assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"), "page 1 hasn't been opened");
     }
 }

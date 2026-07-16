@@ -10,10 +10,10 @@ import java.security.PublicKey;
 import java.time.Duration;
 
 
-public class StatusesPage {
+public class StatusesPage extends BasePage {
 
-    private WebDriver driver;
-    private WebDriverWait wait;
+//    private WebDriver driver;
+//    private WebDriverWait wait;
 
     private final By createStatusButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By nameField = By.cssSelector("input[name='name']");
@@ -37,8 +37,7 @@ public class StatusesPage {
 
     public StatusesPage(WebDriver driver) {
 
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        super(driver);
     }
 
 
