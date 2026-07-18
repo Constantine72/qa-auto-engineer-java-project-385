@@ -915,6 +915,7 @@ public class KanbanTest {
         }
 
         List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertEquals(1, comboCardsNew.size(), "1 task should be on board");
         Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
 
 
@@ -946,7 +947,19 @@ public class KanbanTest {
         }
 
 
+        String urlForEmily = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker10 = "emily@example.com";
 
+        tasksPage.filterByAssignee(targetWorker10);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlForEmily)));
+
+        try {
+            tasksPage.waitForCardsCount(0);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail("table should be empty");
+        }
 
 
 
