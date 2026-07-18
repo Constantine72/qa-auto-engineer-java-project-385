@@ -877,8 +877,6 @@ public class KanbanTest {
         Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
 
 
-// ========================================================== trying to fix wrongtest2
-
         boolean hasOnlyJohnTasks = johnCards.stream()
                 .allMatch(c -> c.contains("Task 11") ||
                         c.contains("Task 2")||
@@ -903,11 +901,12 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        String urlCombo2 = driver.getCurrentUrl();
+        String urlCombo8 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
 
         tasksPage.filterByStatus("To Be Fixed");
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo2)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
 
         try {
             tasksPage.waitForCardsCount(1);
@@ -938,8 +937,6 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-
-        tasksPage.filterByStatus("To Be Fixed");
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAfterClear)));
 
         try {
@@ -947,7 +944,7 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail("15 tasks should be displayed");
         }
-        //=======================================================================
+
 
 
 
