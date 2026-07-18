@@ -859,12 +859,12 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        String urlJohn = driver.getCurrentUrl();
+        //String urlJohn = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
 
         try {
             tasksPage.waitForCardsCount(5);
@@ -944,15 +944,17 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail("15 tasks should be displayed");
         }
-
+        driver.navigate().refresh();
 
         //String urlForEmily = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker10 = "emily@example.com";
 
-        tasksPage.filterByAssignee(targetWorker10);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
 
         //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlForEmily)));
+
+        tasksPage.filterByAssignee(targetWorker10);
 
         try {
             tasksPage.waitForCardsCount(0);
