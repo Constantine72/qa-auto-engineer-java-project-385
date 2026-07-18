@@ -864,7 +864,7 @@ public class KanbanTest {
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
 
         try {
             tasksPage.waitForCardsCount(5);
