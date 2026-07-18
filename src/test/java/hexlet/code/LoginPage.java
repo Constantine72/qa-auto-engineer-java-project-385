@@ -74,6 +74,7 @@ public class LoginPage {
         WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordErrorLocator));
         return error.getText();
     }
+
     public boolean isRequiredErrorDisplayed() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         By errorLocator = By.xpath("//*[contains(text(), 'Required')]");

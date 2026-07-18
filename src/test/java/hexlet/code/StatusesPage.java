@@ -245,6 +245,7 @@ public class StatusesPage extends BasePage {
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public void clearSlugField() {
         By slugLocator = By.name("slug");
         WebElement slugInput = wait.until(ExpectedConditions.elementToBeClickable(slugLocator));

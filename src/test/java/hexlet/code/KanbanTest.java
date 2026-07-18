@@ -46,7 +46,7 @@ public class KanbanTest {
         driver = new ChromeDriver(options);
 
         driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
-        //added wait to fix pagination test
+
         wait = new WebDriverWait(driver, Duration.ofSeconds(7));
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         driver.get(baseurl);
@@ -55,7 +55,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-           driver.quit();
+            driver.quit();
         }
     }
 
@@ -694,52 +694,108 @@ public class KanbanTest {
 
         TasksPage tasksPage = new TasksPage((driver));
 
-        int totalTasks = tasksPage.getVisibleTasksCount();
 
-        Assertions.assertEquals(totalTasks, 15, "Expected 15 cards, but loaded" + totalTasks);
+        int initialCardsCount = tasksPage.getTaskCardsCount();
 
-        tasksPage.applyStatusFilter("2");
+        Assertions.assertTrue(initialCardsCount > 0, "the table is blank");
 
-        tasksPage.waitForTasksUpdate(15);
 
-        int draftTasks = tasksPage.getVisibleTasksCount();
-        Assertions.assertTrue(draftTasks < 15, "Filter failed");
-        Assertions.assertTrue(draftTasks > 0, "No cards left");
+        String urlBeforeFilter = driver.getCurrentUrl();
+
+        String targetStatus = "Draft";
+        tasksPage.filterByStatus(targetStatus);
+
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeFilter)));
+
+        try {
+            tasksPage.waitForCardsCount(3);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        List<String> statusFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+        Assertions.assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
+
+        Assertions.assertEquals(3, statusFilteredCards.size(), "error: incorrect numbers of cards");
+
+
+        Assertions.assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
+        Assertions.assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
+        Assertions.assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
+
+
+        boolean onlyDraftTasks = statusFilteredCards.stream()
+                .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
+        Assertions.assertTrue(onlyDraftTasks, "improper tasks are displayed");
+
+        tasksPage.clearAllFilters();
+
+        String urlBeforeAssignee = driver.getCurrentUrl();
+        String targetWorker = "alice@hotmail.com";
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        WebElement oldCard2 = driver.findElement(By.cssSelector(".MuiCard-root"));
+        tasksPage.filterByAssignee(targetWorker);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        wait.until(ExpectedConditions.stalenessOf(oldCard2));
+        List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+        Assertions.assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
+
+        System.out.println(assigneeFilteredCards.size());
+
+        Assertions.assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
+
+
+        Assertions.assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
+        Assertions.assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
+
+        boolean onlyAliceTasks = assigneeFilteredCards.stream()
+                .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
+        Assertions.assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
 
 
         tasksPage.clearAllFilters();
+        String urlBeforeLabel = driver.getCurrentUrl();
+        String targetLabel = "bug";
 
-        tasksPage.waitForTasksUpdate(draftTasks);
-
-        int resetTasks = tasksPage.getVisibleTasksCount();
-        Assertions.assertEquals(resetTasks, 15, "After filter the amount of cards is not 15");
-
-        tasksPage.applyAssigneeFilter("2");
-
-        tasksPage.waitForTasksUpdate(15);
-
-        int assigneeTasks = tasksPage.getVisibleTasksCount();
-        Assertions.assertTrue(assigneeTasks < 15, "improper number of tasks");
-        Assertions.assertTrue(assigneeTasks > 0, "no cards displayed");
-
-        tasksPage.clearAllFilters();
-        tasksPage.waitForTasksUpdate(assigneeTasks);
-
-        Assertions.assertEquals(tasksPage.getVisibleTasksCount(), 15, "The number of cards is not 15");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
 
-        tasksPage.applyLabelFilter("2");
-        tasksPage.waitForTasksUpdate(15);
+        tasksPage.filterByLabel(targetLabel);
 
-        int labelTasks = tasksPage.getVisibleTasksCount();
-        Assertions.assertTrue(labelTasks < 15, "filter has not been applied");
-        Assertions.assertTrue(labelTasks > 0, "no cards displayed");
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
 
-        tasksPage.clearAllFilters();
-        tasksPage.waitForTasksUpdate(labelTasks);
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
 
-        Assertions.assertEquals(tasksPage.getVisibleTasksCount(), 15, "not 15 cardsz`");
+        System.out.println(targetLabel);
+        List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
 
+        Assertions.assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
+
+
+        Assertions.assertEquals(2, labelFilteredCards.size(), "improper number of cards");
+
+        Assertions.assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
+        Assertions.assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
+
+        boolean onlyBugTasks = labelFilteredCards.stream()
+                .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
+        Assertions.assertTrue(onlyBugTasks, "error: an improper task is shown");
 
     }
 
@@ -1440,6 +1496,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
     }
+
     @Test
     public void testEditStatusWithoutSlug() {
 
@@ -1477,6 +1534,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
     }
+
     @Test
     public void testBulkDeleteUser() {
 
@@ -1500,6 +1558,7 @@ public class KanbanTest {
 
         Assertions.assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
     }
+
     @Test
     public void testBulkDeleteLabel() {
         LoginPage loginPage = new LoginPage(driver);
@@ -1519,6 +1578,7 @@ public class KanbanTest {
         int finalRowCount = labelsPage.getTableRowsCount();
         Assertions.assertEquals(initialRowCount - 1, finalRowCount, "The row count hasn't changed");
     }
+
     @Test
     public void testBulkDeleteStatus() {
 
@@ -1542,6 +1602,7 @@ public class KanbanTest {
         Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
 
     }
+
     @Test
     public void testCancelLabelCheckboxSelection() {
         LoginPage loginPage = new LoginPage(driver);
@@ -1559,6 +1620,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(labelsPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
+
     @Test
     public void testCancelUserCheckboxSelection() {
         LoginPage loginPage = new LoginPage(driver);
@@ -1577,6 +1639,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(usersPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
+
     @Test
     public void testCancelStatusCheckboxSelection() {
         LoginPage loginPage = new LoginPage(driver);
@@ -1594,6 +1657,7 @@ public class KanbanTest {
 
         Assertions.assertTrue(statusesPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
+
     @Test
     public void testPaginationFullFlow() {
 
@@ -1632,4 +1696,39 @@ public class KanbanTest {
 
         Assertions.assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"), "page 1 hasn't been opened");
     }
+
+    @Test
+    public void testTasksFilterByStatusOnGrid() {
+
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToTasks();
+
+        TasksPage tasksPage = new TasksPage((driver));
+
+        int cardsBefore = tasksPage.getTaskCardsCount();
+
+        Assertions.assertTrue(cardsBefore > 0, "no cards on board");
+
+        String urlBeforeFilter = driver.getCurrentUrl();
+
+        String targetStatus = "Draft";
+        tasksPage.filterByStatus(targetStatus);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeFilter)));
+
+        List<String> cardsTexts = tasksPage.getVisibleStatusesInTable();
+
+        Assertions.assertFalse(cardsTexts.isEmpty(), "table is empty: there's no " + targetStatus + "'");
+
+        for (String cardText : cardsTexts) {
+            if (cardText.contains("Published") || cardText.contains("To Publish") || cardText.contains("To Be Fixed") || cardText.contains("To Review")) {
+                Assertions.fail("There's an extra card " + cardText);
+            }
+        }
+    }
+
 }

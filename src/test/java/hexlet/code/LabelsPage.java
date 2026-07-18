@@ -18,7 +18,7 @@ public class LabelsPage extends BasePage {
 
     public LabelsPage(WebDriver driver) {
 
-      super(driver);
+        super(driver);
     }
 
     public void clickCreateLabel() {
@@ -144,11 +144,13 @@ public class LabelsPage extends BasePage {
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
         showButton.click();
     }
+
     public void clickUpperEditButton() {
         By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
         showButton.click();
     }
+
     public boolean isRequiredErrorDisplayed() {
         By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
 
@@ -159,6 +161,7 @@ public class LabelsPage extends BasePage {
             return false;
         }
     }
+
     public void triggerValidationOnNameField() {
         By nameLocator = By.name("name");
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
@@ -167,11 +170,13 @@ public class LabelsPage extends BasePage {
         nameInput.sendKeys("a");
         nameInput.sendKeys(Keys.BACK_SPACE);
     }
+
     public void clickSaveButton() {
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public void clearLabelField() {
         By labelLocator = By.name("name");
         WebElement labelInput = wait.until(ExpectedConditions.elementToBeClickable(labelLocator));

@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.WebDriver;
 
 import org.openqa.selenium.JavascriptExecutor;
+
 import java.time.Duration;
 
 
@@ -280,21 +281,25 @@ public class UsersPage extends BasePage {
             return false;
         }
     }
+
     public void fillFirstNameField(String firstName) {
         By nameLocator = By.name("firstName");
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(firstName);
     }
+
     public void fillLastNameField(String lastName) {
         By nameLocator = By.name("lastName");
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(lastName);
     }
+
     public void fillEmailField(String email) {
         By nameLocator = By.name("email");
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(email);
     }
+
     public void selectFirstRowCheckbox() {
 
         By firstRowCheckbox = By.cssSelector("tbody .PrivateSwitchBase-input");

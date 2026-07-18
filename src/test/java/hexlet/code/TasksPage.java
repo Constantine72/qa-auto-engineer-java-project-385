@@ -9,12 +9,13 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import java.time.Duration;
 
-public class TasksPage {
+public class TasksPage extends BasePage {
 
-    private WebDriver driver;
-    private WebDriverWait wait;
 
     private final By createTaskButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By assigneeDropdown = By.xpath("//div[.//span[contains(text(), 'Assignee')]]//*[@role='combobox']");
@@ -30,11 +31,11 @@ public class TasksPage {
     private final By formStatusDropdown = By.cssSelector("[class*='status_id'] div");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By contentInput = By.name("content");
+    private final By cardLocator = By.cssSelector(".MuiCard-root");
 
     public TasksPage(WebDriver driver) {
 
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        super(driver);
     }
 
     public void clickCreateTask() {
@@ -148,12 +149,12 @@ public class TasksPage {
 
         Actions actions = new Actions(driver);
         actions.click(input)
-        .keyDown(Keys.CONTROL)
+                .keyDown(Keys.CONTROL)
                 .sendKeys("a")
-                        .keyUp(Keys.CONTROL)
-                                .sendKeys(Keys.BACK_SPACE)
-                                        .sendKeys(newName)
-                                                .perform();
+                .keyUp(Keys.CONTROL)
+                .sendKeys(Keys.BACK_SPACE)
+                .sendKeys(newName)
+                .perform();
 
 
         driver.findElement(saveButton).click();
@@ -256,6 +257,7 @@ public class TasksPage {
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public void selectStatus(String statusValue) {
 
         selectDropdownOption(statusDropdown, statusValue);
@@ -263,6 +265,7 @@ public class TasksPage {
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public void fillTaskTitle(String title) {
 
         wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
@@ -271,11 +274,13 @@ public class TasksPage {
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public void clickSaveButton() {
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
+
     public boolean isRequiredErrorDisplayed() {
         By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
 
@@ -286,6 +291,7 @@ public class TasksPage {
             return false;
         }
     }
+
     public void clearTitleField() {
         By titleLocator = By.name("title");
         WebElement titleInput = wait.until(ExpectedConditions.elementToBeClickable(titleLocator));
@@ -293,7 +299,106 @@ public class TasksPage {
         titleInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         titleInput.sendKeys(Keys.BACK_SPACE);
     }
+
+    public void filterByStatus(String statusName) {
+        By filterDropdownLocator = By.cssSelector("[class*='status_id'] div");
+        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        dropdown.click();
+
+
+        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
+
+        By optionByText = By.xpath("//li[contains(., '" + statusName + "')]");
+
+        By optionValue = By.xpath("//li[@data-value='" + statusName + "']");
+
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
+        } catch (Exception e) {
+            wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
+        }
+    }
+
+    public void filterByAssignee(String assigneeName) {
+        By filterDropdownLocator = By.cssSelector("[class*='assignee_id'] div");
+        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        dropdown.click();
+
+
+        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
+
+        By optionByText = By.xpath("//li[contains(., '" + assigneeName + "')]");
+
+        By optionValue = By.xpath("//li[@data-value='" + assigneeName + "']");
+
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
+        } catch (Exception e) {
+            wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
+        }
+    }
+
+    public void filterByLabel(String labelName) {
+        By filterDropdownLocator = By.cssSelector("[class*='label_id'] div");
+        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        dropdown.click();
+
+
+        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
+
+        By optionByText = By.xpath("//li[contains(., '" + labelName + "')]");
+
+        By optionValue = By.xpath("//li[@data-value='" + labelName + "']");
+
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
+        } catch (Exception e) {
+            wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
+        }
+    }
+
+    public List<String> getVisibleStatusesInTable() {
+//        By cardLocator = By.cssSelector(".MuiCard-root");
+//
+//        try {
+//
+//            wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(cardLocator));
+//            List<WebElement> cards = driver.findElements(cardLocator);
+//
+//            return cards.stream()
+//                    .map(WebElement::getText)
+//                    .map(String::trim)
+//                    .collect(Collectors.toList());
+//        } catch (Exception e) {
+//            return List.of();
+//        }
+
+        try {
+            return driver.findElements(cardLocator).stream()
+                    .map(WebElement::getText)
+                    .collect(Collectors.toList());
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            return List.of();
+        }
+    }
+
+    public void waitForCardsCount(int expectedCount) {
+        wait.until(ExpectedConditions.numberOfElementsToBe(cardLocator, expectedCount));
+    }
+
+    public int getTaskCardsCount() {
+        try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(cardLocator));
+            return driver.findElements(cardLocator).size();
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }
+
 
 
 
