@@ -37,7 +37,7 @@ public class KanbanTest {
 
         //new code for testing headless mode in CI 36-40 and 45
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
+        //options.addArguments("--headless=new");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
@@ -55,7 +55,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+            //driver.quit();
         }
     }
 
@@ -843,6 +843,38 @@ public class KanbanTest {
 
         List<String> comboCards = tasksPage.getVisibleStatusesInTable();
         Assertions.assertTrue(comboCards.get(0).contains("Task 8"), "table should be empty");
+
+
+
+        tasksPage.clearAllFilters();
+
+        String urlAlice = driver.getCurrentUrl();
+        String targetWorker4 = "alice@hotmail.com";
+
+        tasksPage.filterByAssignee(targetWorker4);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAlice)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+        String urlJohn = driver.getCurrentUrl();
+
+        String targetWorker5 = "john@google.com";
+        tasksPage.filterByAssignee(targetWorker5);
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+
+        try {
+            tasksPage.waitForCardsCount(5);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        List<String> johnCards = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
+
 
     }
 
