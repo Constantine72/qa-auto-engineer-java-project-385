@@ -701,6 +701,7 @@ public class KanbanTest {
 
 
         String urlBeforeFilter = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetStatus = "Draft";
         tasksPage.filterByStatus(targetStatus);
@@ -733,6 +734,7 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         String urlBeforeAssignee = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker = "alice@hotmail.com";
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
@@ -751,8 +753,6 @@ public class KanbanTest {
         List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
 
         Assertions.assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
-
-        System.out.println(assigneeFilteredCards.size());
 
         Assertions.assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
 
@@ -782,7 +782,6 @@ public class KanbanTest {
             Assertions.fail(" filter hasn't been applied");
         }
 
-        System.out.println(targetLabel);
         List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
 
         Assertions.assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
@@ -800,9 +799,8 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         String urlBeforeAssignee2 = driver.getCurrentUrl();
-        String targetWorker2 = "emily@example.com";
-
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker2 = "emily@example.com";
 
         tasksPage.filterByAssignee(targetWorker2);
 
@@ -830,6 +828,7 @@ public class KanbanTest {
             Assertions.fail(" filter hasn't been applied");
         }
         String urlBeforeCombo2 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetStatusNew2 = "To Be Fixed";
         tasksPage.filterByStatus(targetStatusNew2);
@@ -849,6 +848,7 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         String urlAlice = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker4 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker4);
@@ -861,10 +861,11 @@ public class KanbanTest {
             Assertions.fail(" filter hasn't been applied");
         }
         String urlJohn = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
 
         try {
             tasksPage.waitForCardsCount(5);
@@ -890,9 +891,8 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         String urlCombo7 = driver.getCurrentUrl();
-        String targetWorker6 = "alice@hotmail.com";
-
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker6 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker6);
 
@@ -919,12 +919,10 @@ public class KanbanTest {
         Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
 
 
-
-
-
         tasksPage.clearAllFilters();
 
         String urlBeforeClear = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker7 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker7);
