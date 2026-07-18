@@ -883,7 +883,7 @@ public class KanbanTest {
         String urlCombo1 = driver.getCurrentUrl();
         String targetWorker6 = "alice@hotmail.com";
 
-        tasksPage.filterByAssignee(targetWorker4);
+        tasksPage.filterByAssignee(targetWorker6);
 
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo1)));
 
