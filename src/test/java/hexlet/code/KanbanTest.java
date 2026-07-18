@@ -885,12 +885,14 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-        String urlCombo1 = driver.getCurrentUrl();
+        String urlCombo7 = driver.getCurrentUrl();
         String targetWorker6 = "alice@hotmail.com";
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         tasksPage.filterByAssignee(targetWorker6);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo1)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
 
         try {
             tasksPage.waitForCardsCount(2);
