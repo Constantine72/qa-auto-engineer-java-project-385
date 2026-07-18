@@ -890,7 +890,7 @@ public class KanbanTest {
         //String urlCombo7 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker6 = "alice@hotmail.com";
-
+        System.out.println(targetWorker6);
         tasksPage.filterByAssignee(targetWorker6);
 
         //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
