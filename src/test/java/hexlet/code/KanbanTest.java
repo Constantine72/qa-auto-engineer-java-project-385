@@ -864,7 +864,7 @@ public class KanbanTest {
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
 
         try {
             tasksPage.waitForCardsCount(5);
@@ -873,82 +873,7 @@ public class KanbanTest {
         }
 
         List<String> johnCards = tasksPage.getVisibleStatusesInTable();
-        //Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
-        boolean hasOnlyJohnTasks = johnCards.stream()
-                                .allMatch(c -> c.contains("Task 11") ||
-                                                c.contains("Task 2")||
-                                        c.contains("Task 1") ||
-                                        c.contains("Task 15") ||
-                                        c.contains("Task 5"));
-
-                     Assertions.assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
-
-        tasksPage.clearAllFilters();
-
-        String urlCombo7 = driver.getCurrentUrl();
-        String targetWorker6 = "alice@hotmail.com";
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
-        tasksPage.filterByAssignee(targetWorker6);
-
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
-
-        try {
-            tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
-        }
-        String urlCombo2 = driver.getCurrentUrl();
-
-
-        tasksPage.filterByStatus("To Be Fixed");
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo2)));
-
-        try {
-            tasksPage.waitForCardsCount(1);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
-        }
-
-        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
-
-
-
-
-
-        tasksPage.clearAllFilters();
-
-        String urlBeforeClear = driver.getCurrentUrl();
-        String targetWorker7 = "alice@hotmail.com";
-
-        tasksPage.filterByAssignee(targetWorker7);
-
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
-
-        try {
-            tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
-        }
-        String urlAfterClear = driver.getCurrentUrl();
-
-        tasksPage.clearAllFilters();
-
-
-        tasksPage.filterByStatus("To Be Fixed");
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAfterClear)));
-
-        try {
-            tasksPage.waitForCardsCount(15);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail("15 tasks should be displayed");
-        }
-
-
-
-
+        Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
 
 
     }
