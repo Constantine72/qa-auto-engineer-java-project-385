@@ -864,7 +864,7 @@ public class KanbanTest {
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
 
         try {
             tasksPage.waitForCardsCount(5);
@@ -874,8 +874,6 @@ public class KanbanTest {
 
         List<String> johnCards = tasksPage.getVisibleStatusesInTable();
         Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
-
-
 
 
         tasksPage.clearAllFilters();
@@ -906,6 +904,42 @@ public class KanbanTest {
 
         List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
         Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
+
+
+
+
+
+        tasksPage.clearAllFilters();
+
+        String urlBeforeClear = driver.getCurrentUrl();
+        String targetWorker7 = "alice@hotmail.com";
+
+        tasksPage.filterByAssignee(targetWorker7);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+        String urlAfterClear = driver.getCurrentUrl();
+
+        tasksPage.clearAllFilters();
+
+
+        tasksPage.filterByStatus("To Be Fixed");
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAfterClear)));
+
+        try {
+            tasksPage.waitForCardsCount(15);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail("15 tasks should be displayed");
+        }
+
+
+
+
 
 
     }
