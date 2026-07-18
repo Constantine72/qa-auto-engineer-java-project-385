@@ -876,6 +876,38 @@ public class KanbanTest {
         Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
 
 
+
+
+        tasksPage.clearAllFilters();
+
+        String urlCombo1 = driver.getCurrentUrl();
+        String targetWorker6 = "alice@hotmail.com";
+
+        tasksPage.filterByAssignee(targetWorker4);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo1)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+        String urlCombo2 = driver.getCurrentUrl();
+
+
+        tasksPage.filterByStatus("To Be Fixed");
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo2)));
+
+        try {
+            tasksPage.waitForCardsCount(1);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
+
+
     }
 
     @Test
