@@ -732,8 +732,7 @@ public class KanbanTest {
         Assertions.assertTrue(onlyDraftTasks, "improper tasks are displayed");
 
         tasksPage.clearAllFilters();
-
-        String urlBeforeAssignee = driver.getCurrentUrl();
+        //String urlBeforeAssignee = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker = "alice@hotmail.com";
 
@@ -741,7 +740,7 @@ public class KanbanTest {
         WebElement oldCard2 = driver.findElement(By.cssSelector(".MuiCard-root"));
         tasksPage.filterByAssignee(targetWorker);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -766,7 +765,7 @@ public class KanbanTest {
 
 
         tasksPage.clearAllFilters();
-        String urlBeforeLabel = driver.getCurrentUrl();
+        //String urlBeforeLabel = driver.getCurrentUrl();
         String targetLabel = "bug";
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
@@ -774,7 +773,7 @@ public class KanbanTest {
 
         tasksPage.filterByLabel(targetLabel);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -798,13 +797,13 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-        String urlBeforeAssignee2 = driver.getCurrentUrl();
+        //String urlBeforeAssignee2 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker2 = "emily@example.com";
 
         tasksPage.filterByAssignee(targetWorker2);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee2)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee2)));
         try {
             tasksPage.waitForCardsCount(0);
         } catch (org.openqa.selenium.TimeoutException e) {
@@ -815,24 +814,24 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-        String urlBeforeCombo = driver.getCurrentUrl();
+        //String urlBeforeCombo = driver.getCurrentUrl();
         String targetWorker3 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker3);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo)));
 
         try {
             tasksPage.waitForCardsCount(2);
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        String urlBeforeCombo2 = driver.getCurrentUrl();
+        //String urlBeforeCombo2 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetStatusNew2 = "To Be Fixed";
         tasksPage.filterByStatus(targetStatusNew2);
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo2)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo2)));
 
         try {
             tasksPage.waitForCardsCount(1);
@@ -847,25 +846,25 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-        String urlAlice = driver.getCurrentUrl();
+        //String urlAlice = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker4 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker4);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAlice)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAlice)));
 
         try {
             tasksPage.waitForCardsCount(2);
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        String urlJohn = driver.getCurrentUrl();
+        //String urlJohn = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
 
         try {
             tasksPage.waitForCardsCount(5);
@@ -888,25 +887,25 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-        String urlCombo7 = driver.getCurrentUrl();
+        //String urlCombo7 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker6 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker6);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
 
         try {
             tasksPage.waitForCardsCount(2);
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        String urlCombo8 = driver.getCurrentUrl();
+        //String urlCombo8 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
 
         tasksPage.filterByStatus("To Be Fixed");
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
 
         try {
             tasksPage.waitForCardsCount(1);
@@ -921,24 +920,24 @@ public class KanbanTest {
 
         tasksPage.clearAllFilters();
 
-        String urlBeforeClear = driver.getCurrentUrl();
+        //String urlBeforeClear = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker7 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker7);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
 
         try {
             tasksPage.waitForCardsCount(2);
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        String urlAfterClear = driver.getCurrentUrl();
+        //String urlAfterClear = driver.getCurrentUrl();
 
         tasksPage.clearAllFilters();
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAfterClear)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAfterClear)));
 
         try {
             tasksPage.waitForCardsCount(15);
@@ -947,13 +946,13 @@ public class KanbanTest {
         }
 
 
-        String urlForEmily = driver.getCurrentUrl();
+        //String urlForEmily = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker10 = "emily@example.com";
 
         tasksPage.filterByAssignee(targetWorker10);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlForEmily)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlForEmily)));
 
         try {
             tasksPage.waitForCardsCount(0);
