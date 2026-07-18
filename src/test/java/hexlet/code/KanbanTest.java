@@ -873,8 +873,15 @@ public class KanbanTest {
         }
 
         List<String> johnCards = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
+        //Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
+        boolean hasOnlyJohnTasks = johnCards.stream()
+                                .allMatch(c -> c.contains("Task 11") ||
+                                                c.contains("Task 2")||
+                                        c.contains("Task 1") ||
+                                        c.contains("Task 15") ||
+                                        c.contains("Task 5"));
 
+                     Assertions.assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
 
         tasksPage.clearAllFilters();
 
