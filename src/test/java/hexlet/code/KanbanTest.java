@@ -797,6 +797,23 @@ public class KanbanTest {
                 .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
         Assertions.assertTrue(onlyBugTasks, "error: an improper task is shown");
 
+        tasksPage.clearAllFilters();
+
+        String urlBeforeAssignee2 = driver.getCurrentUrl();
+        String targetWorker2 = "emily@example.com";
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+        tasksPage.filterByAssignee(targetWorker2);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee2)));
+        try {
+            tasksPage.waitForCardsCount(0);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail("no cards should be displayed");
+        }
+        List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
     }
 
     @Test
@@ -1598,6 +1615,7 @@ public class KanbanTest {
         statusesPage.clickBulkDeleteButton();
 
         int finalRowCount = statusesPage.getTableRowsCount();
+        System.out.println(initialRowCount);
         System.out.println(initialRowCount);
         Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
 
