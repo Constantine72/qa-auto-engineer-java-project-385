@@ -842,7 +842,6 @@ public class KanbanTest {
         }
 
         List<String> comboCards = tasksPage.getVisibleStatusesInTable();
-
         Assertions.assertTrue(comboCards.get(0).contains("Task 8"), "table should be empty");
 
 
@@ -953,31 +952,9 @@ public class KanbanTest {
         //=======================================================================
 
 
-//============================== trying to fix wrongtest3 ========================================
-//
-//        tasksPage.clearAllFilters();
-//
-//        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-//
-//
-//        String urlBeforeEmpty = driver.getCurrentUrl();
-//        String targetWorker8 = "emily@example.com";
-//
-//        tasksPage.filterByAssignee(targetWorker8);
-//
-//        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeEmpty)));
-//
-//        try {
-//            tasksPage.waitForCardsCount(0);
-//        } catch (org.openqa.selenium.TimeoutException e) {
-//            Assertions.fail("0 tasks should be displayed");
-//        }
-//
-//
-//        List<String> emptyBoardCardsNew = tasksPage.getVisibleStatusesInTable();
-//        Assertions.assertTrue(emptyBoardCardsNew.isEmpty(), "table should be empty");
 
-//==================================================================================
+
+
     }
 
     @Test
