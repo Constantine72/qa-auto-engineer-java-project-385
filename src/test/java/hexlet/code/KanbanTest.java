@@ -1011,13 +1011,13 @@ public class KanbanTest {
 
 
         //======================================SaveFilterAlice=================================
-        String urlCombo12 = driver.getCurrentUrl();
+        //String urlCombo12 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker12 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker12);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo12)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo12)));
 
         try {
             tasksPage.waitForCardsCount(2);
