@@ -838,13 +838,13 @@ public class KanbanTest {
 
         //================================Assignee+Status===============================
 
-        String urlCombo7 = driver.getCurrentUrl();
+        String urlCombo15 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker6 = "alice@hotmail.com";
         System.out.println(targetWorker6);
         tasksPage.filterByAssignee(targetWorker6);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo15)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -856,6 +856,12 @@ public class KanbanTest {
 
 
         tasksPage.filterByStatus("To Be Fixed");
+
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         try {
