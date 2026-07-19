@@ -37,7 +37,7 @@ public class KanbanTest {
 
         //new code for testing headless mode in CI 36-40 and 45
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--headless=new");
+        options.addArguments("--headless=new");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
@@ -55,7 +55,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            //driver.quit();
+            driver.quit();
         }
     }
 
