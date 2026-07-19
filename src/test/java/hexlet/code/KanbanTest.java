@@ -732,7 +732,7 @@ public class KanbanTest {
         Assertions.assertTrue(onlyDraftTasks, "improper tasks are displayed");
 
         tasksPage.clearAllFilters();
-        //String urlBeforeAssignee = driver.getCurrentUrl();
+        String urlBeforeAssignee = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker = "alice@hotmail.com";
 
@@ -740,7 +740,7 @@ public class KanbanTest {
         WebElement oldCard2 = driver.findElement(By.cssSelector(".MuiCard-root"));
         tasksPage.filterByAssignee(targetWorker);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -764,16 +764,16 @@ public class KanbanTest {
         Assertions.assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
 
 
-        tasksPage.clearAllFilters();
-        //String urlBeforeLabel = driver.getCurrentUrl();
+
+        String urlBeforeLabel = driver.getCurrentUrl();
         String targetLabel = "bug";
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
 
-        tasksPage.filterByLabel(targetLabel);
+        //tasksPage.filterByLabel(targetLabel);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -795,15 +795,15 @@ public class KanbanTest {
                 .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
         Assertions.assertTrue(onlyBugTasks, "error: an improper task is shown");
 
-        tasksPage.clearAllFilters();
+        //tasksPage.clearAllFilters();
 
-        //String urlBeforeAssignee2 = driver.getCurrentUrl();
+        String urlBeforeAssignee2 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker2 = "emily@example.com";
 
         tasksPage.filterByAssignee(targetWorker2);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee2)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee2)));
         try {
             tasksPage.waitForCardsCount(0);
         } catch (org.openqa.selenium.TimeoutException e) {
@@ -812,14 +812,14 @@ public class KanbanTest {
         List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
         Assertions.assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
 
-        tasksPage.clearAllFilters();
+        //tasksPage.clearAllFilters();
 
-        //String urlBeforeCombo = driver.getCurrentUrl();
+        String urlBeforeCombo = driver.getCurrentUrl();
         String targetWorker3 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker3);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -844,7 +844,7 @@ public class KanbanTest {
 
 
 
-        tasksPage.clearAllFilters();
+        //tasksPage.clearAllFilters();
 
         String urlAlice = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
@@ -885,15 +885,15 @@ public class KanbanTest {
 
         Assertions.assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
 
-        tasksPage.clearAllFilters();
+        //tasksPage.clearAllFilters();
 
-        //String urlCombo7 = driver.getCurrentUrl();
+        String urlCombo7 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker6 = "alice@hotmail.com";
         System.out.println(targetWorker6);
         tasksPage.filterByAssignee(targetWorker6);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -918,15 +918,15 @@ public class KanbanTest {
         Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
 
 
-        tasksPage.clearAllFilters();
+        //tasksPage.clearAllFilters();
 
-        //String urlBeforeClear = driver.getCurrentUrl();
+        String urlBeforeClear = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker7 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker7);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
 
         try {
             tasksPage.waitForCardsCount(2);
