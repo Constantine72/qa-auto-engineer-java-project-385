@@ -894,7 +894,7 @@ public class KanbanTest {
         }
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(5000);
         } catch (Exception e) {
             e.printStackTrace();
         }
