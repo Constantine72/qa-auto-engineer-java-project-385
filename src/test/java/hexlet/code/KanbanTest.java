@@ -1765,8 +1765,7 @@ public class KanbanTest {
         statusesPage.clickBulkDeleteButton();
 
         int finalRowCount = statusesPage.getTableRowsCount();
-        System.out.println(initialRowCount);
-        System.out.println(initialRowCount);
+
         Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
 
     }
