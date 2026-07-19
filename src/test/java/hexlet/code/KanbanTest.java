@@ -37,7 +37,7 @@ public class KanbanTest {
 
         //new code for testing headless mode in CI 36-40 and 45
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
+        //options.addArguments("--headless=new");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
@@ -55,7 +55,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+            //driver.quit();
         }
     }
 
@@ -1120,15 +1120,22 @@ public class KanbanTest {
         tasksPage.filterByStatus(targetStatus14);
         tasksPage.filterByLabel(targetLabel14);
 
+
         try {
             tasksPage.waitForCardsCount(1);
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
 
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertEquals(1, savedQueryCards.size(), "number of cards is not 1");
+        Assertions.assertEquals(1, visibleCardAlice.size(), "number of cards is not 1");
         Assertions.assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
 
     }
