@@ -892,12 +892,18 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        //String urlJohn = driver.getCurrentUrl();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlJohn)));
+
 
         try {
             tasksPage.waitForCardsCount(5);
