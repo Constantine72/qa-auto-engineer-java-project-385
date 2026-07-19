@@ -771,7 +771,7 @@ public class KanbanTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
 
-        //tasksPage.filterByLabel(targetLabel);
+        tasksPage.filterByLabel(targetLabel);
 
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
 
