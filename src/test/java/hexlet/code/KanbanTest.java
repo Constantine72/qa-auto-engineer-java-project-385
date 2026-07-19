@@ -221,6 +221,60 @@ public class KanbanTest {
         assertFalse(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "old userName is still on the list");
 
     }
+    @Test
+    public void testEditFormPopulatedDataCorrectly() {
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(driver);
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((driver));
+
+        String uniqueId = String.valueOf(System.currentTimeMillis());
+        String originalFirstName = "OldFirstName_" + uniqueId;
+        String originalLastName = "OldLastName_" + uniqueId;
+        String originalEmail = "old" + uniqueId + "@example.com";
+
+        usersPage.clickCreateUser();
+        usersPage.fillAndSubmitUserForm(originalEmail, originalFirstName, originalLastName);
+
+        usersPage.forceGoToUsers();
+
+        assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "User for edit has not been created");
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        usersPage.clickEditUser(originalFirstName);
+
+        WebElement editFirstNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='firstName']")));
+        WebElement editLastNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='lastName']")));
+        WebElement editEmailInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='email']")));
+
+
+
+
+
+        String expectedEmail = driver.findElement(By.cssSelector("input[name='email']")).getText();
+        String expectedFirstName = driver.findElement(By.cssSelector("input[name='firstName']")).getText();
+        String expectedLastName = driver.findElement(By.cssSelector("input[name='lastName']")).getText();
+
+        String actualEmail = editEmailInput.getAttribute("value");
+        String actualLastName = editLastNameInput.getAttribute("value");
+        String actualFirstName = editFirstNameInput.getAttribute("value");
+
+        System.out.println(expectedFirstName);
+        System.out.println(originalFirstName);
+
+        Assertions.assertEquals(actualFirstName, originalFirstName);
+        Assertions.assertEquals(actualLastName, originalLastName);
+        Assertions.assertEquals(actualEmail, originalEmail);
+    }
 
     @Test
     public void testDeleteUser() {
