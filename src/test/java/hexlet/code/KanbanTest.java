@@ -965,12 +965,12 @@ public class KanbanTest {
         String targetWorker11 = "alice@hotmail.com";
 
         try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
+            Thread.sleep(2000);
+            tasksPage.filterByAssignee(targetWorker11);
+        } catch (InterruptedException e) {
+            Assertions.fail("filter is broken");
             e.printStackTrace();
         }
-
-        tasksPage.filterByAssignee(targetWorker11);
 
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo11)));
 
@@ -1125,6 +1125,7 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
+
 
         List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
         Assertions.assertEquals(1, savedQueryCards.size(), "number of cards is not 1");
