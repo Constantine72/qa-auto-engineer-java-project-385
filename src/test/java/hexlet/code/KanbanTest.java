@@ -1805,6 +1805,12 @@ public class KanbanTest {
 
         int finalRowCount = statusesPage.getTableRowsCount();
 
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
 
     }
