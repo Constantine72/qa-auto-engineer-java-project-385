@@ -953,6 +953,9 @@ public class KanbanTest {
             Assertions.fail("15 tasks should be displayed");
         }
 
+        List<String> allCards = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 1")), "Task 1 is not shown");
+        Assertions.assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 15")), "Task 1 is not shown");
         //===============================================================================
 
 
@@ -1043,7 +1046,6 @@ public class KanbanTest {
         Assertions.assertTrue(savedQueryCards.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")), "only Alice tasks should be displayed");
 
 
-
         //=================================================================================
 
 
@@ -1052,10 +1054,78 @@ public class KanbanTest {
         tasksPage.deleteSavedQuery(myFilterName);
         boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
         Assertions.assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
-    }
+
+        tasksPage.clearAllFilters();
+
 
         //=================================================================================
 
+
+        //==========================================AliceWithZeroTasks==========================
+
+        String urlCombo13 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker13 = "alice@hotmail.com";
+
+        tasksPage.filterByAssignee(targetWorker13);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo13)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+
+        tasksPage.filterByStatus("Draft");
+
+
+        try {
+            tasksPage.waitForCardsCount(0);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        List<String> visibleCards = tasksPage.getVisibleStatusesInTable();
+
+        Assertions.assertTrue(visibleCards.isEmpty(), "The table should be empty");
+
+
+        tasksPage.clearAllFilters();
+
+
+        //======================================================================================
+
+
+        //=============================ThreeFilters========================================
+        String urlCombo14 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+        String targetWorker14 = "alice@hotmail.com";
+        String targetStatus14 = "To Be Fixed";
+        String targetLabel14 = " feature";
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo14)));
+
+        tasksPage.filterByAssignee(targetWorker14);
+        tasksPage.filterByStatus(targetStatus14);
+        tasksPage.filterByLabel(targetLabel14);
+
+        try {
+            tasksPage.waitForCardsCount(1);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertEquals(1, savedQueryCards.size(), "number of cards is not 1");
+        Assertions.assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
+
+    }
+        //=================================================================================
 
     @Test
     public void testEditTask() {
