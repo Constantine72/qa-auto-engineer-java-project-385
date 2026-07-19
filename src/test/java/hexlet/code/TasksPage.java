@@ -354,7 +354,10 @@ public class TasksPage extends BasePage {
 
         By optionValue = By.xpath("//li[@data-value='" + labelName + "']");
 
+
+
         try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(optionByText));
             wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
         } catch (Exception e) {
             wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
