@@ -960,6 +960,49 @@ public class KanbanTest {
         //===============================================================================
 
 
+        //===========================RemoveStatusFromAssigneeAndStatus=====================
+        String urlCombo11 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker11 = "alice@hotmail.com";
+
+        tasksPage.filterByAssignee(targetWorker11);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo11)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+        //String urlCombo8 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+
+        tasksPage.filterByStatus("To Be Fixed");
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
+
+        try {
+            tasksPage.waitForCardsCount(1);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        tasksPage.removeStatusFilter();
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been changed");
+        }
+
+        List<String> aliceCardsAfterRemoval = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertEquals(2, aliceCardsAfterRemoval.size(), "2 task2 should be on board");
+        Assertions.assertTrue(aliceCardsAfterRemoval.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")), "only Alice tasks should be displayed");
+
+
+        tasksPage.clearAllFilters();
+
+        //=================================================================================
     }
 
     @Test

@@ -397,6 +397,18 @@ public class TasksPage extends BasePage {
             return 0;
         }
     }
+    public void removeStatusFilter() {
+        By filterDropdownLocator = By.cssSelector("[class*='status_id'] div");
+        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        dropdown.click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[role='listbox']")));
+
+        WebElement emptyOption = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("li[data-value='']")));
+        emptyOption.click();
+
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("[role='listbox']")));
+    }
 }
 
 
