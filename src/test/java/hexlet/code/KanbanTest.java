@@ -964,6 +964,12 @@ public class KanbanTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker11 = "alice@hotmail.com";
 
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         tasksPage.filterByAssignee(targetWorker11);
 
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo11)));
