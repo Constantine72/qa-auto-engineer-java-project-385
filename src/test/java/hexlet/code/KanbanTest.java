@@ -37,7 +37,7 @@ public class KanbanTest {
 
         //new code for testing headless mode in CI 36-40 and 45
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
+        //options.addArguments("--headless=new");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
@@ -55,7 +55,7 @@ public class KanbanTest {
     @AfterEach
     public void tearDown() {
         if (driver != null) {
-            driver.quit();
+            //driver.quit();
         }
     }
 
@@ -695,6 +695,9 @@ public class KanbanTest {
         TasksPage tasksPage = new TasksPage((driver));
 
 
+
+        //=======================status============================
+
         int initialCardsCount = tasksPage.getTaskCardsCount();
 
         Assertions.assertTrue(initialCardsCount > 0, "the table is blank");
@@ -702,6 +705,7 @@ public class KanbanTest {
 
         String urlBeforeFilter = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
 
         String targetStatus = "Draft";
         tasksPage.filterByStatus(targetStatus);
@@ -731,7 +735,14 @@ public class KanbanTest {
                 .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
         Assertions.assertTrue(onlyDraftTasks, "improper tasks are displayed");
 
+
         tasksPage.clearAllFilters();
+
+        //============================================================
+
+
+
+        //==========================Assignee===================================
         String urlBeforeAssignee = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
         String targetWorker = "alice@hotmail.com";
@@ -763,7 +774,12 @@ public class KanbanTest {
                 .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
         Assertions.assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
 
+        tasksPage.clearAllFilters();
 
+        //============================================================
+
+
+        //=================================Label=============================
 
         String urlBeforeLabel = driver.getCurrentUrl();
         String targetLabel = "bug";
@@ -795,7 +811,13 @@ public class KanbanTest {
                 .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
         Assertions.assertTrue(onlyBugTasks, "error: an improper task is shown");
 
-        //tasksPage.clearAllFilters();
+        tasksPage.clearAllFilters();
+
+        //=========================================================================
+
+
+
+        //===============================AssigneeWithNoCards===================================
 
         String urlBeforeAssignee2 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
@@ -812,26 +834,32 @@ public class KanbanTest {
         List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
         Assertions.assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
 
-        //tasksPage.clearAllFilters();
+        tasksPage.clearAllFilters();
 
-        String urlBeforeCombo = driver.getCurrentUrl();
-        String targetWorker3 = "alice@hotmail.com";
+        //==============================================================================
 
-        tasksPage.filterByAssignee(targetWorker3);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo)));
+        //================================Assignee+Status===============================
+
+        String urlCombo7 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker6 = "alice@hotmail.com";
+        System.out.println(targetWorker6);
+        tasksPage.filterByAssignee(targetWorker6);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
 
         try {
             tasksPage.waitForCardsCount(2);
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        //String urlBeforeCombo2 = driver.getCurrentUrl();
+        //String urlCombo8 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
-        String targetStatusNew2 = "To Be Fixed";
-        tasksPage.filterByStatus(targetStatusNew2);
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeCombo2)));
+
+        tasksPage.filterByStatus("To Be Fixed");
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
 
         try {
             tasksPage.waitForCardsCount(1);
@@ -839,12 +867,17 @@ public class KanbanTest {
             Assertions.fail(" filter hasn't been applied");
         }
 
-        List<String> comboCards = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertTrue(comboCards.get(0).contains("Task 8"), "table should be empty");
+        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertEquals(1, comboCardsNew.size(), "1 task should be on board");
+        Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
 
 
+        tasksPage.clearAllFilters();
 
-        //tasksPage.clearAllFilters();
+        //=================================================================================
+
+
+        //=================================ChangeAssignee================================
 
         String urlAlice = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
@@ -885,40 +918,13 @@ public class KanbanTest {
 
         Assertions.assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
 
-        //tasksPage.clearAllFilters();
+        tasksPage.clearAllFilters();
 
-        String urlCombo7 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-        String targetWorker6 = "alice@hotmail.com";
-        System.out.println(targetWorker6);
-        tasksPage.filterByAssignee(targetWorker6);
-
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo7)));
-
-        try {
-            tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
-        }
-        //String urlCombo8 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        //===========================================================================
 
 
-        tasksPage.filterByStatus("To Be Fixed");
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
 
-        try {
-            tasksPage.waitForCardsCount(1);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
-        }
-
-        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertEquals(1, comboCardsNew.size(), "1 task should be on board");
-        Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
-
-
-        //tasksPage.clearAllFilters();
+        //===============================RemoveAllFilters===========================
 
         String urlBeforeClear = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
@@ -944,24 +950,8 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail("15 tasks should be displayed");
         }
-        driver.navigate().refresh();
 
-        //String urlForEmily = driver.getCurrentUrl();
-        String targetWorker10 = "emily@example.com";
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
-
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlForEmily)));
-
-        tasksPage.filterByAssignee(targetWorker10);
-
-        try {
-            tasksPage.waitForCardsCount(0);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail("table should be empty");
-        }
-
+        //===============================================================================
 
 
     }
