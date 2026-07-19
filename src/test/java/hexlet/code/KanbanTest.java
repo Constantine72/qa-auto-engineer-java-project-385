@@ -851,12 +851,12 @@ public class KanbanTest {
         } catch (org.openqa.selenium.TimeoutException e) {
             Assertions.fail(" filter hasn't been applied");
         }
-        //String urlCombo8 = driver.getCurrentUrl();
+
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
 
         tasksPage.filterByStatus("To Be Fixed");
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
+
 
         try {
             tasksPage.waitForCardsCount(1);
