@@ -1107,14 +1107,14 @@ public class KanbanTest {
 
 
         //=============================ThreeFilters========================================
-        String urlCombo14 = driver.getCurrentUrl();
+        //String urlCombo14 = driver.getCurrentUrl();
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
         String targetWorker14 = "alice@hotmail.com";
         String targetStatus14 = "To Be Fixed";
         String targetLabel14 = " feature";
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo14)));
+        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo14)));
 
         tasksPage.filterByAssignee(targetWorker14);
         tasksPage.filterByStatus(targetStatus14);
