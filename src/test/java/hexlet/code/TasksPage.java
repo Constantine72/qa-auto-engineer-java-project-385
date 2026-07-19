@@ -315,6 +315,7 @@ public class TasksPage extends BasePage {
         By optionValue = By.xpath("//li[@data-value='" + statusName + "']");
 
         try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(optionByText));
             wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
         } catch (Exception e) {
             wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
@@ -327,7 +328,7 @@ public class TasksPage extends BasePage {
         dropdown.click();
 
 
-                                                                                                                                                                        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
+        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + assigneeName + "')]");
@@ -335,6 +336,7 @@ public class TasksPage extends BasePage {
         By optionValue = By.xpath("//li[@data-value='" + assigneeName + "']");
 
         try {
+            wait.until(ExpectedConditions.presenceOfElementLocated(optionByText));
             wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
         } catch (Exception e) {
             wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
