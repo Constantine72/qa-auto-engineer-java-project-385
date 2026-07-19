@@ -26,6 +26,7 @@ public class TasksPage extends BasePage {
     private final By filterStatusDropdown = By.xpath("//div[@data-source='status_id']");
     private final By addFilterButton = By.xpath("//*[contains(text(), 'Add filter')]");
     private final By removeAllFiltersOption = By.xpath("//*[contains(text(), 'Remove all filters')]");
+    private final By saveCurrentQueryButton = By.xpath("//*[contains(text(), 'Save current query...')]");
     private final By assigneeStatusDropdown = By.xpath("//div[@data-source='assignee_id']");
     private final By labelStatusDropdown = By.xpath("//div[@data-source='label_id']");
     private final By formStatusDropdown = By.cssSelector("[class*='status_id'] div");
@@ -326,7 +327,7 @@ public class TasksPage extends BasePage {
         dropdown.click();
 
 
-        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
+                                                                                                                                                                        By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + assigneeName + "')]");
@@ -397,6 +398,7 @@ public class TasksPage extends BasePage {
             return 0;
         }
     }
+
     public void removeStatusFilter() {
         By filterDropdownLocator = By.cssSelector("[class*='status_id'] div");
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
@@ -408,6 +410,65 @@ public class TasksPage extends BasePage {
         emptyOption.click();
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("[role='listbox']")));
+    }
+
+    public void openSaveQueryModal() {
+        driver.findElement(addFilterButton).click();
+
+        driver.findElement(saveCurrentQueryButton).click();
+    }
+    public void saveCurrentQueryAs(String queryName) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-dialog-title")));
+
+        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("name")));
+
+        nameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        nameInput.sendKeys(Keys.BACK_SPACE);
+        nameInput.sendKeys(queryName);
+
+        WebElement saveBtn = driver.findElement(By.xpath("//button[contains(., 'Save')]"));
+        saveBtn.click();
+
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h2[contains(., 'Save current query as')]")));
+    }
+    public void applySavedQuery(String queryName) {
+
+        driver.findElement(addFilterButton).click();
+
+        WebElement savedQueryTab = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(text(), '" + queryName + "')]")));
+        savedQueryTab.click();
+    }
+    public void deleteSavedQuery(String queryName) {
+        driver.findElement(addFilterButton).click();
+
+        String xpath = String.format("//li[contains(., 'Remove query') and contains(., '%s')]", queryName);
+        WebElement removeOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+
+        removeOption.click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(), 'Remove saved query?')]")));
+
+
+        WebElement confirmBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(., 'Confirm')]")));
+        confirmBtn.click();
+
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(), 'Remove saved query?')]")));
+    }
+    public boolean isSavedQueryPresent(String queryName) {
+        driver.findElement(addFilterButton).click();
+
+        boolean isPresent = false;
+        try {
+            WebDriverWait shortWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(2));
+            shortWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[contains(., '" +
+                    queryName + "')]")));
+            isPresent = true;
+        } catch (org.openqa.selenium.TimeoutException e) {
+            isPresent = false;
+        } finally {
+            driver.findElement(By.tagName("body")).click();
+        }
+        return isPresent;
     }
 }
 

@@ -695,7 +695,6 @@ public class KanbanTest {
         TasksPage tasksPage = new TasksPage((driver));
 
 
-
         //=======================status============================
 
         int initialCardsCount = tasksPage.getTaskCardsCount();
@@ -739,7 +738,6 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         //============================================================
-
 
 
         //==========================Assignee===================================
@@ -814,7 +812,6 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         //=========================================================================
-
 
 
         //===============================AssigneeWithNoCards===================================
@@ -917,7 +914,7 @@ public class KanbanTest {
 
         boolean hasOnlyJohnTasks = johnCards.stream()
                 .allMatch(c -> c.contains("Task 11") ||
-                        c.contains("Task 2")||
+                        c.contains("Task 2") ||
                         c.contains("Task 1") ||
                         c.contains("Task 15") ||
                         c.contains("Task 5"));
@@ -927,7 +924,6 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         //===========================================================================
-
 
 
         //===============================RemoveAllFilters===========================
@@ -1003,7 +999,63 @@ public class KanbanTest {
         tasksPage.clearAllFilters();
 
         //=================================================================================
+
+
+        //======================================SaveFilterAlice=================================
+        String urlCombo12 = driver.getCurrentUrl();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String targetWorker12 = "alice@hotmail.com";
+
+        tasksPage.filterByAssignee(targetWorker12);
+
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo12)));
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail(" filter hasn't been applied");
+        }
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+        String myFilterName = "Alice_Custom_Filter";
+        tasksPage.openSaveQueryModal();
+        tasksPage.saveCurrentQueryAs(myFilterName);
+
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+
+        tasksPage.clearAllFilters();
+
+        tasksPage.waitForCardsCount(15);
+
+        tasksPage.applySavedQuery(myFilterName);
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            Assertions.fail("custom filter hasn't been applied");
+        }
+
+        List<String> savedQueryCards = tasksPage.getVisibleStatusesInTable();
+        Assertions.assertEquals(2, savedQueryCards.size(), "number of cards is not 2");
+        Assertions.assertTrue(savedQueryCards.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")), "only Alice tasks should be displayed");
+
+
+
+        //=================================================================================
+
+
+        //================================DeleteCustomQuery================================
+
+        tasksPage.deleteSavedQuery(myFilterName);
+        boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
+        Assertions.assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
     }
+
+        //=================================================================================
+
 
     @Test
     public void testEditTask() {
@@ -1761,6 +1813,12 @@ public class KanbanTest {
         usersPage.clickBulkDeleteButton();
 
         int finalRowsCount = usersPage.getTableRowsCount();
+
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Assertions.assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
     }
