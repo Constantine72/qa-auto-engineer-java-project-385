@@ -948,11 +948,11 @@ public class KanbanTest {
 
         tasksPage.filterByStatus("To Be Fixed");
 
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(5000);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         try {
@@ -1224,11 +1224,11 @@ public class KanbanTest {
             Assertions.fail(" filter hasn't been applied");
         }
 
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(3000);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
@@ -1400,10 +1400,10 @@ public class KanbanTest {
 
         tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, taskDesc);
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
+//        try {
+//            Thread.sleep(2000);
+//        } catch (InterruptedException e) {
+//        }
 
         tasksPage.forceGoToTasks();
 
@@ -1506,10 +1506,10 @@ public class KanbanTest {
 
         labelsPage.fillAndSubmitLabelForm(labelName);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//        }
 
         labelsPage.forceGoToLabels();
 
