@@ -235,8 +235,13 @@ public class StatusesPage extends BasePage {
     public void clearNameField() {
         By nameLocator = By.name("name");
         WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+
         nameInput.click();
-        nameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+
+        //nameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        nameInput.sendKeys(Keys.END);
+        nameInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+
         nameInput.sendKeys(Keys.BACK_SPACE);
     }
 

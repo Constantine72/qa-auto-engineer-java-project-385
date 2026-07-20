@@ -1535,6 +1535,8 @@ public class KanbanTest {
 
         UsersPage usersPage = new UsersPage((driver));
 
+        int initialUsersCount =  driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+
         usersPage.clickCreateUser();
 
         usersPage.fillLastNameField("Smith");
@@ -1545,8 +1547,9 @@ public class KanbanTest {
 
         Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
 
-        usersPage.fillFirstNameField("John");
         usersPage.clearLastNameField();
+        usersPage.fillFirstNameField("John");
+
         usersPage.clickSaveButton();
 
         Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
@@ -1561,12 +1564,22 @@ public class KanbanTest {
 
         Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
 
-        usersPage.fillEmailField("notAnEmail");
+        String badEmail = "notAnEmail";
+
+        usersPage.fillEmailField(badEmail);
         usersPage.clickSaveButton();
 
         Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
         Assertions.assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "Incorrect email error is not shown");
+
+        usersPage.forceGoToUsers();
+
+        int finalUsersCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        Assertions.assertEquals(initialUsersCount, finalUsersCount, "improper user has been created");
+
+        boolean isUserCreatedAnyway = driver.getPageSource().contains(badEmail);
+        Assertions.assertFalse(isUserCreatedAnyway, "improper user has been saved");
 
     }
 
@@ -1580,6 +1593,9 @@ public class KanbanTest {
         LabelsPage labelsPage = new LabelsPage(driver);
 
         labelsPage.forceGoToLabels();
+
+        int initialLabelsCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+
         labelsPage.clickCreateLabel();
         labelsPage.triggerValidationOnNameField();
         labelsPage.clickSaveButton();
@@ -1587,6 +1603,15 @@ public class KanbanTest {
         Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty label has been created");
 
         Assertions.assertTrue(labelsPage.isRequiredErrorDisplayed(), "No required error is displayed");
+
+        labelsPage.forceGoToLabels();
+
+        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+
+        int finalLabelsCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+
+        Assertions.assertEquals(initialLabelsCount, finalLabelsCount, "empty label has been saved");
     }
 
     @Test
@@ -1600,6 +1625,12 @@ public class KanbanTest {
 
 
         statusesPage.forceGoToStatuses();
+
+        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+
+        int initialStatusesCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+
         statusesPage.clickCreateStatus();
 
         statusesPage.fillNameField("Temp status name");
@@ -1610,6 +1641,13 @@ public class KanbanTest {
         Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
         statusesPage.clearNameField();
+
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         statusesPage.fillSlugField("Temp slug name");
         statusesPage.clickSaveButton();
 
@@ -1617,6 +1655,15 @@ public class KanbanTest {
         Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty slug has been created");
 
         Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+        statusesPage.forceGoToStatuses();
+
+        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+
+        int finalStatusesCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+
+        Assertions.assertEquals(initialStatusesCount, finalStatusesCount, "empty status has been saved");
 
     }
 
@@ -1636,6 +1683,12 @@ public class KanbanTest {
         kanbanPage.goToTasks();
 
         TasksPage tasksPage = new TasksPage((driver));
+
+        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-content"))));
+
+        int initialTasksCount = driver.findElements(By.cssSelector(".MuiCard-root")).size();
+
         tasksPage.clickCreateTask();
 
         tasksPage.selectAssignee(assigneeName);
@@ -1666,6 +1719,14 @@ public class KanbanTest {
         Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "task has been created w/o status");
 
         Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+
+        kanbanPage.goToTasks();
+
+
+        int finalTasksCount = driver.findElements(By.cssSelector(".MuiCard-root")).size();
+
+        Assertions.assertEquals(initialTasksCount, finalTasksCount, "empty status has been saved");
     }
 
     @Test

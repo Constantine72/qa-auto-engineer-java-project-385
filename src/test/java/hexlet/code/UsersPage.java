@@ -259,7 +259,9 @@ public class UsersPage extends BasePage {
         By locator = By.name("lastName");
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
-        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.END);
+        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+        //input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         input.sendKeys(Keys.BACK_SPACE);
     }
 
@@ -267,7 +269,9 @@ public class UsersPage extends BasePage {
         By locator = By.name("email");
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
-        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+       // input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.END);
+        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
     }
 
