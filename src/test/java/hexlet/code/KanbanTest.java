@@ -675,6 +675,18 @@ public class KanbanTest {
         }
 
         assertFalse(isOldNamePresent, "old name '" + initialName + "' is still displayed)");
+
+
+        labelsPage.clickEditLabel(updatedName);
+
+
+        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='name']")));
+
+
+        String actualName = editNameInput.getAttribute("value");
+
+        Assertions.assertEquals(updatedName, actualName);
+
     }
 
     @Test
