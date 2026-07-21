@@ -6,8 +6,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 
 public class LabelsPage extends BasePage {
-//    private WebDriver driver;
-//    private WebDriverWait wait;
+
 
     private final By createLabelButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By nameField = By.cssSelector("input[name='name']");
