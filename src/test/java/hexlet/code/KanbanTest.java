@@ -1758,6 +1758,12 @@ public class KanbanTest {
 
         usersPage.clickSaveButton();
 
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o first name was saved");
 
@@ -1915,6 +1921,12 @@ public class KanbanTest {
 
         tasksPage.clickSaveButton();
 
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Assertions.assertFalse(driver.getCurrentUrl().endsWith("/tasks"), "task w/o title was saved");
 
         Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "no required message");
@@ -1951,6 +1963,11 @@ public class KanbanTest {
         labelsPage.clearLabelField();
 
         labelsPage.clickSaveButton();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        }
 
 
         Assertions.assertFalse(driver.getCurrentUrl().endsWith("/labels"), "label w/o title was saved");
@@ -2029,6 +2046,11 @@ public class KanbanTest {
 
         statusesPage.clickSaveButton();
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+        }
+
 
         Assertions.assertFalse(driver.getCurrentUrl().endsWith("/statuses"), "status w/o slug was saved");
 
@@ -2097,6 +2119,13 @@ public class KanbanTest {
         statusesPage.forceGoToStatuses();
 
         int initialRowCount = statusesPage.getTableRowsCount();
+
+        try {
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Assertions.assertTrue(initialRowCount > 0, "Table is empty");
 
         statusesPage.selectFirstRowCheckbox();
@@ -2111,6 +2140,8 @@ public class KanbanTest {
             e.printStackTrace();
         }
 
+        System.out.println(initialRowCount);
+        System.out.println(finalRowCount);
         Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
 
     }
