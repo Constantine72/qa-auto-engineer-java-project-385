@@ -4,34 +4,26 @@ package hexlet.code;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.security.PublicKey;
-import java.time.Duration;
 
 
 public class StatusesPage extends BasePage {
 
-//    private WebDriver driver;
-//    private WebDriverWait wait;
 
     private final By createStatusButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By nameField = By.cssSelector("input[name='name']");
     private final By slugField = By.cssSelector("input[name='slug']");
     private final By saveButton = By.xpath("//*[contains(text(), 'Save')]");
-    private final By statusesListContainer = By.className("list-page");
     private final By nameHeader = By.xpath("//*[contains(text(), 'Name')]");
     private final By slugHeader = By.xpath("//*[contains(text(), 'Slug')]");
 
-//    private final By tableRows = By.cssSelector("MuiTableBody-root datagrid-body RaDatagrid-tbody");
+
 
     private final By tableRows = By.cssSelector("table tbody tr");
 
-    private final By nameInput = By.name("//*[contains(text(), 'Name')]");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
-    private final By noTaskStatusesYetMessage = By.xpath("//*[contains(text(), 'No Task statuses yet.");
-    private final By doYouWantToAddOneMessage = By.xpath("//*[contains(text(), 'Do you want to add one?'");
+
     private final By deleteAllStatusesButton = By.xpath("//*[contains(text(), 'Delete')]");
 
 
@@ -45,14 +37,6 @@ public class StatusesPage extends BasePage {
         wait.until(ExpectedConditions.elementToBeClickable(createStatusButton)).click();
     }
 
-    public boolean isUserFormDisplayed() {
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(nameField));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 
     public void fillAndSubmitStatusForm(String name, String slug) {
 

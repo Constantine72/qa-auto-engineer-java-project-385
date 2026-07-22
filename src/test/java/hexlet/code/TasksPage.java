@@ -108,9 +108,6 @@ public class TasksPage extends BasePage {
         return driver.findElements(taskCards).size();
     }
 
-    public void applyStatusFilter(String statusName) {
-        selectDropdownOption(filterStatusDropdown, statusName);
-    }
 
     public void waitForTasksUpdate(int initialCount) {
 
@@ -125,14 +122,6 @@ public class TasksPage extends BasePage {
         removeBtn.click();
     }
 
-    public void applyAssigneeFilter(String assigneeName) {
-        selectDropdownOption(assigneeStatusDropdown, assigneeName);
-    }
-
-    public void applyLabelFilter(String labelName) {
-        selectDropdownOption(labelStatusDropdown, labelName);
-    }
-
     public void openTaskForEditing(String taskName) {
         String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
 
@@ -142,11 +131,6 @@ public class TasksPage extends BasePage {
     public void updateTaskName(String newName) {
 
         WebElement input = driver.findElement(titleInEditForm);
-
-//        input.click();
-//        input.sendKeys(Keys.CONTROL + "a");
-//        input.sendKeys(Keys.BACK_SPACE);
-//        input.sendKeys(newName);
 
         Actions actions = new Actions(driver);
         actions.click(input)
@@ -377,20 +361,6 @@ public class TasksPage extends BasePage {
     }
 
     public List<String> getVisibleStatusesInTable() {
-//        By cardLocator = By.cssSelector(".MuiCard-root");
-//
-//        try {
-//
-//            wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(cardLocator));
-//            List<WebElement> cards = driver.findElements(cardLocator);
-//
-//            return cards.stream()
-//                    .map(WebElement::getText)
-//                    .map(String::trim)
-//                    .collect(Collectors.toList());
-//        } catch (Exception e) {
-//            return List.of();
-//        }
 
         try {
             return driver.findElements(cardLocator).stream()
@@ -432,6 +402,7 @@ public class TasksPage extends BasePage {
 
         driver.findElement(saveCurrentQueryButton).click();
     }
+
     public void saveCurrentQueryAs(String queryName) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-dialog-title")));
 
@@ -446,6 +417,7 @@ public class TasksPage extends BasePage {
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h2[contains(., 'Save current query as')]")));
     }
+
     public void applySavedQuery(String queryName) {
 
         driver.findElement(addFilterButton).click();
@@ -453,6 +425,7 @@ public class TasksPage extends BasePage {
         WebElement savedQueryTab = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(text(), '" + queryName + "')]")));
         savedQueryTab.click();
     }
+
     public void deleteSavedQuery(String queryName) {
         driver.findElement(addFilterButton).click();
 
@@ -469,6 +442,7 @@ public class TasksPage extends BasePage {
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(), 'Remove saved query?')]")));
     }
+
     public boolean isSavedQueryPresent(String queryName) {
         driver.findElement(addFilterButton).click();
 

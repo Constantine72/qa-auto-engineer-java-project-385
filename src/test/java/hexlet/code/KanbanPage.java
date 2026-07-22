@@ -34,12 +34,7 @@ public class KanbanPage {
     }
 
     public boolean isWelcomeTitleDisplayed() {
-//        try {
-//            return driver.findElement(title).isDisplayed();
-//        } catch (Exception e) {
-//            return false;
-//        }
-        //changing the method with the one with WAIT 42-48
+
         try {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             wait.until(ExpectedConditions.visibilityOfElementLocated(title));
@@ -63,16 +58,6 @@ public class KanbanPage {
 
     }
 
-    public void goToStatuses() {
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-        wait.until(ExpectedConditions.elementToBeClickable(burger)).click();
-
-        wait.until(ExpectedConditions.elementToBeClickable(TaskStatusesButton)).click();
-
-    }
-
     public void clickLogout() {
         driver.findElement(avatarButton).click();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
@@ -80,15 +65,6 @@ public class KanbanPage {
         driver.findElement(logoutButton).click();
     }
 
-    public void goToLabels() {
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-        wait.until(ExpectedConditions.elementToBeClickable(burger)).click();
-
-        wait.until(ExpectedConditions.elementToBeClickable(labelsButton)).click();
-
-    }
 
     public void goToTasks() {
 

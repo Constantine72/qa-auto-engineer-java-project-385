@@ -5,9 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
+
 
 import java.time.Duration;
 
@@ -28,13 +26,7 @@ public class LoginPage {
     }
 
     public void login(String username, String password) {
-//        driver.findElement(usernameField).clear();
-//        driver.findElement(usernameField).sendKeys(username);
-//        driver.findElement(passwordField).clear();
-//        driver.findElement(passwordField).sendKeys(password);
-//        driver.findElement(signInButton).click();
 
-        //removing old clicks for waits 30-41
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
         WebElement usernameEl = wait.until(ExpectedConditions.elementToBeClickable(usernameField));

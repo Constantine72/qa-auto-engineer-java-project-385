@@ -21,14 +21,10 @@ public class UsersPage extends BasePage {
     private final By saveButton = By.xpath("//*[contains(text(), 'Save')]");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By deleteAllUsersButton = By.xpath("//*[contains(text(), 'Delete')]");
-    private final By showButton = By.xpath("//*[contains(text(), 'SHOW')]");
-    private final By userCreateForm = By.className("create-page");
     private final By userListContainer = By.className("list-page");
     private final By userRow = By.className("MuiTableRow-root");
     private final By emailErrorMessage = By.xpath("//*[contains(text(), 'Incorrect email format')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
-    private final By noUsersYetMessage = By.xpath("//*[contains(text(), 'No Users yet.'");
-    private final By doYouWantToAddOneMessage = By.xpath("//*[contains(text(), 'Do you want to add one?'");
 
     public UsersPage(WebDriver driver) {
 
@@ -236,17 +232,6 @@ public class UsersPage extends BasePage {
         }
     }
 
-//    public boolean isRequiredErrorDisplayed() {
-//        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
-//
-//        try {
-//            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
-//            return errorMessage.isDisplayed();
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
-
     public void clearFirstNameField() {
         By locator = By.name("firstName");
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
@@ -261,7 +246,6 @@ public class UsersPage extends BasePage {
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
-        //input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         input.sendKeys(Keys.BACK_SPACE);
     }
 
@@ -269,7 +253,6 @@ public class UsersPage extends BasePage {
         By locator = By.name("email");
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
-       // input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
@@ -312,20 +295,6 @@ public class UsersPage extends BasePage {
 
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
     }
-//    public int getTableRowsCount() {
-//        By rowsLocator = By.xpath("//tbody/tr");
-//        try {
-//            wait.until(ExpectedConditions.presenceOfElementLocated(rowsLocator));
-//        } catch (Exception e) {
-//            return 0;
-//        }
-//        return driver.findElements(rowsLocator).size();
-//    }
-//    public void clickBulkDeleteButton() {
-//        By bulkDeleteLocator = By.xpath("//button[@aria-label='Delete']");
-//        WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(bulkDeleteLocator));
-//        deleteButton.click();
-//    }
 }
 
 
