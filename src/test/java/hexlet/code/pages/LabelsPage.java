@@ -1,12 +1,11 @@
-package hexlet.code;
+package hexlet.code.pages;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 
-public class LabelsPage extends BasePage {
-
+public final class LabelsPage extends BasePage {
 
     private final By createLabelButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By nameField = By.cssSelector("input[name='name']");
@@ -16,21 +15,11 @@ public class LabelsPage extends BasePage {
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
 
     public LabelsPage(WebDriver driver) {
-
         super(driver);
     }
 
     public void clickCreateLabel() {
         wait.until(ExpectedConditions.elementToBeClickable(createLabelButton)).click();
-    }
-
-    public boolean isLabelFormDisplayed() {
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(nameField));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public void fillAndSubmitLabelForm(String labelName) {
@@ -94,7 +83,6 @@ public class LabelsPage extends BasePage {
 
         input.click();
 
-
         new Actions(driver)
                 .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
                 .sendKeys(Keys.BACK_SPACE)
@@ -107,20 +95,6 @@ public class LabelsPage extends BasePage {
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
-    }
-
-    public boolean isLabelsRowCorrect(String expectedLabelName) {
-        String complexRowXPath = "//tr[contains(., '" + expectedLabelName + "')";
-
-        try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(complexRowXPath)));
-
-            return true;
-
-        } catch (Exception e) {
-            return false;
-
-        }
     }
 
     public void clickDeleteButton() {
@@ -180,7 +154,35 @@ public class LabelsPage extends BasePage {
         By labelLocator = By.name("name");
         WebElement labelInput = wait.until(ExpectedConditions.elementToBeClickable(labelLocator));
         labelInput.click();
-        labelInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        labelInput.sendKeys(Keys.END);
+        labelInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         labelInput.sendKeys(Keys.BACK_SPACE);
+    }
+
+    public String getNameInputValue() {
+        By nameInputLocator = By.cssSelector("input[name='name']");
+        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(nameInputLocator));
+        return editNameInput.getAttribute("value");
+    }
+    public int getInitialLabelsCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+    public int getFinalLabelsCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+    public void waitForListToLoad() {
+        wait.until(ExpectedConditions.or(ExpectedConditions.
+                        presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+    }
+    public void waitForSnackBar() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+    }
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
+    public boolean isTextPresentOnPage(String text) {
+        By textLocator = By.xpath("//*[contains(., '" + text + "')]");
+        return !driver.findElements(textLocator).isEmpty();
     }
 }

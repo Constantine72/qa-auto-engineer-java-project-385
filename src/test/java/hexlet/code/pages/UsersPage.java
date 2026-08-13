@@ -1,20 +1,14 @@
-package hexlet.code;
+package hexlet.code.pages;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.WebDriver;
-
 import org.openqa.selenium.JavascriptExecutor;
 
-import java.time.Duration;
-
-
-public class UsersPage extends BasePage {
+public final class UsersPage extends BasePage {
 
     private final By createUserButton = By.xpath("//*[contains(text(), 'Create')]");
-
     private final By emailField = By.cssSelector("input[name='email']");
     private final By firstNameField = By.cssSelector("input[name='firstName']");
     private final By lastNameField = By.cssSelector("input[name='lastName']");
@@ -35,7 +29,6 @@ public class UsersPage extends BasePage {
         wait.until(ExpectedConditions.elementToBeClickable(createUserButton)).click();
     }
 
-
     public boolean isUserFormDisplayed() {
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
@@ -49,7 +42,6 @@ public class UsersPage extends BasePage {
     }
 
     public void fillAndSubmitUserForm(String email, String firstName, String lastName) {
-
         clearAndType(emailField, email);
         clearAndType(firstNameField, firstName);
         clearAndType(lastNameField, lastName);
@@ -68,14 +60,9 @@ public class UsersPage extends BasePage {
             By userListContainer = By.className("list-page");
             wait.until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
 
-
-            // By userCard = By.xpath("//*[contains(text(), '" + expectedFirstName + "')]");
-
-            //creating a mix of firstname, lastname and email
             String xpathQuery = String.format(
                     "//*[contains(., '%s') and contains(., '%s')]", expectedFirstName, expectedLastName, expectedEmail);
             By userCard = By.xpath(xpathQuery);
-
 
             wait.until(ExpectedConditions.visibilityOf(driver.findElement(userCard)));
 
@@ -170,8 +157,6 @@ public class UsersPage extends BasePage {
 
     public void clickDeleteAllUsersButton() {
         wait.until(ExpectedConditions.elementToBeClickable(deleteAllUsersButton)).click();
-
-
     }
 
     public void clickSelectAllUsersButton() {
@@ -196,18 +181,6 @@ public class UsersPage extends BasePage {
             }
         }
         return false;
-    }
-
-    public boolean isStatusPresent(String statusName) {
-        String rowXPath = "//*[contains(text(), '" + statusName + "')]";
-
-        try {
-            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(2));
-            shortWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(rowXPath)));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public void clickUpperShowButton() {
@@ -236,7 +209,8 @@ public class UsersPage extends BasePage {
         By locator = By.name("firstName");
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
-        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.END);
+        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
     }
 
@@ -295,6 +269,47 @@ public class UsersPage extends BasePage {
 
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
     }
-}
 
+    public String getFirstNameInputValue() {
+        By firstNameInputLocator = By.cssSelector("input[name='firstName']");
+        WebElement editFirstNameInput = wait.until(ExpectedConditions.
+                visibilityOfElementLocated(firstNameInputLocator));
+        return editFirstNameInput.getAttribute("value");
+    }
+
+    public String getLastNameInputValue() {
+        By firstNameInputLocator = By.cssSelector("input[name='lastName']");
+        WebElement editLastNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameInputLocator));
+        return editLastNameInput.getAttribute("value");
+    }
+
+    public String getEmailInputValue() {
+        By emailInputLocator = By.cssSelector("input[name='email']");
+        WebElement editFirstNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(emailInputLocator));
+        return editFirstNameInput.getAttribute("value");
+    }
+    public int getUsersCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+    public int getFinalUsersCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+    public void waitForSnackBar() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+    }
+    public void waitForPaginationTextOneToFive() {
+        By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
+    }
+    public void waitForPaginationTextSixToMore() {
+        By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "6-"));
+    }
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
+    public boolean isTextPresentOnPage(String text) {
+        return driver.getPageSource().contains(text);
+    }
+}
 

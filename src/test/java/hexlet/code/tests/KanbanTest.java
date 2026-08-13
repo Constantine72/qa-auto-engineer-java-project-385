@@ -1,29 +1,31 @@
-package hexlet.code;
+package hexlet.code.tests;
 
+import hexlet.code.pages.KanbanPage;
+import hexlet.code.pages.LabelsPage;
+import hexlet.code.pages.LoginPage;
+import hexlet.code.pages.StatusesPage;
+import hexlet.code.pages.TasksPage;
+import hexlet.code.pages.UsersPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
-
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.OutputType;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.util.List;
-
 import java.time.Duration;
 import java.util.Map;
 import java.util.LinkedHashMap;
-
-
+import io.qameta.allure.Allure;
+import java.io.ByteArrayInputStream;
 import static org.junit.jupiter.api.Assertions.*;
+import hexlet.code.utils.WebDriverFactory;
 
-public class KanbanTest {
+public final class KanbanTest {
     private WebDriver driver;
     private String baseurl;
     private WebDriverWait wait;
@@ -35,20 +37,10 @@ public class KanbanTest {
             baseurl = "http://localhost:5173";
         }
 
-        //new code for testing headless mode in CI 36-40 and 45
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--window-size=1920,1080");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-
-
-        driver = new ChromeDriver(options);
-
-        driver.manage().window().setSize(new org.openqa.selenium.Dimension(1920, 1080));
+        driver = new WebDriverFactory().createDriver();
 
         wait = new WebDriverWait(driver, Duration.ofSeconds(7));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
         driver.get(baseurl);
     }
 
@@ -72,41 +64,38 @@ public class KanbanTest {
 
     @Test
     public void testLoginWithEmptyFields() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("", "");
 
         String actualUsernameError = loginPage.getUsernameErrorMessage();
-        Assertions.assertTrue(actualUsernameError.contains("Required"), "No error message displayed");
+        assertTrue(actualUsernameError.contains("Required"), "No error message displayed");
 
         String actualPasswordError = loginPage.getPasswordErrorMessage();
-        Assertions.assertTrue(actualPasswordError.contains("Required"), "No error message displayed");
+        assertTrue(actualPasswordError.contains("Required"), "No error message displayed");
     }
 
     @Test
     public void testLoginWithEmptyFieldsConsecutively() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("qwe", "");
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Enter happened with password");
+        assertTrue(loginPage.getCurrentUrl().contains("/login"), "Enter happened with password");
 
-        Assertions.assertTrue(loginPage.isRequiredErrorDisplayed());
+        assertTrue(loginPage.isRequiredErrorDisplayed());
 
-        driver.navigate().refresh();
+        loginPage.refreshPage();
 
         loginPage.login("", "ASD");
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/login"), "Enter happened with password");
+        assertTrue(loginPage.getCurrentUrl().contains("/login"), "Enter happened with password");
 
-        Assertions.assertTrue(loginPage.isRequiredErrorDisplayed());
+        assertTrue(loginPage.isRequiredErrorDisplayed());
     }
 
     @Test
     public void testSuccessfulLogout() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -126,7 +115,6 @@ public class KanbanTest {
         String testFirstName = "test" + uniqueId;
         String testLastName = "user" + uniqueId;
 
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -143,13 +131,12 @@ public class KanbanTest {
 
         kanbanPage.goToUsers();
 
-        assertTrue(usersPage.isUserInList(testFirstName, testLastName, testEmail), "Created user " + testFirstName + "not found");
+        assertTrue(usersPage.isUserInList(testFirstName, testLastName, testEmail), "Created user "
+                + testFirstName + "not found");
     }
 
     @Test
     public void testUserListLoadingAndFields() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -166,7 +153,6 @@ public class KanbanTest {
 
     @Test
     public void testEditUserAndValidation() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -186,13 +172,8 @@ public class KanbanTest {
 
         usersPage.forceGoToUsers();
 
-        assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "User for edit has not been created");
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail),
+                "User for edit has not been created");
 
         usersPage.clickEditUser(originalFirstName);
 
@@ -205,12 +186,6 @@ public class KanbanTest {
 
         assertTrue(usersPage.isEmailValidationErrorDisplayed(), "No error message displayed");
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         String newFirstName = "NewFirstName_" + uniqueId;
         String newLastName = "NewLastName_" + uniqueId;
         String newEmail = "new" + uniqueId + "@example.com";
@@ -218,9 +193,10 @@ public class KanbanTest {
         usersPage.fillAndSubmitUserForm(newEmail, newFirstName, newLastName);
 
         assertTrue(usersPage.isUserInList(newFirstName, newLastName, newEmail));
-        assertFalse(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "old userName is still on the list");
-
+        assertFalse(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail),
+                "old userName is still on the list");
     }
+
     @Test
     public void testEditFormPopulatedDataCorrectly() {
         LoginPage loginPage = new LoginPage(driver);
@@ -242,43 +218,22 @@ public class KanbanTest {
 
         usersPage.forceGoToUsers();
 
-        assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail), "User for edit has not been created");
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail),
+                "User for edit has not been created");
 
         usersPage.clickEditUser(originalFirstName);
 
-        WebElement editFirstNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='firstName']")));
-        WebElement editLastNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='lastName']")));
-        WebElement editEmailInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='email']")));
+        String actualFirstName = usersPage.getFirstNameInputValue();
+        String actualLastName = usersPage.getLastNameInputValue();
+        String actualEmail = usersPage.getEmailInputValue();
 
-
-
-
-
-        String expectedEmail = driver.findElement(By.cssSelector("input[name='email']")).getText();
-        String expectedFirstName = driver.findElement(By.cssSelector("input[name='firstName']")).getText();
-        String expectedLastName = driver.findElement(By.cssSelector("input[name='lastName']")).getText();
-
-        String actualEmail = editEmailInput.getAttribute("value");
-        String actualLastName = editLastNameInput.getAttribute("value");
-        String actualFirstName = editFirstNameInput.getAttribute("value");
-
-        System.out.println(expectedFirstName);
-        System.out.println(originalFirstName);
-
-        Assertions.assertEquals(actualFirstName, originalFirstName);
-        Assertions.assertEquals(actualLastName, originalLastName);
-        Assertions.assertEquals(actualEmail, originalEmail);
+        assertEquals(actualFirstName, originalFirstName);
+        assertEquals(actualLastName, originalLastName);
+        assertEquals(actualEmail, originalEmail);
     }
 
     @Test
     public void testDeleteUser() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -298,32 +253,21 @@ public class KanbanTest {
 
         usersPage.forceGoToUsers();
 
-        assertTrue(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail), "User for edit has not been created");
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        assertTrue(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail),
+                "User for edit has not been created");
 
         usersPage.clickEditUser(userToDeleteFirstName);
 
         usersPage.clickDeleteButton();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         usersPage.forceGoToUsers();
 
-        assertFalse(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail), "Error: the user to delete is still there");
+        assertFalse(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail),
+                "Error: the user to delete is still there");
     }
 
     @Test
     public void testDeleteAllUsers() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -333,33 +277,20 @@ public class KanbanTest {
 
         UsersPage usersPage = new UsersPage((driver));
 
-
         usersPage.clickSelectAllUsersButton();
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
-
         usersPage.clickDeleteAllUsersButton();
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
 
         assertTrue(usersPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
 
     @Test
     public void testCreateNewStatus() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
 
         StatusesPage statusesPage = new StatusesPage(driver);
-
 
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String name = "In Progress " + uniqueId;
@@ -372,18 +303,10 @@ public class KanbanTest {
         statusesPage.forceGoToStatuses();
 
         assertTrue(statusesPage.isStatusInList(name), "Status has not been created");
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Test
     public void testDefaultStatusesArePresent() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -404,14 +327,13 @@ public class KanbanTest {
             String expectedName = status.getKey();
             String expectedSlug = status.getKey();
 
-            assertTrue(statusesPage.isStatusRowCorrect(expectedName, expectedSlug), "No name and slug found");
+            assertTrue(statusesPage.isStatusRowCorrect(expectedName, expectedSlug),
+                    "No name and slug found");
         }
     }
 
     @Test
     public void testStatusesListView() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -422,7 +344,8 @@ public class KanbanTest {
 
         assertTrue(statusesPage.areHeaderDisplayed(), "Name and Slug headers are missing");
 
-        assertTrue(statusesPage.isStatusRowCorrect("Draft", "draft"), "improper order");
+        assertTrue(statusesPage.isStatusRowCorrect("Draft", "draft"),
+                "improper order");
 
         int rowsCount = statusesPage.getRowsCount();
 
@@ -431,7 +354,6 @@ public class KanbanTest {
 
     @Test
     public void testEditStatus() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -448,11 +370,6 @@ public class KanbanTest {
 
         statusesPage.fillAndSubmitStatusForm(initialName, initialSlug);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-
         statusesPage.forceGoToStatuses();
 
         statusesPage.clickEditStatus(initialName);
@@ -462,55 +379,25 @@ public class KanbanTest {
 
         statusesPage.fillAndSubmitEditForm(updatedName, updatedSlug);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-
         statusesPage.forceGoToStatuses();
 
         assertTrue(statusesPage.isStatusRowCorrect(updatedName, updatedSlug), "changed status not found");
 
-        String oldXPath = "//*[contains(., '" + initialName + "')]";
-        boolean isOldNamePresent = false;
-
-        try {
-            isOldNamePresent = driver.findElement(By.xpath(oldXPath)).isDisplayed();
-        } catch (Exception ignored) {
-        }
+        boolean isOldNamePresent = statusesPage.isStatusPresent(initialName);
 
         assertFalse(isOldNamePresent, "old name '" + initialName + "' is still displayed)");
 
         statusesPage.clickEditStatus(updatedName);
 
+        String actualName = statusesPage.getNameInputValue();
+        String actualSlug = statusesPage.getSlugInputValue();
 
-
-        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='name']")));
-        WebElement editSlugInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='slug']")));
-
-
-
-        String expectedName = driver.findElement(By.cssSelector("input[name='name']")).getText();
-        String expectedSlug = driver.findElement(By.cssSelector("input[name='slug']")).getText();
-
-
-        String actualName = editNameInput.getAttribute("value");
-        String actualSlug = editSlugInput.getAttribute("value");
-
-
-
-        Assertions.assertEquals(updatedName, actualName);
-        Assertions.assertEquals(updatedSlug, actualSlug);
-
-
-
-
+        assertEquals(updatedName, actualName);
+        assertEquals(updatedSlug, actualSlug);
     }
 
     @Test
     public void testDeleteStatus() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -526,11 +413,6 @@ public class KanbanTest {
         statusesPage.clickCreateStatus();
         statusesPage.fillAndSubmitEditForm(nameToDelete, slugToDelete);
 
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-        }
-
         statusesPage.forceGoToStatuses();
 
         assertTrue(statusesPage.isStatusInList(nameToDelete));
@@ -538,21 +420,13 @@ public class KanbanTest {
 
         statusesPage.clickDeleteButton();
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
-
-
         assertFalse(
                 statusesPage.isStatusInList(nameToDelete), nameToDelete + "is still displayed"
-
         );
     }
 
     @Test
     public void testDeleteAllStatuses() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -563,24 +437,13 @@ public class KanbanTest {
 
         statusesPage.clickSelectAllUsersButton();
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
-
         statusesPage.clickDeleteAllUsersButton();
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
 
         assertTrue(statusesPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
 
     @Test
     public void testCreateNewLabel() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -596,19 +459,11 @@ public class KanbanTest {
 
         labelsPage.forceGoToLabels();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         assertTrue(labelsPage.isLabelInList(labelName), "Label " + labelName + "has not been created");
     }
 
     @Test
     public void testLabelsListView() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -624,9 +479,9 @@ public class KanbanTest {
         assertTrue(rowsCount > 0, "Labels page is empty or data are not loaded");
     }
 
+
     @Test
     public void testEditLabel() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -638,15 +493,9 @@ public class KanbanTest {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String initialName = "ToEdit_" + uniqueId;
 
-
         labelsPage.clickCreateLabel();
 
         labelsPage.fillAndSubmitLabelForm(initialName);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
 
         labelsPage.forceGoToLabels();
 
@@ -654,45 +503,25 @@ public class KanbanTest {
 
         String updatedName = "Updated_" + uniqueId;
 
-
         labelsPage.fillAndSubmitEditForm(updatedName);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
 
         labelsPage.forceGoToLabels();
 
         assertTrue(labelsPage.isLabelInList(updatedName), "changed label not found");
 
-        String oldXPath = "//*[contains(., '" + initialName + "')]";
-        boolean isOldNamePresent = false;
-
-        try {
-            isOldNamePresent = driver.findElement(By.xpath(oldXPath)).isDisplayed();
-        } catch (Exception ignored) {
-        }
+        boolean isOldNamePresent = labelsPage.isTextPresentOnPage(initialName);
 
         assertFalse(isOldNamePresent, "old name '" + initialName + "' is still displayed)");
 
-
         labelsPage.clickEditLabel(updatedName);
 
+        String actualName = labelsPage.getNameInputValue();
 
-        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name='name']")));
-
-
-        String actualName = editNameInput.getAttribute("value");
-
-        Assertions.assertEquals(updatedName, actualName);
-
+        assertEquals(updatedName, actualName);
     }
 
     @Test
     public void testDeleteLabel() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -704,14 +533,8 @@ public class KanbanTest {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelToDelete = "DeleteMe_" + uniqueId;
 
-
         labelsPage.clickCreateLabel();
         labelsPage.fillAndSubmitEditForm(labelToDelete);
-
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-        }
 
         labelsPage.forceGoToLabels();
 
@@ -720,21 +543,13 @@ public class KanbanTest {
 
         labelsPage.clickDeleteButton();
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
-
         assertFalse(
                 labelsPage.isLabelInList(labelToDelete), labelToDelete + "is still displayed"
-
         );
     }
 
     @Test
     public void testCreateNewTask() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -756,11 +571,6 @@ public class KanbanTest {
 
         tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue);
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
-
         tasksPage.forceGoToTasks();
 
         assertTrue(tasksPage.isTaskInColumn(taskTitle, targetColumn),
@@ -774,8 +584,6 @@ public class KanbanTest {
 
     @Test
     public void testTaskViewingAndFiltering() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -784,353 +592,341 @@ public class KanbanTest {
         kanbanPage.goToTasks();
 
         TasksPage tasksPage = new TasksPage((driver));
-
-
         //=======================status============================
-
         int initialCardsCount = tasksPage.getTaskCardsCount();
 
-        Assertions.assertTrue(initialCardsCount > 0, "the table is blank");
+        assertTrue(initialCardsCount > 0, "the table is blank");
 
+        String urlBeforeFilter = tasksPage.getCurrentUrl();
 
-        String urlBeforeFilter = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
+        tasksPage.waitForCardsToLoad();
 
         String targetStatus = "Draft";
         tasksPage.filterByStatus(targetStatus);
-
-
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeFilter)));
+        tasksPage.waitForUrlToBe(urlBeforeFilter);
 
         try {
             tasksPage.waitForCardsCount(3);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot",
+                    new ByteArrayInputStream(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
         List<String> statusFilteredCards = tasksPage.getVisibleStatusesInTable();
 
-        Assertions.assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
+        assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
 
-        Assertions.assertEquals(3, statusFilteredCards.size(), "error: incorrect numbers of cards");
+        assertEquals(3, statusFilteredCards.size(), "error: incorrect numbers of cards");
 
-
-        Assertions.assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
-        Assertions.assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
-        Assertions.assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
-
+        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
+        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
+        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
 
         boolean onlyDraftTasks = statusFilteredCards.stream()
                 .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
-        Assertions.assertTrue(onlyDraftTasks, "improper tasks are displayed");
-
+        assertTrue(onlyDraftTasks, "improper tasks are displayed");
 
         tasksPage.clearAllFilters();
-
         //============================================================
 
-
         //==========================Assignee===================================
-        String urlBeforeAssignee = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String urlBeforeAssignee = tasksPage.getCurrentUrl();
+        tasksPage.waitForCardsToLoad();
+
         String targetWorker = "alice@hotmail.com";
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-        WebElement oldCard2 = driver.findElement(By.cssSelector(".MuiCard-root"));
-        tasksPage.filterByAssignee(targetWorker);
+        tasksPage.waitForCardsToLoad();
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee)));
+        tasksPage.rememberOldCard();
+        tasksPage.filterByAssignee(targetWorker);
+        tasksPage.waitForOldCardToDisappear();
+
+        tasksPage.waitForUrlToChange(urlBeforeAssignee);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
-        wait.until(ExpectedConditions.stalenessOf(oldCard2));
+        tasksPage.waitForOldCardToDisappear();
         List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
 
-        Assertions.assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
+        assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
 
-        Assertions.assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
+        assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
 
-
-        Assertions.assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
-        Assertions.assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
+        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
+        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
 
         boolean onlyAliceTasks = assigneeFilteredCards.stream()
                 .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
-        Assertions.assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
+        assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
 
         tasksPage.clearAllFilters();
-
         //============================================================
 
-
         //=================================Label=============================
-
-        String urlBeforeLabel = driver.getCurrentUrl();
+        String urlBeforeLabel = tasksPage.getCurrentUrl();
         String targetLabel = "bug";
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
+        tasksPage.waitForCardsToLoad();
 
         tasksPage.filterByLabel(targetLabel);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeLabel)));
+        tasksPage.waitForUrlToChange(urlBeforeLabel);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
         List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
 
-        Assertions.assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
+        assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
 
+        assertEquals(2, labelFilteredCards.size(), "improper number of cards");
 
-        Assertions.assertEquals(2, labelFilteredCards.size(), "improper number of cards");
-
-        Assertions.assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
-        Assertions.assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
+        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
+        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
 
         boolean onlyBugTasks = labelFilteredCards.stream()
                 .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
-        Assertions.assertTrue(onlyBugTasks, "error: an improper task is shown");
+        assertTrue(onlyBugTasks, "error: an improper task is shown");
 
         tasksPage.clearAllFilters();
-
         //=========================================================================
 
-
         //===============================AssigneeWithNoCards===================================
+        String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
 
-        String urlBeforeAssignee2 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        tasksPage.waitForCardsToLoad();
+
         String targetWorker2 = "emily@example.com";
 
         tasksPage.filterByAssignee(targetWorker2);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeAssignee2)));
+        tasksPage.waitForUrlToChange(urlBeforeAssignee2);
         try {
             tasksPage.waitForCardsCount(0);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail("no cards should be displayed");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail("no cards should be displayed");
         }
         List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
+        assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
 
         tasksPage.clearAllFilters();
-
         //==============================================================================
 
-
         //================================Assignee+Status===============================
+        String urlCombo15 = tasksPage.getCurrentUrl();
 
-        String urlCombo15 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        tasksPage.waitForCardsToLoad();
         String targetWorker6 = "alice@hotmail.com";
-        System.out.println(targetWorker6);
+
         tasksPage.filterByAssignee(targetWorker6);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo15)));
+        tasksPage.waitForUrlToChange(urlCombo15);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
+        tasksPage.waitForCardsToLoad();
 
         tasksPage.filterByStatus("To Be Fixed");
 
-//        try {
-//            Thread.sleep(5000);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
         try {
             tasksPage.waitForCardsCount(1);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
         List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertEquals(1, comboCardsNew.size(), "1 task should be on board");
-        Assertions.assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
-
+        assertEquals(1, comboCardsNew.size(), "1 task should be on board");
+        assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
 
         tasksPage.clearAllFilters();
 
         //=================================================================================
 
-
         //=================================ChangeAssignee================================
 
-        String urlAlice = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String urlAlice = tasksPage.getCurrentUrl();
+
+        tasksPage.waitForCardsToLoad();
         String targetWorker4 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker4);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAlice)));
+        tasksPage.waitForUrlToChange(urlAlice);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        tasksPage.waitForCardsToLoad();
 
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
 
-
         try {
             tasksPage.waitForCardsCount(5);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
         List<String> johnCards = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
-
+        assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
 
         boolean hasOnlyJohnTasks = johnCards.stream()
-                .allMatch(c -> c.contains("Task 11") ||
-                        c.contains("Task 2") ||
-                        c.contains("Task 1") ||
-                        c.contains("Task 15") ||
+                .allMatch(c -> c.contains("Task 11")
+                        ||
+                        c.contains("Task 2")
+                        ||
+                        c.contains("Task 1")
+                        ||
+                        c.contains("Task 15")
+                        ||
                         c.contains("Task 5"));
 
-        Assertions.assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
+        assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
 
         tasksPage.clearAllFilters();
-
         //===========================================================================
-
 
         //===============================RemoveAllFilters===========================
 
-        String urlBeforeClear = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String urlBeforeClear = tasksPage.getCurrentUrl();
+
+        tasksPage.waitForCardsToLoad();
+
         String targetWorker7 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker7);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeClear)));
+        tasksPage.waitForUrlToChange(urlBeforeClear);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
-        //String urlAfterClear = driver.getCurrentUrl();
 
         tasksPage.clearAllFilters();
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlAfterClear)));
-
         try {
             tasksPage.waitForCardsCount(15);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail("15 tasks should be displayed");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail("15 tasks should be displayed");
         }
 
         List<String> allCards = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 1")), "Task 1 is not shown");
-        Assertions.assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 15")), "Task 1 is not shown");
+        assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 1")), "Task 1 is not shown");
+        assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 15")), "Task 1 is not shown");
         //===============================================================================
 
-
         //===========================RemoveStatusFromAssigneeAndStatus=====================
-        String urlCombo11 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        String urlCombo11 = tasksPage.getCurrentUrl();
+
+        tasksPage.waitForCardsToLoad();
         String targetWorker11 = "alice@hotmail.com";
 
         try {
-            Thread.sleep(2000);
             tasksPage.filterByAssignee(targetWorker11);
-        } catch (InterruptedException e) {
-            Assertions.fail("filter is broken");
-            e.printStackTrace();
+        } catch (TimeoutException e) {
+
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail("filter is broken");
         }
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo11)));
+        tasksPage.waitForUrlToChange(urlCombo11);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
-        //String urlCombo8 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
 
+        tasksPage.waitForCardsToLoad();
 
         tasksPage.filterByStatus("To Be Fixed");
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo8)));
 
         try {
             tasksPage.waitForCardsCount(1);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
         tasksPage.removeStatusFilter();
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been changed");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been changed");
         }
 
         List<String> aliceCardsAfterRemoval = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertEquals(2, aliceCardsAfterRemoval.size(), "2 task2 should be on board");
-        Assertions.assertTrue(aliceCardsAfterRemoval.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")), "only Alice tasks should be displayed");
-
+        assertEquals(2, aliceCardsAfterRemoval.size(), "2 task2 should be on board");
+        assertTrue(aliceCardsAfterRemoval.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")),
+                "only Alice tasks should be displayed");
 
         tasksPage.clearAllFilters();
 
         //=================================================================================
 
-
         //======================================SaveFilterAlice=================================
-        //String urlCombo12 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        tasksPage.waitForCardsToLoad();
         String targetWorker12 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker12);
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo12)));
-
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        tasksPage.waitForCardsToLoad();
 
         String myFilterName = "Alice_Custom_Filter";
         tasksPage.openSaveQueryModal();
         tasksPage.saveCurrentQueryAs(myFilterName);
 
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
+        tasksPage.waitForCardsToLoad();
 
         tasksPage.clearAllFilters();
 
@@ -1140,107 +936,92 @@ public class KanbanTest {
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail("custom filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail("custom filter hasn't been applied");
         }
 
         List<String> savedQueryCards = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertEquals(2, savedQueryCards.size(), "number of cards is not 2");
-        Assertions.assertTrue(savedQueryCards.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")), "only Alice tasks should be displayed");
-
-
+        assertEquals(2, savedQueryCards.size(), "number of cards is not 2");
+        assertTrue(savedQueryCards.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")),
+                "only Alice tasks should be displayed");
         //=================================================================================
-
 
         //================================DeleteCustomQuery================================
-
         tasksPage.deleteSavedQuery(myFilterName);
         boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
-        Assertions.assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
+        assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
 
         tasksPage.clearAllFilters();
-
-
         //=================================================================================
 
-
         //==========================================AliceWithZeroTasks==========================
+        String urlCombo13 = tasksPage.getCurrentUrl();
 
-        String urlCombo13 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        tasksPage.waitForCardsToLoad();
+
         String targetWorker13 = "alice@hotmail.com";
 
         tasksPage.filterByAssignee(targetWorker13);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo13)));
+        tasksPage.waitForUrlToChange(urlCombo13);
 
         try {
             tasksPage.waitForCardsCount(2);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
-
+        tasksPage.waitForCardsToLoad();
 
         tasksPage.filterByStatus("Draft");
 
-
         try {
             tasksPage.waitForCardsCount(0);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
         List<String> visibleCards = tasksPage.getVisibleStatusesInTable();
 
-        Assertions.assertTrue(visibleCards.isEmpty(), "The table should be empty");
-
+        assertTrue(visibleCards.isEmpty(), "The table should be empty");
 
         tasksPage.clearAllFilters();
-
-
         //======================================================================================
 
-
         //=============================ThreeFilters========================================
-        //String urlCombo14 = driver.getCurrentUrl();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+
+        tasksPage.waitForCardsToLoad();
 
         String targetWorker14 = "alice@hotmail.com";
         String targetStatus14 = "To Be Fixed";
         String targetLabel14 = " feature";
 
-        //wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlCombo14)));
-
         tasksPage.filterByAssignee(targetWorker14);
         tasksPage.filterByStatus(targetStatus14);
         tasksPage.filterByLabel(targetLabel14);
 
-
         try {
             tasksPage.waitForCardsCount(1);
-        } catch (org.openqa.selenium.TimeoutException e) {
-            Assertions.fail(" filter hasn't been applied");
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
         }
 
-//        try {
-//            Thread.sleep(3000);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-
         List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
-        Assertions.assertEquals(1, visibleCardAlice.size(), "number of cards is not 1");
-        Assertions.assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
-
+        assertEquals(1, visibleCardAlice.size(), "number of cards is not 1");
+        assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
     }
-        //=================================================================================
+    //=================================================================================
 
     @Test
     public void testEditTask() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1249,7 +1030,6 @@ public class KanbanTest {
         kanbanPage.goToTasks();
 
         TasksPage tasksPage = new TasksPage((driver));
-
 
         String updatedName = "new task" + System.currentTimeMillis();
 
@@ -1263,53 +1043,35 @@ public class KanbanTest {
         String taskStatus = "2";
         String taskValue = "1";
 
-
         tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
 
         tasksPage.forceGoToTasks();
 
-
         tasksPage.openTaskForEditing(taskTitle);
-
 
         tasksPage.updateTaskName(updatedName);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        tasksPage.waitForCardWithTitle(updatedName);
 
-        By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='" +
-                updatedName + "']");
+        assertTrue(tasksPage.isCardPresent(updatedName));
 
-        By oldCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='" +
-                taskTitle + "']");
+        tasksPage.waitForNewCardToAppear(updatedName);
 
-        List<WebElement> oldcards = driver.findElements(oldCardLocator);
+        assertTrue(tasksPage.isNewCardDisplayed(updatedName));
 
-
-        WebElement newCard = wait.until(ExpectedConditions.presenceOfElementLocated(newCardLocator));
-
-
-        Assertions.assertTrue(newCard.isDisplayed(), "changes haven't been applied: new card name is missing");
-        Assertions.assertTrue(oldcards.isEmpty(), "old task " + taskTitle + " is still displayed");
+        assertTrue(tasksPage.areOldCardsEmpty(taskTitle));
 
         tasksPage.openTaskForEditing(updatedName);
 
         String actualDescription = tasksPage.getDescriptionInputValue();
         String actualAssignee = tasksPage.getAssigneeDropdownValue();
 
-        Assertions.assertEquals(expectedDescription, actualDescription, "the description is missing");
-        Assertions.assertEquals(expectedAssignee, actualAssignee, "the description is missing");
-
+        assertEquals(expectedDescription, actualDescription, "the description is missing");
+        assertEquals(expectedAssignee, actualAssignee, "the description is missing");
     }
 
     @Test
     public void testMoveTaskToAnotherStatus() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1328,26 +1090,19 @@ public class KanbanTest {
 
         tasksPage.waitForTasksUpdate(5);
 
-        tasksPage.selectDropdownOption(By.xpath("//div[@data-source='status_id']"), newStatusId);
+        tasksPage.filterByStatus(newStatusId);
 
         tasksPage.waitForTasksUpdate(5);
 
-        By moveCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='" + taskToMove +
-                "']");
+        boolean isCardMoved = tasksPage.isTaskVisible(taskToMove);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
-        WebElement moveCard = wait.until(ExpectedConditions.presenceOfElementLocated(moveCardLocator));
-
-        Assertions.assertTrue(moveCard.isDisplayed(), "The task hasn't been moved to another status");
+        Assertions.assertTrue(isCardMoved, "Card " + taskToMove + "' is not visible in the new status column");
 
         tasksPage.clearAllFilters();
     }
 
     @Test
     public void testDeleteTask() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1359,6 +1114,8 @@ public class KanbanTest {
 
         String taskToDelete = "Task 5";
 
+        int initialCount = tasksPage.getVisibleTasksCount();
+
         tasksPage.openTaskForEditing(taskToDelete);
 
         tasksPage.clickDelete();
@@ -1367,20 +1124,13 @@ public class KanbanTest {
 
         int currentTasksCount = tasksPage.getVisibleTasksCount();
 
-        Assertions.assertEquals(currentTasksCount, 14, "The number of tasks hasn't changed");
+        assertEquals(initialCount - 1, currentTasksCount, "The number of tasks hasn't changed");
 
-        By deleteCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='" +
-                taskToDelete + "']");
-
-        boolean istaskGone = driver.findElements(deleteCardLocator).isEmpty();
-
-        Assertions.assertTrue(istaskGone, "Error: a deleted task is still present");
+        assertTrue(tasksPage.isTaskGone(taskToDelete), "Error: a deleted task is still present");
     }
 
     @Test
     public void testShowTask() {
-
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1400,23 +1150,19 @@ public class KanbanTest {
 
         tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, taskDesc);
 
-//        try {
-//            Thread.sleep(2000);
-//        } catch (InterruptedException e) {
-//        }
-
         tasksPage.forceGoToTasks();
 
         tasksPage.openTaskForViewing(taskTitle);
 
-        Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task " + taskTitle + " is not displayed");
+        assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task "
+                + taskTitle + " is not displayed");
 
-        Assertions.assertTrue(tasksPage.isTextPresentOnViewPage(taskDesc), "the task description " + taskDesc + " is not displayed");
+        assertTrue(tasksPage.isTextPresentOnViewPage(taskDesc), "the task description "
+                + taskDesc + " is not displayed");
     }
 
     @Test
     public void testShowUser() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1441,20 +1187,19 @@ public class KanbanTest {
 
         usersPage.clickUpperShowButton();
 
-        Assertions.assertTrue(usersPage.isTextPresentOnViewPage(testFirstName), "Username is not displayed");
+        assertTrue(usersPage.isTextPresentOnViewPage(testFirstName), "Username is not displayed");
 
-        Assertions.assertTrue(usersPage.isTextPresentOnViewPage(testEmail), "Email is not displayed");
+        assertTrue(usersPage.isTextPresentOnViewPage(testEmail), "Email is not displayed");
 
-        Assertions.assertTrue(usersPage.isTextPresentOnViewPage(testLastName), "Last is not displayed");
+        assertTrue(usersPage.isTextPresentOnViewPage(testLastName), "Last is not displayed");
 
         usersPage.clickUpperEditButton();
 
-        Assertions.assertFalse(driver.getCurrentUrl().contains("/show"), "Show page is still displayed");
+        assertFalse(usersPage.getCurrentUrl().contains("/show"), "Show page is still displayed");
     }
 
     @Test
     public void testShowStatus() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1469,27 +1214,21 @@ public class KanbanTest {
         statusesPage.clickCreateStatus();
         statusesPage.fillAndSubmitEditForm(statusName, slugName);
 
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-        }
-
         statusesPage.forceGoToStatuses();
 
         statusesPage.clickEditStatus(statusName);
 
         statusesPage.clickUpperShowButton();
 
-        Assertions.assertTrue(statusesPage.isTextPresentOnViewPage(statusName), "No status name on Show page");
+        assertTrue(statusesPage.isTextPresentOnViewPage(statusName), "No status name on Show page");
 
         statusesPage.clickUpperEditButton();
 
-        Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
+        assertFalse(statusesPage.getCurrentUrl().contains("/edit"));
     }
 
     @Test
     public void testShowLabel() {
-
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelName = "Label " + uniqueId;
 
@@ -1501,15 +1240,9 @@ public class KanbanTest {
 
         labelsPage.forceGoToLabels();
 
-
         labelsPage.clickCreateLabel();
 
         labelsPage.fillAndSubmitLabelForm(labelName);
-
-//        try {
-//            Thread.sleep(1000);
-//        } catch (InterruptedException e) {
-//        }
 
         labelsPage.forceGoToLabels();
 
@@ -1517,11 +1250,11 @@ public class KanbanTest {
 
         labelsPage.clickUpperShowButton();
 
-        Assertions.assertTrue(labelsPage.isTextPresentOnViewPage(labelName), "Labelname is not displayed on Show page");
+        assertTrue(labelsPage.isTextPresentOnViewPage(labelName), "Labelname is not displayed on Show page");
 
         labelsPage.clickUpperEditButton();
 
-        Assertions.assertFalse(driver.getCurrentUrl().contains("/edit"));
+        assertFalse(labelsPage.getCurrentUrl().contains("/edit"));
     }
 
     @Test
@@ -1535,7 +1268,8 @@ public class KanbanTest {
 
         UsersPage usersPage = new UsersPage((driver));
 
-        int initialUsersCount =  driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        int initialUsersCount = usersPage.getUsersCount();
+
 
         usersPage.clickCreateUser();
 
@@ -1543,49 +1277,47 @@ public class KanbanTest {
         usersPage.fillEmailField("newemail@test.com");
         usersPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+        assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
-        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
+        assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
 
         usersPage.clearLastNameField();
         usersPage.fillFirstNameField("John");
 
         usersPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+        assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
-        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
+        assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
 
         usersPage.fillLastNameField("Smith");
         usersPage.clearEmailField();
         usersPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+        assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
-        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
+        assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
 
         String badEmail = "notAnEmail";
 
         usersPage.fillEmailField(badEmail);
         usersPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "empty firstName was saved");
+        assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
-        Assertions.assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "Incorrect email error is not shown");
+        assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "Incorrect email error is not shown");
 
         usersPage.forceGoToUsers();
 
-        int finalUsersCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
-        Assertions.assertEquals(initialUsersCount, finalUsersCount, "improper user has been created");
+        int finalUsersCount = usersPage.getFinalUsersCount();
+        assertEquals(initialUsersCount, finalUsersCount, "improper user has been created");
 
-        boolean isUserCreatedAnyway = driver.getPageSource().contains(badEmail);
-        Assertions.assertFalse(isUserCreatedAnyway, "improper user has been saved");
-
+        boolean isUserCreatedAnyway = usersPage.isTextPresentOnPage(badEmail);
+        assertFalse(isUserCreatedAnyway, "improper user has been saved");
     }
 
     @Test
     public void testCreateLabelValidation() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1594,29 +1326,27 @@ public class KanbanTest {
 
         labelsPage.forceGoToLabels();
 
-        int initialLabelsCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        int initialLabelsCount = labelsPage.getInitialLabelsCount();
 
         labelsPage.clickCreateLabel();
         labelsPage.triggerValidationOnNameField();
         labelsPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty label has been created");
+        assertTrue(labelsPage.getCurrentUrl().contains("/create"), "Empty label has been created");
 
-        Assertions.assertTrue(labelsPage.isRequiredErrorDisplayed(), "No required error is displayed");
+        assertTrue(labelsPage.isRequiredErrorDisplayed(), "No required error is displayed");
 
         labelsPage.forceGoToLabels();
 
-        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+        labelsPage.waitForListToLoad();
 
-        int finalLabelsCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        int finalLabelsCount = labelsPage.getFinalLabelsCount();
 
-        Assertions.assertEquals(initialLabelsCount, finalLabelsCount, "empty label has been saved");
+        assertEquals(initialLabelsCount, finalLabelsCount, "empty label has been saved");
     }
 
     @Test
     public void testCreateStatusValidation() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1626,50 +1356,39 @@ public class KanbanTest {
 
         statusesPage.forceGoToStatuses();
 
-        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+        statusesPage.waitForListToLoad();
 
-        int initialStatusesCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        int initialStatusesCount = statusesPage.getInitialStatusesCount();
 
         statusesPage.clickCreateStatus();
 
         statusesPage.fillNameField("Temp status name");
         statusesPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty slug has been created");
+        assertTrue(statusesPage.getCurrentUrl().contains("/create"), "Empty slug has been created");
 
-        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
+        assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
         statusesPage.clearNameField();
-
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         statusesPage.fillSlugField("Temp slug name");
         statusesPage.clickSaveButton();
 
+        assertTrue(statusesPage.getCurrentUrl().contains("/create"), "Empty slug has been created");
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty slug has been created");
-
-        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
+        assertTrue(statusesPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
         statusesPage.forceGoToStatuses();
 
-        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+        statusesPage.waitForListToLoad();
 
-        int finalStatusesCount = driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        int finalStatusesCount = statusesPage.getFinalStatusesCount();
 
-        Assertions.assertEquals(initialStatusesCount, finalStatusesCount, "empty status has been saved");
-
+        assertEquals(initialStatusesCount, finalStatusesCount, "empty status has been saved");
     }
 
     @Test
     public void testCreateTaskValidation() {
-
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String taskTitle = "SomeTask_" + uniqueId;
         String taskStatus = "2";
@@ -1684,10 +1403,9 @@ public class KanbanTest {
 
         TasksPage tasksPage = new TasksPage((driver));
 
-        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")),
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-content"))));
+        tasksPage.waitForListToLoad();
 
-        int initialTasksCount = driver.findElements(By.cssSelector(".MuiCard-root")).size();
+        int initialTasksCount = tasksPage.getInitialTasksCount();
 
         tasksPage.clickCreateTask();
 
@@ -1695,43 +1413,40 @@ public class KanbanTest {
         tasksPage.selectStatus(taskStatus);
         tasksPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "Empty task has been created");
+        assertTrue(tasksPage.getCurrentUrl().contains("/create"), "Empty task has been created");
 
-        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+        assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
-        driver.navigate().refresh();
+        tasksPage.refreshPage();
 
         tasksPage.fillTaskTitle(taskTitle);
         tasksPage.selectStatus(taskStatus);
 
         tasksPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "task has been created w/o assignee");
+        assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o assignee");
 
-        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+        assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
-        driver.navigate().refresh();
+        tasksPage.refreshPage();
 
         tasksPage.fillTaskTitle(taskTitle);
         tasksPage.selectAssignee(assigneeName);
         tasksPage.clickSaveButton();
 
-        Assertions.assertTrue(driver.getCurrentUrl().contains("/create"), "task has been created w/o status");
+        assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o status");
 
-        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
-
+        assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
         kanbanPage.goToTasks();
 
+        int finalTasksCount = tasksPage.getFinalTasksCount();
 
-        int finalTasksCount = driver.findElements(By.cssSelector(".MuiCard-root")).size();
-
-        Assertions.assertEquals(initialTasksCount, finalTasksCount, "empty status has been saved");
+        assertEquals(initialTasksCount, finalTasksCount, "empty status has been saved");
     }
 
     @Test
     public void testEditUserValidationWithoutFirstName() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1758,22 +1473,15 @@ public class KanbanTest {
 
         usersPage.clickSaveButton();
 
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        usersPage.waitForSnackBar();
 
+        assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o first name was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o first name was saved");
-
-        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
-
+        assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
     }
 
     @Test
     public void testEditUserValidationWithoutLastName() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1800,16 +1508,14 @@ public class KanbanTest {
 
         usersPage.clickSaveButton();
 
+        assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
-
-        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
+        assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
     }
 
     @Test
     public void testEditUserValidationWithoutEmail() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1836,16 +1542,13 @@ public class KanbanTest {
 
         usersPage.clickSaveButton();
 
+        assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
-
-        Assertions.assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
-
+        assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
     }
 
     @Test
     public void testEditUserValidationWithIncorrectEmail() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1875,16 +1578,13 @@ public class KanbanTest {
 
         usersPage.clickSaveButton();
 
+        assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
-
-        Assertions.assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "no error message for improper email");
-
+        assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "no error message for improper email");
     }
 
     @Test
     public void testEditTaskWithoutTitle() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1896,7 +1596,6 @@ public class KanbanTest {
 
         String expectedDescription = "Description of task 15";
 
-
         tasksPage.clickCreateTask();
 
         String uniqueId = String.valueOf(System.currentTimeMillis());
@@ -1904,16 +1603,9 @@ public class KanbanTest {
         String taskStatus = "2";
         String taskValue = "1";
 
-
         tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
-
         tasksPage.forceGoToTasks();
-
 
         tasksPage.openTaskForEditing(taskTitle);
 
@@ -1921,20 +1613,15 @@ public class KanbanTest {
 
         tasksPage.clickSaveButton();
 
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        tasksPage.waitForSnackBar();
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/tasks"), "task w/o title was saved");
+        assertFalse(tasksPage.getCurrentUrl().endsWith("/tasks"), "task w/o title was saved");
 
-        Assertions.assertTrue(tasksPage.isRequiredErrorDisplayed(), "no required message");
+        assertTrue(tasksPage.isRequiredErrorDisplayed(), "no required message");
     }
 
     @Test
     public void testEditLabelWithoutName() {
-
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelName = "Label " + uniqueId;
 
@@ -1946,15 +1633,9 @@ public class KanbanTest {
 
         labelsPage.forceGoToLabels();
 
-
         labelsPage.clickCreateLabel();
 
         labelsPage.fillAndSubmitLabelForm(labelName);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
 
         labelsPage.forceGoToLabels();
 
@@ -1964,21 +1645,15 @@ public class KanbanTest {
 
         labelsPage.clickSaveButton();
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
+        labelsPage.waitForSnackBar();
 
+        assertFalse(labelsPage.getCurrentUrl().endsWith("/labels"), "label w/o title was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/labels"), "label w/o title was saved");
-
-        Assertions.assertTrue(labelsPage.isRequiredErrorDisplayed(), "no required message");
-
+        assertTrue(labelsPage.isRequiredErrorDisplayed(), "no required message");
     }
 
     @Test
     public void testEditStatusWithoutName() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1994,11 +1669,6 @@ public class KanbanTest {
         statusesPage.clickCreateStatus();
 
         statusesPage.fillAndSubmitStatusForm(initialName, initialSlug);
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
 
         statusesPage.forceGoToStatuses();
 
@@ -2008,15 +1678,13 @@ public class KanbanTest {
 
         statusesPage.clickSaveButton();
 
+        assertFalse(statusesPage.getCurrentUrl().endsWith("/statuses"), "status w/o name was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/statuses"), "status w/o name was saved");
-
-        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
+        assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
     }
 
     @Test
     public void testEditStatusWithoutSlug() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -2033,11 +1701,6 @@ public class KanbanTest {
 
         statusesPage.fillAndSubmitStatusForm(initialName, initialSlug);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-
         statusesPage.forceGoToStatuses();
 
         statusesPage.clickEditStatus(initialName);
@@ -2046,20 +1709,15 @@ public class KanbanTest {
 
         statusesPage.clickSaveButton();
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-        }
+        statusesPage.waitForSnackBar();
 
+        assertFalse(statusesPage.getCurrentUrl().endsWith("/statuses"), "status w/o slug was saved");
 
-        Assertions.assertFalse(driver.getCurrentUrl().endsWith("/statuses"), "status w/o slug was saved");
-
-        Assertions.assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
+        assertTrue(statusesPage.isRequiredErrorDisplayed(), "no required message");
     }
 
     @Test
     public void testBulkDeleteUser() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -2070,21 +1728,17 @@ public class KanbanTest {
         UsersPage usersPage = new UsersPage((driver));
 
         int initialRowCount = usersPage.getTableRowsCount();
-        Assertions.assertTrue(initialRowCount > 0, "The table is empty");
+        assertTrue(initialRowCount > 0, "The table is empty");
         System.out.println(initialRowCount);
         usersPage.selectFirstRowCheckbox();
 
         usersPage.clickBulkDeleteButton();
 
+        usersPage.waitForSnackBar();
+
         int finalRowsCount = usersPage.getTableRowsCount();
 
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Assertions.assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
+        assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
     }
 
     @Test
@@ -2098,18 +1752,19 @@ public class KanbanTest {
         labelsPage.forceGoToLabels();
 
         int initialRowCount = labelsPage.getRowsCount();
-        Assertions.assertTrue(initialRowCount > 0, "Labels table is empty");
+        assertTrue(initialRowCount > 0, "Labels table is empty");
 
         labelsPage.selectFirstRowCheckbox();
         labelsPage.clickBulkDeleteButton();
 
         int finalRowCount = labelsPage.getTableRowsCount();
-        Assertions.assertEquals(initialRowCount - 1, finalRowCount, "The row count hasn't changed");
+        labelsPage.waitForSnackBar();
+
+        assertEquals(initialRowCount - 1, finalRowCount, "The row count hasn't changed");
     }
 
     @Test
     public void testBulkDeleteStatus() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -2120,30 +1775,17 @@ public class KanbanTest {
 
         int initialRowCount = statusesPage.getTableRowsCount();
 
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Assertions.assertTrue(initialRowCount > 0, "Table is empty");
+        assertTrue(initialRowCount > 0, "Table is empty");
 
         statusesPage.selectFirstRowCheckbox();
 
         statusesPage.clickBulkDeleteButton();
 
+        statusesPage.waitForSnackBar();
+
         int finalRowCount = statusesPage.getTableRowsCount();
 
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(initialRowCount);
-        System.out.println(finalRowCount);
-        Assertions.assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
-
+        assertEquals(initialRowCount - 1, finalRowCount, "Rows count hasn't changed");
     }
 
     @Test
@@ -2156,12 +1798,12 @@ public class KanbanTest {
 
         labelsPage.forceGoToLabels();
 
-        Assertions.assertTrue(labelsPage.getTableRowsCount() > 0, "Labels table is empty");
+        assertTrue(labelsPage.getTableRowsCount() > 0, "Labels table is empty");
 
         labelsPage.selectFirstRowCheckbox();
         labelsPage.clickUnselectCrossButton();
 
-        Assertions.assertTrue(labelsPage.isSelectionTextHidden(), "1 item selected is still displayed");
+        assertTrue(labelsPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
 
     @Test
@@ -2175,12 +1817,12 @@ public class KanbanTest {
 
         UsersPage usersPage = new UsersPage((driver));
 
-        Assertions.assertTrue(usersPage.getTableRowsCount() > 0, "Labels table is empty");
+        assertTrue(usersPage.getTableRowsCount() > 0, "Labels table is empty");
 
         usersPage.selectFirstRowCheckbox();
         usersPage.clickUnselectCrossButton();
 
-        Assertions.assertTrue(usersPage.isSelectionTextHidden(), "1 item selected is still displayed");
+        assertTrue(usersPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
 
     @Test
@@ -2193,17 +1835,16 @@ public class KanbanTest {
 
         statusesPage.forceGoToStatuses();
 
-        Assertions.assertTrue(statusesPage.getTableRowsCount() > 0, "Labels table is empty");
+        assertTrue(statusesPage.getTableRowsCount() > 0, "Labels table is empty");
 
         statusesPage.selectFirstRowCheckbox();
         statusesPage.clickUnselectCrossButton();
 
-        Assertions.assertTrue(statusesPage.isSelectionTextHidden(), "1 item selected is still displayed");
+        assertTrue(statusesPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
 
     @Test
     public void testPaginationFullFlow() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -2213,36 +1854,35 @@ public class KanbanTest {
 
         UsersPage usersPage = new UsersPage((driver));
 
-        Assertions.assertTrue(usersPage.getTableRowsCount() > 0, "the table is empty");
-
-        By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
+        assertTrue(usersPage.getTableRowsCount() > 0, "the table is empty");
 
         usersPage.changeRowsPerPage("5");
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
+        usersPage.waitForPaginationTextOneToFive();
 
-        Assertions.assertTrue(usersPage.isNextPageButtonEnabled(), "pagination arrow right is not clickable");
+        assertTrue(usersPage.isNextPageButtonEnabled(), "pagination arrow right is not clickable");
 
         usersPage.clickNextPageButton();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "6-"));
+        usersPage.waitForPaginationTextSixToMore();
 
-        String urlPage2 = driver.getCurrentUrl();
+        String urlPage2 = usersPage.getCurrentUrl();
 
-        Assertions.assertTrue(urlPage2.contains("page=2") || (urlPage2.contains("page%22%3A2")), "next page hasn't been opened");
+        assertTrue(urlPage2.contains("page=2") || (urlPage2.contains("page%22%3A2")),
+                "next page hasn't been opened");
 
         usersPage.clickPreviousPageButton();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
+        usersPage.waitForPaginationTextOneToFive();
 
-        String finalUrl = driver.getCurrentUrl();
+        String finalUrl = usersPage.getCurrentUrl();
 
-        Assertions.assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"), "page 1 hasn't been opened");
+        assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"),
+                "page 1 hasn't been opened");
     }
 
     @Test
     public void testTasksFilterByStatusOnGrid() {
-
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -2254,24 +1894,24 @@ public class KanbanTest {
 
         int cardsBefore = tasksPage.getTaskCardsCount();
 
-        Assertions.assertTrue(cardsBefore > 0, "no cards on board");
+        assertTrue(cardsBefore > 0, "no cards on board");
 
-        String urlBeforeFilter = driver.getCurrentUrl();
+        String urlBeforeFilter = tasksPage.getCurrentUrl();
 
         String targetStatus = "Draft";
         tasksPage.filterByStatus(targetStatus);
 
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeFilter)));
+        tasksPage.waitForUrlToChange(urlBeforeFilter);
 
         List<String> cardsTexts = tasksPage.getVisibleStatusesInTable();
 
-        Assertions.assertFalse(cardsTexts.isEmpty(), "table is empty: there's no " + targetStatus + "'");
+        assertFalse(cardsTexts.isEmpty(), "table is empty: there's no " + targetStatus + "'");
 
         for (String cardText : cardsTexts) {
-            if (cardText.contains("Published") || cardText.contains("To Publish") || cardText.contains("To Be Fixed") || cardText.contains("To Review")) {
-                Assertions.fail("There's an extra card " + cardText);
+            if (cardText.contains("Published") || cardText.contains("To Publish") || cardText.contains("To Be Fixed")
+                    || cardText.contains("To Review")) {
+                fail("There's an extra card " + cardText);
             }
         }
     }
-
 }

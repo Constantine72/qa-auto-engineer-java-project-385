@@ -1,38 +1,30 @@
-package hexlet.code;
+package hexlet.code.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
 import java.time.Duration;
 
-public class TasksPage extends BasePage {
-
+public final class TasksPage extends BasePage {
 
     private final By createTaskButton = By.xpath("//*[contains(text(), 'Create')]");
-    private final By assigneeDropdown = By.xpath("//div[.//span[contains(text(), 'Assignee')]]//*[@role='combobox']");
+    private final By assigneeDropdown = By.xpath(
+            "//div[.//span[contains(text(), 'Assignee')]]//*[@role='combobox']");
     private final By titleInput = By.name("title");
     private final By titleInEditForm = By.xpath("//input[@name='title']");
     private final By statusDropdown = By.cssSelector("[class*='status_id'] div");
     private final By saveButton = By.xpath("//*[contains(text(), 'Save')]");
-    private final By filterStatusDropdown = By.xpath("//div[@data-source='status_id']");
     private final By addFilterButton = By.xpath("//*[contains(text(), 'Add filter')]");
     private final By removeAllFiltersOption = By.xpath("//*[contains(text(), 'Remove all filters')]");
     private final By saveCurrentQueryButton = By.xpath("//*[contains(text(), 'Save current query...')]");
-    private final By assigneeStatusDropdown = By.xpath("//div[@data-source='assignee_id']");
-    private final By labelStatusDropdown = By.xpath("//div[@data-source='label_id']");
     private final By formStatusDropdown = By.cssSelector("[class*='status_id'] div");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By contentInput = By.name("content");
     private final By cardLocator = By.cssSelector(".MuiCard-root");
+    private final By statusDropdownLocator = By.xpath("//div[@data-source='status_id']");
 
     public TasksPage(WebDriver driver) {
 
@@ -61,13 +53,14 @@ public class TasksPage extends BasePage {
         selectDropdownOption(assigneeDropdown, assigneeValue);
         selectDropdownOption(statusDropdown, statusValue);
 
-
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
 
     public boolean isTaskInColumn(String taskTitle, String columnName) {
-        String taskInColumnXPath = String.format("//div[contains(@class, 'MuiBox-root') and contains(., '%s')]//div[contains(., '%s')]",
+        String taskInColumnXPath = String.format("//div[contains(@class, "
+                        +
+                        "'MuiBox-root') and contains(., '%s')]//div[contains(., '%s')]",
                 columnName, taskTitle);
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(taskInColumnXPath)));
@@ -78,11 +71,8 @@ public class TasksPage extends BasePage {
     }
 
     public void selectDropdownOption(By dropdownLocator, String dataValue) {
-
-
         org.openqa.selenium.WebElement combobox = wait.until(ExpectedConditions.elementToBeClickable(dropdownLocator));
         combobox.click();
-
 
         try {
             Thread.sleep(500);
@@ -91,7 +81,8 @@ public class TasksPage extends BasePage {
 
         String optionXPath = "//*[@role='option' and @data-value='" + dataValue + "']";
 
-        org.openqa.selenium.WebElement option = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(optionXPath)));
+        org.openqa.selenium.WebElement option = wait.until(ExpectedConditions
+                .presenceOfElementLocated(By.xpath(optionXPath)));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", option);
 
     }
@@ -108,7 +99,6 @@ public class TasksPage extends BasePage {
         return driver.findElements(taskCards).size();
     }
 
-
     public void waitForTasksUpdate(int initialCount) {
 
 
@@ -123,7 +113,9 @@ public class TasksPage extends BasePage {
     }
 
     public void openTaskForEditing(String taskName) {
-        String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
+        String xpath = String.format("//*[contains(text(),"
+                +
+                " '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
     }
@@ -140,8 +132,6 @@ public class TasksPage extends BasePage {
                 .sendKeys(Keys.BACK_SPACE)
                 .sendKeys(newName)
                 .perform();
-
-
         driver.findElement(saveButton).click();
     }
 
@@ -190,7 +180,8 @@ public class TasksPage extends BasePage {
     }
 
     public String getDescriptionInputValue() {
-        return driver.findElement(By.name("content")).getAttribute("value");
+        return driver.findElement(By.name
+                ("content")).getAttribute("value");
     }
 
     public String getAssigneeDropdownValue() {
@@ -199,52 +190,46 @@ public class TasksPage extends BasePage {
 
     public void openTaskForViewing(String taskName) {
 
-        String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Show')]", taskName);
-
+        String xpath = String.format("//*[contains(text(), '%s')]/ancestor::div[contains(@class,"
+                +
+                " 'MuiCard-root')][1]//*[contains(text(), 'Show')]", taskName);
         By showIconLocator = By.xpath(xpath);
-
         WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showIconLocator));
-
         showButton.click();
     }
 
     public boolean isTextPresentOnViewPage(String expectedText) {
-        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
-
+        By textLocator = By.xpath("//span[contains(@class,"
+                +
+                " 'MuiTypography-body2') and text()='" + expectedText + "']");
         try {
             WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
             return element.isDisplayed();
         } catch (Exception e) {
             return false;
-
         }
     }
 
-    public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue, String description) {
-
+    public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue,
+                                      String description) {
 
         wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
-
         wait.until(ExpectedConditions.elementToBeClickable(contentInput)).sendKeys(description);
 
         selectDropdownOption(assigneeDropdown, assigneeValue);
         selectDropdownOption(statusDropdown, statusValue);
-
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
 
     public void selectAssignee(String assigneeValue) {
-
         selectDropdownOption(assigneeDropdown, assigneeValue);
-
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
 
     public void selectStatus(String statusValue) {
-
         selectDropdownOption(statusDropdown, statusValue);
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
@@ -252,16 +237,13 @@ public class TasksPage extends BasePage {
     }
 
     public void fillTaskTitle(String title) {
-
         wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
-
 
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
 
     public void clickSaveButton() {
-
         WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
     }
@@ -281,7 +263,8 @@ public class TasksPage extends BasePage {
         By titleLocator = By.name("title");
         WebElement titleInput = wait.until(ExpectedConditions.elementToBeClickable(titleLocator));
         titleInput.click();
-        titleInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        titleInput.sendKeys(Keys.END);
+        titleInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         titleInput.sendKeys(Keys.BACK_SPACE);
     }
 
@@ -290,12 +273,10 @@ public class TasksPage extends BasePage {
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
 
-
         By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + statusName + "')]");
-
         By optionValue = By.xpath("//li[@data-value='" + statusName + "']");
 
         try {
@@ -310,7 +291,6 @@ public class TasksPage extends BasePage {
         By filterDropdownLocator = By.cssSelector("[class*='assignee_id'] div");
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
-
 
         By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
@@ -338,12 +318,10 @@ public class TasksPage extends BasePage {
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
 
-
         By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + labelName + "')]");
-
         By optionValue = By.xpath("//li[@data-value='" + labelName + "']");
 
         try {
@@ -391,7 +369,8 @@ public class TasksPage extends BasePage {
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[role='listbox']")));
 
-        WebElement emptyOption = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("li[data-value='']")));
+        WebElement emptyOption = wait.until(ExpectedConditions.
+                elementToBeClickable(By.cssSelector("li[data-value='']")));
         emptyOption.click();
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("[role='listbox']")));
@@ -415,14 +394,17 @@ public class TasksPage extends BasePage {
         WebElement saveBtn = driver.findElement(By.xpath("//button[contains(., 'Save')]"));
         saveBtn.click();
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h2[contains(., 'Save current query as')]")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h2[contains(.,"
+                +
+                " 'Save current query as')]")));
     }
 
     public void applySavedQuery(String queryName) {
 
         driver.findElement(addFilterButton).click();
 
-        WebElement savedQueryTab = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(text(), '" + queryName + "')]")));
+        WebElement savedQueryTab = wait.until(ExpectedConditions.
+                elementToBeClickable(By.xpath("//*[contains(text(), '" + queryName + "')]")));
         savedQueryTab.click();
     }
 
@@ -434,13 +416,17 @@ public class TasksPage extends BasePage {
 
         removeOption.click();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(), 'Remove saved query?')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),"
+                +
+                " 'Remove saved query?')]")));
 
-
-        WebElement confirmBtn = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(., 'Confirm')]")));
+        WebElement confirmBtn = wait.until(ExpectedConditions.
+                elementToBeClickable(By.xpath("//button[contains(., 'Confirm')]")));
         confirmBtn.click();
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(), 'Remove saved query?')]")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(),"
+                +
+                " 'Remove saved query?')]")));
     }
 
     public boolean isSavedQueryPresent(String queryName) {
@@ -449,7 +435,8 @@ public class TasksPage extends BasePage {
         boolean isPresent = false;
         try {
             WebDriverWait shortWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(2));
-            shortWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[contains(., '" +
+            shortWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[contains(., '"
+                    +
                     queryName + "')]")));
             isPresent = true;
         } catch (org.openqa.selenium.TimeoutException e) {
@@ -459,8 +446,116 @@ public class TasksPage extends BasePage {
         }
         return isPresent;
     }
-}
 
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
+
+    public void waitForCardsToLoad() {
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+    }
+
+    public void waitForUrlToBe(String expectedUrl) {
+        wait.until(ExpectedConditions.urlToBe(expectedUrl));
+    }
+
+    public void waitForUrlToChange(String oldUrl) {
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(oldUrl)));
+    }
+
+    private WebElement oldCard;
+
+    public void rememberOldCard() {
+        oldCard = driver.findElement(By.cssSelector(".MuiCard-root"));
+    }
+
+    public void waitForOldCardToDisappear() {
+        wait.until(ExpectedConditions.stalenessOf(oldCard));
+    }
+
+    private By getCardLocatorByTitle(String taskTitle) {
+        return By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
+                +
+                taskTitle + "']");
+    }
+
+    public void waitForCardWithTitle(String taskTitle) {
+        By dynamicLocator = getCardLocatorByTitle(taskTitle);
+        wait.until(ExpectedConditions.presenceOfElementLocated(dynamicLocator));
+    }
+
+    public boolean isCardPresent(String taskTitle) {
+        By dynamicLocator = getCardLocatorByTitle(taskTitle);
+        return !driver.findElements(dynamicLocator).isEmpty();
+    }
+
+    public void waitForNewCardToAppear(String updatedName) {
+        By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
+                +
+                updatedName + "']");
+        wait.until(ExpectedConditions.presenceOfElementLocated(newCardLocator));
+    }
+
+    public boolean isNewCardDisplayed(String updatedName) {
+        By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
+                +
+                updatedName + "']");
+        WebElement newCard = wait.until(ExpectedConditions.visibilityOfElementLocated(newCardLocator));
+        return newCard.isDisplayed();
+    }
+
+    public boolean areOldCardsEmpty(String taskTitle) {
+        By oldCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
+                +
+                taskTitle + "']");
+        return driver.findElements(oldCardLocator).isEmpty();
+    }
+
+    public boolean isTaskMovedToStatus(String taskToMove) {
+        By moveCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='" + taskToMove
+                +
+                "']");
+        WebElement moveCard = wait.until(ExpectedConditions.visibilityOfElementLocated(moveCardLocator));
+        return moveCard.isDisplayed();
+    }
+
+    public boolean isTaskGone(String taskToDelete) {
+        By deleteCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='"
+                +
+                taskToDelete + "']");
+        return driver.findElements(deleteCardLocator).isEmpty();
+    }
+
+    public void waitForListToLoad() {
+        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-content"))));
+    }
+
+    public int getInitialTasksCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+
+    public int getFinalTasksCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+
+    public void waitForSnackBar() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+    }
+
+    public boolean isTaskVisible(String taskTitle) {
+        By taskLocator = By.xpath("//*[text()='" + taskTitle + "']");
+        try {
+            WebElement task = wait.until(ExpectedConditions.visibilityOfElementLocated(taskLocator));
+            return task.isDisplayed();
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+    public void refreshPage() {
+        driver.navigate().refresh();
+    }
+}
 
 
 

@@ -1,24 +1,25 @@
-package hexlet.code;
+package hexlet.code.pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
-
 import java.time.Duration;
 
-
-public class LoginPage {
+public final class LoginPage {
     private final WebDriver driver;
-
     private final By usernameField = By.name("username");
     private final By passwordField = By.name("password");
     private final By signInButton = By.cssSelector("button");
-    private final By usernameErrorLocator = By.xpath("//input[@name='username']/ancestor::div[contains(@class, 'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
-    private final By passwordErrorLocator = By.xpath("//input[@name='password']/ancestor::div[contains(@class, 'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
-
+    private final By usernameErrorLocator =
+            By.xpath("//input[@name='username']/ancestor::div[contains(@class,"
+                    +
+                    " 'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
+    private final By passwordErrorLocator =
+            By.xpath("//input[@name='password']/ancestor::div[contains(@class, "
+                    +
+                    "'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -39,8 +40,6 @@ public class LoginPage {
 
         WebElement signInBtnEl = wait.until(ExpectedConditions.elementToBeClickable(signInButton));
         signInBtnEl.click();
-
-
     }
 
     public boolean isUsernameFieldDisplayed() {
@@ -77,6 +76,12 @@ public class LoginPage {
         } catch (Exception e) {
             return false;
         }
+    }
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
+    public void refreshPage() {
+        driver.navigate().refresh();
     }
 }
 

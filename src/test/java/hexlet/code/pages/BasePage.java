@@ -1,25 +1,22 @@
-package hexlet.code;
+package hexlet.code.pages;
 
 import org.openqa.selenium.*;
-
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import org.openqa.selenium.JavascriptExecutor;
-
 import java.time.Duration;
 
 public class BasePage {
 
-    protected WebDriver driver;
-    protected WebDriverWait wait;
+    protected final WebDriver driver;
+    protected final WebDriverWait wait;
 
-    public BasePage(WebDriver driver) {
+    public  BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public int getTableRowsCount() {
+    public final int getTableRowsCount() {
         By rowsLocator = By.xpath("//tbody/tr");
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(rowsLocator));
@@ -38,7 +35,7 @@ public class BasePage {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
     }
 
-    public void clickBulkDeleteButton() {
+    public final void clickBulkDeleteButton() {
         By bulkDeleteLocator = By.xpath("//button[@aria-label='Delete']");
         WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(bulkDeleteLocator));
         deleteButton.click();
@@ -59,14 +56,14 @@ public class BasePage {
         By saveButtonLocator = By.xpath("//*[contains(text(), 'Save')]");
     }
 
-    public void clickUnselectCrossButton() {
+    public final void clickUnselectCrossButton() {
         By unselectLocator = By.xpath("//button[@aria-label='Unselect']");
 
         WebElement unselectBtn = wait.until(ExpectedConditions.elementToBeClickable(unselectLocator));
         unselectBtn.click();
     }
 
-    public boolean isSelectionTextHidden() {
+    public final boolean isSelectionTextHidden() {
         By selectionTextLocator = By.xpath("//*[contains(text(), '1 item selected')]");
 
         try {
@@ -77,7 +74,7 @@ public class BasePage {
         }
     }
 
-    public void changeRowsPerPage(String value) {
+    public final void changeRowsPerPage(String value) {
         By dropdownLocator = By.xpath("//div[contains(@class, 'MuiTablePagination-select')]");
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(dropdownLocator));
         dropdown.click();
@@ -87,7 +84,7 @@ public class BasePage {
         option.click();
     }
 
-    public boolean isNextPageButtonEnabled() {
+    public final boolean isNextPageButtonEnabled() {
         By nextButtonLocator = By.xpath("//button[@aria-label='Go to next page']");
         try {
             WebElement nextBtn = wait.until(ExpectedConditions.presenceOfElementLocated(nextButtonLocator));
@@ -97,15 +94,18 @@ public class BasePage {
         }
     }
 
-    public void clickNextPageButton() {
+    public final void clickNextPageButton() {
         By nextButtonLocator = By.xpath("//button[@aria-label='Go to next page']");
         WebElement nextBtn = wait.until(ExpectedConditions.elementToBeClickable(nextButtonLocator));
         nextBtn.click();
     }
 
-    public void clickPreviousPageButton() {
+    public final void clickPreviousPageButton() {
         By nextButtonLocator = By.xpath("//button[@aria-label='Go to previous page']");
         WebElement prevBtn = wait.until(ExpectedConditions.elementToBeClickable(nextButtonLocator));
         prevBtn.click();
+    }
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
     }
 }

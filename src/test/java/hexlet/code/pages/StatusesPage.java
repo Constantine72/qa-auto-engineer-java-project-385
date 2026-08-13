@@ -1,14 +1,10 @@
-package hexlet.code;
-
+package hexlet.code.pages;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-
-
-public class StatusesPage extends BasePage {
-
+public final class StatusesPage extends BasePage {
 
     private final By createStatusButton = By.xpath("//*[contains(text(), 'Create')]");
     private final By nameField = By.cssSelector("input[name='name']");
@@ -16,33 +12,23 @@ public class StatusesPage extends BasePage {
     private final By saveButton = By.xpath("//*[contains(text(), 'Save')]");
     private final By nameHeader = By.xpath("//*[contains(text(), 'Name')]");
     private final By slugHeader = By.xpath("//*[contains(text(), 'Slug')]");
-
-
-
     private final By tableRows = By.cssSelector("table tbody tr");
-
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
-
     private final By deleteAllStatusesButton = By.xpath("//*[contains(text(), 'Delete')]");
 
-
     public StatusesPage(WebDriver driver) {
-
         super(driver);
     }
-
 
     public void clickCreateStatus() {
         wait.until(ExpectedConditions.elementToBeClickable(createStatusButton)).click();
     }
 
-
     public void fillAndSubmitStatusForm(String name, String slug) {
 
         wait.until(ExpectedConditions.elementToBeClickable(nameField)).sendKeys(name);
         wait.until(ExpectedConditions.elementToBeClickable(slugField)).sendKeys(slug);
-
         wait.until(ExpectedConditions.elementToBeClickable(saveButton)).click();
 
         try {
@@ -91,12 +77,9 @@ public class StatusesPage extends BasePage {
 
         try {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(complexRowXPath)));
-
             return true;
-
         } catch (Exception e) {
             return false;
-
         }
     }
 
@@ -126,9 +109,7 @@ public class StatusesPage extends BasePage {
 
     private void clearAndType(By fieldLocator, String text) {
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fieldLocator));
-
         input.click();
-
 
         new Actions(driver)
                 .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
@@ -143,7 +124,6 @@ public class StatusesPage extends BasePage {
 
     public void clickDeleteAllUsersButton() {
         wait.until(ExpectedConditions.elementToBeClickable(deleteAllStatusesButton)).click();
-
 
     }
 
@@ -222,7 +202,6 @@ public class StatusesPage extends BasePage {
 
         nameInput.click();
 
-        //nameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         nameInput.sendKeys(Keys.END);
         nameInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
 
@@ -239,7 +218,38 @@ public class StatusesPage extends BasePage {
         By slugLocator = By.name("slug");
         WebElement slugInput = wait.until(ExpectedConditions.elementToBeClickable(slugLocator));
         slugInput.click();
-        slugInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        slugInput.sendKeys(Keys.END);
+        slugInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         slugInput.sendKeys(Keys.BACK_SPACE);
+    }
+    public String getNameInputValue() {
+        By nameInputLocator = By.cssSelector("input[name='name']");
+        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(nameInputLocator));
+        return editNameInput.getAttribute("value");
+    }
+    public String getSlugInputValue() {
+        By slugInputLocator = By.cssSelector("input[name='slug']");
+        WebElement editSlugInput = wait.until(ExpectedConditions.visibilityOfElementLocated(slugInputLocator));
+        return editSlugInput.getAttribute("value");
+    }
+    public void waitForListToLoad() {
+        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
+    }
+    public int getInitialStatusesCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+    public int getFinalStatusesCount() {
+        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+    }
+    public void waitForSnackBar() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+    }
+    public String getCurrentUrl() {
+        return driver.getCurrentUrl();
+    }
+    public boolean isStatusPresent(String oldXPath) {
+        By statusLocator = By.xpath("//*[contains(., '" + oldXPath + "')]");
+        return !driver.findElements(statusLocator).isEmpty();
     }
 }

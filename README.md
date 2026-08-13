@@ -1,5 +1,9 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/Constantine72/qa-auto-engineer-java-project-385/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Constantine72/qa-auto-engineer-java-project-385/actions)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=Constantine72_qa-auto-engineer-java-project-385&metric=bugs)](https://sonarcloud.io/summary/new_code?id=Constantine72_qa-auto-engineer-java-project-385)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=Constantine72_qa-auto-engineer-java-project-385&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=Constantine72_qa-auto-engineer-java-project-385)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=Constantine72_qa-auto-engineer-java-project-385&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=Constantine72_qa-auto-engineer-java-project-385)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=Constantine72_qa-auto-engineer-java-project-385&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Constantine72_qa-auto-engineer-java-project-385)
 
 # Kanban Board Automation Project
 
