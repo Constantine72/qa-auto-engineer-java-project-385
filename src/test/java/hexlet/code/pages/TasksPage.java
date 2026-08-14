@@ -82,10 +82,10 @@ public final class TasksPage extends BasePage {
                 elementToBeClickable(dropdownLocator));
         combobox.click();
 
-        try {
-            Thread.sleep(MINIMAL_SLEEP);
-        } catch (InterruptedException ignored) {
-        }
+//        try {
+//            Thread.sleep(MINIMAL_SLEEP);
+//        } catch (InterruptedException ignored) {
+//        }
 
         String optionXPath = "//*[@role='option' and @data-value='" + dataValue + "']";
 
@@ -295,11 +295,11 @@ public final class TasksPage extends BasePage {
 
         By optionValue = By.xpath("//li[@data-value='" + assigneeName + "']");
 
-        try {
-            Thread.sleep(MAX_WAIT_DURATION);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(MAX_WAIT_DURATION);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         try {
             getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));
@@ -320,11 +320,11 @@ public final class TasksPage extends BasePage {
         By optionByText = By.xpath("//li[contains(., '" + labelName + "')]");
         By optionValue = By.xpath("//li[@data-value='" + labelName + "']");
 
-        try {
-            Thread.sleep(MAX_WAIT_DURATION);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(MAX_WAIT_DURATION);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         try {
             getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));

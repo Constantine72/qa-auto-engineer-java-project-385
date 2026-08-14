@@ -49,7 +49,6 @@ public final class KanbanPage extends BasePage {
 
     public void clickLogout() {
         getDriver().findElement(avatarButton).click();
-        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
         getDriver().findElement(logoutButton).click();
     }

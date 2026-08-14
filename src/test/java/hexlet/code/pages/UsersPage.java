@@ -52,11 +52,11 @@ public final class UsersPage extends BasePage {
 
         getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
 
-        try {
-            Thread.sleep(MINIMAL_SLEEP);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(MINIMAL_SLEEP);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public boolean isUserInList(String expectedFirstName, String expectedLastName, String expectedEmail) {
@@ -179,10 +179,10 @@ public final class UsersPage extends BasePage {
             if (pageSource.contains("No Users yet.") && pageSource.contains("Do you want to add one?")) {
                 return true;
             }
-            try {
-                Thread.sleep(MINIMAL_SLEEP);
-            } catch (InterruptedException ignored) {
-            }
+//            try {
+//                Thread.sleep(MINIMAL_SLEEP);
+//            } catch (InterruptedException ignored) {
+//            }
         }
         return false;
     }

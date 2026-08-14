@@ -24,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import hexlet.code.utils.WebDriverFactory;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-public final class KanbanTest {
+final class KanbanTest {
     private WebDriver driver;
     private String baseurl;
     private static final int MAX_CARDS_NUMBER = 15;
@@ -34,7 +35,7 @@ public final class KanbanTest {
     private static final int NUMBER_OF_DRAFT_CARDS = 3;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         baseurl = System.getenv("APP_BASE_URL");
         if (baseurl == null || baseurl.trim().isEmpty()) {
             baseurl = "http://localhost:5173";
@@ -46,14 +47,14 @@ public final class KanbanTest {
     }
 
     @AfterEach
-    public void tearDown() {
+     void tearDown() {
         if (driver != null) {
             driver.quit();
         }
     }
 
     @Test
-    public void testSuccessfulLogin() {
+     void testSuccessfulLogin() {
 
         LoginPage loginPage = new LoginPage(driver);
 
@@ -64,7 +65,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testLoginWithEmptyFields() {
+     void testLoginWithEmptyFields() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("", "");
@@ -77,7 +78,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testLoginWithEmptyFieldsConsecutively() {
+     void testLoginWithEmptyFieldsConsecutively() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("qwe", "");
@@ -96,7 +97,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testSuccessfulLogout() {
+     void testSuccessfulLogout() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -110,7 +111,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateNewUser() {
+     void testCreateNewUser() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String testEmail = "test@mail.com" + uniqueId;
         String testFirstName = "test" + uniqueId;
@@ -137,7 +138,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testUserListLoadingAndFields() {
+     void testUserListLoadingAndFields() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -153,7 +154,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditUserAndValidation() {
+     void testEditUserAndValidation() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -199,7 +200,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditFormPopulatedDataCorrectly() {
+     void testEditFormPopulatedDataCorrectly() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -234,7 +235,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDeleteUser() {
+     void testDeleteUser() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -268,7 +269,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDeleteAllUsers() {
+     void testDeleteAllUsers() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -286,7 +287,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateNewStatus() {
+     void testCreateNewStatus() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -307,7 +308,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDefaultStatusesArePresent() {
+     void testDefaultStatusesArePresent() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -334,7 +335,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testStatusesListView() {
+     void testStatusesListView() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -354,7 +355,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditStatus() {
+     void testEditStatus() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -398,7 +399,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDeleteStatus() {
+     void testDeleteStatus() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -427,7 +428,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDeleteAllStatuses() {
+     void testDeleteAllStatuses() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -444,7 +445,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateNewLabel() {
+     void testCreateNewLabel() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -464,7 +465,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testLabelsListView() {
+     void testLabelsListView() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -482,7 +483,7 @@ public final class KanbanTest {
 
 
     @Test
-    public void testEditLabel() {
+     void testEditLabel() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -522,7 +523,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDeleteLabel() {
+     void testDeleteLabel() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -550,7 +551,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateNewTask() {
+     void testCreateNewTask() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -584,7 +585,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testTaskViewingAndFiltering() {
+     void testTaskViewingAndFiltering() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -631,13 +632,11 @@ public final class KanbanTest {
 
         tasksPage.filterByAssignee(targetWorker12);
 
-        try {
-            tasksPage.waitForCardsCount(2);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
-                    driver).getScreenshotAs(OutputType.BYTES)));
-            fail(" filter hasn't been applied");
-        }
+        assertDoesNotThrow(
+                () -> tasksPage.waitForCardsCount(2),
+                "filter hasn't been applied"
+        );
+
 
         tasksPage.waitForCardsToLoad();
 
@@ -687,20 +686,17 @@ public final class KanbanTest {
         tasksPage.filterByStatus(targetStatus14);
         tasksPage.filterByLabel(targetLabel14);
 
-        try {
-            tasksPage.waitForCardsCount(1);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
-                    driver).getScreenshotAs(OutputType.BYTES)));
-            fail(" filter hasn't been applied");
-        }
+        assertDoesNotThrow(
+                () -> tasksPage.waitForCardsCount(1),
+                "filter hasn't been applied"
+        );
 
         List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
         assertEquals(1, visibleCardAlice.size(), "number of cards is not 1");
         assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
     }
 
-    private void aliceWithZeroTasks(TasksPage tasksPage) {
+     void aliceWithZeroTasks(TasksPage tasksPage) {
         String urlCombo13 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -738,7 +734,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private static void deleteCustomQuery(TasksPage tasksPage, String myFilterName) {
+     static void deleteCustomQuery(TasksPage tasksPage, String myFilterName) {
         tasksPage.deleteSavedQuery(myFilterName);
         boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
         assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
@@ -746,7 +742,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void removeAllFilters(TasksPage tasksPage) {
+     void removeAllFilters(TasksPage tasksPage) {
         String urlBeforeClear = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -835,7 +831,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void changeAssignee(TasksPage tasksPage) {
+     void changeAssignee(TasksPage tasksPage) {
         String urlAlice = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -885,7 +881,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void filterByAssigneeAndStatus(TasksPage tasksPage) {
+     void filterByAssigneeAndStatus(TasksPage tasksPage) {
         String urlCombo15 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -922,7 +918,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void filterByAssigneeWithNoCards(TasksPage tasksPage) {
+     void filterByAssigneeWithNoCards(TasksPage tasksPage) {
         String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -945,7 +941,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void filterByLabel(TasksPage tasksPage) {
+     void filterByLabel(TasksPage tasksPage) {
         String urlBeforeLabel = tasksPage.getCurrentUrl();
         String targetLabel = "bug";
 
@@ -979,7 +975,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void filterByAssignee(TasksPage tasksPage) {
+     void filterByAssignee(TasksPage tasksPage) {
         String urlBeforeAssignee = tasksPage.getCurrentUrl();
         tasksPage.waitForCardsToLoad();
 
@@ -1018,7 +1014,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
     }
 
-    private void filterByStatus(TasksPage tasksPage) {
+     void filterByStatus(TasksPage tasksPage) {
         int initialCardsCount = tasksPage.getTaskCardsCount();
 
         assertTrue(initialCardsCount > 0, "the table is blank");
@@ -1058,7 +1054,7 @@ public final class KanbanTest {
     //=================================================================================
 
     @Test
-    public void testEditTask() {
+     void testEditTask() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1108,7 +1104,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testMoveTaskToAnotherStatus() {
+     void testMoveTaskToAnotherStatus() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1139,7 +1135,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testDeleteTask() {
+     void testDeleteTask() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1167,7 +1163,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testShowTask() {
+     void testShowTask() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1199,7 +1195,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testShowUser() {
+    void testShowUser() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1236,7 +1232,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testShowStatus() {
+     void testShowStatus() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1265,7 +1261,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testShowLabel() {
+     void testShowLabel() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelName = "Label " + uniqueId;
 
@@ -1295,7 +1291,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateUserValidation() {
+     void testCreateUserValidation() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1354,7 +1350,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateLabelValidation() {
+     void testCreateLabelValidation() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1383,7 +1379,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateStatusValidation() {
+     void testCreateStatusValidation() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1425,7 +1421,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCreateTaskValidation() {
+     void testCreateTaskValidation() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String taskTitle = "SomeTask_" + uniqueId;
         String taskStatus = "2";
@@ -1483,7 +1479,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditUserValidationWithoutFirstName() {
+     void testEditUserValidationWithoutFirstName() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1518,7 +1514,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditUserValidationWithoutLastName() {
+     void testEditUserValidationWithoutLastName() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1552,7 +1548,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditUserValidationWithoutEmail() {
+     void testEditUserValidationWithoutEmail() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1585,7 +1581,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditUserValidationWithIncorrectEmail() {
+     void testEditUserValidationWithIncorrectEmail() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1621,7 +1617,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditTaskWithoutTitle() {
+     void testEditTaskWithoutTitle() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1658,7 +1654,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditLabelWithoutName() {
+     void testEditLabelWithoutName() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelName = "Label " + uniqueId;
 
@@ -1690,7 +1686,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditStatusWithoutName() {
+     void testEditStatusWithoutName() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1721,7 +1717,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testEditStatusWithoutSlug() {
+     void testEditStatusWithoutSlug() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1754,7 +1750,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testBulkDeleteUser() {
+     void testBulkDeleteUser() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1779,7 +1775,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testBulkDeleteLabel() {
+     void testBulkDeleteLabel() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1801,7 +1797,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testBulkDeleteStatus() {
+     void testBulkDeleteStatus() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1826,7 +1822,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCancelLabelCheckboxSelection() {
+     void testCancelLabelCheckboxSelection() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1844,7 +1840,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCancelUserCheckboxSelection() {
+     void testCancelUserCheckboxSelection() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1863,7 +1859,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testCancelStatusCheckboxSelection() {
+     void testCancelStatusCheckboxSelection() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1881,7 +1877,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testPaginationFullFlow() {
+     void testPaginationFullFlow() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
@@ -1919,7 +1915,7 @@ public final class KanbanTest {
     }
 
     @Test
-    public void testTasksFilterByStatusOnGrid() {
+     void testTasksFilterByStatusOnGrid() {
         LoginPage loginPage = new LoginPage(driver);
 
         loginPage.login("admin", "admin");
