@@ -9,26 +9,29 @@ import hexlet.code.pages.UsersPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.OutputType;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.List;
-import java.time.Duration;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import io.qameta.allure.Allure;
 import java.io.ByteArrayInputStream;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import hexlet.code.utils.WebDriverFactory;
 
 public final class KanbanTest {
     private WebDriver driver;
     private String baseurl;
-    private WebDriverWait wait;
+    private static final int MAX_CARDS_NUMBER = 15;
+    private static final int JOHN_CARDS_COUNT = 5;
+    private static final int NUMBER_OF_CARDS_TO_REVIEW = 5;
+    private static final int NUMBER_OF_DRAFT_CARDS = 3;
 
     @BeforeEach
     public void setUp() {
@@ -38,8 +41,6 @@ public final class KanbanTest {
         }
 
         driver = new WebDriverFactory().createDriver();
-
-        wait = new WebDriverWait(driver, Duration.ofSeconds(7));
 
         driver.get(baseurl);
     }
@@ -182,7 +183,7 @@ public final class KanbanTest {
 
         usersPage.fillEmailOnly("qweqweqwe");
 
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertTrue(usersPage.isEmailValidationErrorDisplayed(), "No error message displayed");
 
@@ -593,148 +594,42 @@ public final class KanbanTest {
 
         TasksPage tasksPage = new TasksPage((driver));
         //=======================status============================
-        int initialCardsCount = tasksPage.getTaskCardsCount();
-
-        assertTrue(initialCardsCount > 0, "the table is blank");
-
-        String urlBeforeFilter = tasksPage.getCurrentUrl();
-
-        tasksPage.waitForCardsToLoad();
-
-        String targetStatus = "Draft";
-        tasksPage.filterByStatus(targetStatus);
-        tasksPage.waitForUrlToBe(urlBeforeFilter);
-
-        try {
-            tasksPage.waitForCardsCount(3);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot",
-                    new ByteArrayInputStream(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)));
-            fail(" filter hasn't been applied");
-        }
-
-        List<String> statusFilteredCards = tasksPage.getVisibleStatusesInTable();
-
-        assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
-
-        assertEquals(3, statusFilteredCards.size(), "error: incorrect numbers of cards");
-
-        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
-        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
-        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
-
-        boolean onlyDraftTasks = statusFilteredCards.stream()
-                .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
-        assertTrue(onlyDraftTasks, "improper tasks are displayed");
-
-        tasksPage.clearAllFilters();
+        filterByStatus(tasksPage);
         //============================================================
 
         //==========================Assignee===================================
-        String urlBeforeAssignee = tasksPage.getCurrentUrl();
-        tasksPage.waitForCardsToLoad();
-
-        String targetWorker = "alice@hotmail.com";
-
-        tasksPage.waitForCardsToLoad();
-
-        tasksPage.rememberOldCard();
-        tasksPage.filterByAssignee(targetWorker);
-        tasksPage.waitForOldCardToDisappear();
-
-        tasksPage.waitForUrlToChange(urlBeforeAssignee);
-
-        try {
-            tasksPage.waitForCardsCount(2);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
-                    driver).getScreenshotAs(OutputType.BYTES)));
-            fail(" filter hasn't been applied");
-        }
-
-        tasksPage.waitForOldCardToDisappear();
-        List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
-
-        assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
-
-        assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
-
-        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
-        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
-
-        boolean onlyAliceTasks = assigneeFilteredCards.stream()
-                .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
-        assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
-
-        tasksPage.clearAllFilters();
+        filterByAssignee(tasksPage);
         //============================================================
 
         //=================================Label=============================
-        String urlBeforeLabel = tasksPage.getCurrentUrl();
-        String targetLabel = "bug";
-
-        tasksPage.waitForCardsToLoad();
-
-        tasksPage.filterByLabel(targetLabel);
-
-        tasksPage.waitForUrlToChange(urlBeforeLabel);
-
-        try {
-            tasksPage.waitForCardsCount(2);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
-                    driver).getScreenshotAs(OutputType.BYTES)));
-            fail(" filter hasn't been applied");
-        }
-
-        List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
-
-        assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
-
-        assertEquals(2, labelFilteredCards.size(), "improper number of cards");
-
-        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
-        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
-
-        boolean onlyBugTasks = labelFilteredCards.stream()
-                .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
-        assertTrue(onlyBugTasks, "error: an improper task is shown");
-
-        tasksPage.clearAllFilters();
+        filterByLabel(tasksPage);
         //=========================================================================
 
         //===============================AssigneeWithNoCards===================================
-        String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
-
-        tasksPage.waitForCardsToLoad();
-
-        String targetWorker2 = "emily@example.com";
-
-        tasksPage.filterByAssignee(targetWorker2);
-
-        tasksPage.waitForUrlToChange(urlBeforeAssignee2);
-        try {
-            tasksPage.waitForCardsCount(0);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
-                    driver).getScreenshotAs(OutputType.BYTES)));
-            fail("no cards should be displayed");
-        }
-        List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
-        assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
-
-        tasksPage.clearAllFilters();
+        filterByAssigneeWithNoCards(tasksPage);
         //==============================================================================
 
         //================================Assignee+Status===============================
-        String urlCombo15 = tasksPage.getCurrentUrl();
+        filterByAssigneeAndStatus(tasksPage);
 
+        //=================================================================================
+
+        //=================================ChangeAssignee================================
+
+        changeAssignee(tasksPage);
+        //===========================================================================
+
+        //===============================RemoveAllFilters===========================
+
+        removeAllFilters(tasksPage);
+
+        //=================================================================================
+
+        //======================================SaveFilterAlice=================================
         tasksPage.waitForCardsToLoad();
-        String targetWorker6 = "alice@hotmail.com";
+        String targetWorker12 = "alice@hotmail.com";
 
-        tasksPage.filterByAssignee(targetWorker6);
-
-        tasksPage.waitForUrlToChange(urlCombo15);
+        tasksPage.filterByAssignee(targetWorker12);
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -746,7 +641,51 @@ public final class KanbanTest {
 
         tasksPage.waitForCardsToLoad();
 
-        tasksPage.filterByStatus("To Be Fixed");
+        String myFilterName = "Alice_Custom_Filter";
+        tasksPage.openSaveQueryModal();
+        tasksPage.saveCurrentQueryAs(myFilterName);
+
+        tasksPage.waitForCardsToLoad();
+
+        tasksPage.clearAllFilters();
+
+        tasksPage.waitForCardsCount(MAX_CARDS_NUMBER);
+
+        tasksPage.applySavedQuery(myFilterName);
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail("custom filter hasn't been applied");
+        }
+
+        List<String> savedQueryCards = tasksPage.getVisibleStatusesInTable();
+        assertEquals(2, savedQueryCards.size(), "number of cards is not 2");
+        assertTrue(savedQueryCards.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")),
+                "only Alice tasks should be displayed");
+        //=================================================================================
+
+        //================================DeleteCustomQuery================================
+        deleteCustomQuery(tasksPage, myFilterName);
+        //=================================================================================
+
+        //==========================================AliceWithZeroTasks==========================
+        aliceWithZeroTasks(tasksPage);
+        //======================================================================================
+
+        //=============================ThreeFilters========================================
+
+        tasksPage.waitForCardsToLoad();
+
+        String targetWorker14 = "alice@hotmail.com";
+        String targetStatus14 = "To Be Fixed";
+        String targetLabel14 = " feature";
+
+        tasksPage.filterByAssignee(targetWorker14);
+        tasksPage.filterByStatus(targetStatus14);
+        tasksPage.filterByLabel(targetLabel14);
 
         try {
             tasksPage.waitForCardsCount(1);
@@ -756,24 +695,21 @@ public final class KanbanTest {
             fail(" filter hasn't been applied");
         }
 
-        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
-        assertEquals(1, comboCardsNew.size(), "1 task should be on board");
-        assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
+        List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
+        assertEquals(1, visibleCardAlice.size(), "number of cards is not 1");
+        assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
+    }
 
-        tasksPage.clearAllFilters();
-
-        //=================================================================================
-
-        //=================================ChangeAssignee================================
-
-        String urlAlice = tasksPage.getCurrentUrl();
+    private void aliceWithZeroTasks(TasksPage tasksPage) {
+        String urlCombo13 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
-        String targetWorker4 = "alice@hotmail.com";
 
-        tasksPage.filterByAssignee(targetWorker4);
+        String targetWorker13 = "alice@hotmail.com";
 
-        tasksPage.waitForUrlToChange(urlAlice);
+        tasksPage.filterByAssignee(targetWorker13);
+
+        tasksPage.waitForUrlToChange(urlCombo13);
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -785,38 +721,32 @@ public final class KanbanTest {
 
         tasksPage.waitForCardsToLoad();
 
-        String targetWorker5 = "john@google.com";
-        tasksPage.filterByAssignee(targetWorker5);
+        tasksPage.filterByStatus("Draft");
 
         try {
-            tasksPage.waitForCardsCount(5);
+            tasksPage.waitForCardsCount(0);
         } catch (TimeoutException e) {
             Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
                     driver).getScreenshotAs(OutputType.BYTES)));
             fail(" filter hasn't been applied");
         }
 
-        List<String> johnCards = tasksPage.getVisibleStatusesInTable();
-        assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
+        List<String> visibleCards = tasksPage.getVisibleStatusesInTable();
 
-        boolean hasOnlyJohnTasks = johnCards.stream()
-                .allMatch(c -> c.contains("Task 11")
-                        ||
-                        c.contains("Task 2")
-                        ||
-                        c.contains("Task 1")
-                        ||
-                        c.contains("Task 15")
-                        ||
-                        c.contains("Task 5"));
-
-        assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
+        assertTrue(visibleCards.isEmpty(), "The table should be empty");
 
         tasksPage.clearAllFilters();
-        //===========================================================================
+    }
 
-        //===============================RemoveAllFilters===========================
+    private static void deleteCustomQuery(TasksPage tasksPage, String myFilterName) {
+        tasksPage.deleteSavedQuery(myFilterName);
+        boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
+        assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
 
+        tasksPage.clearAllFilters();
+    }
+
+    private void removeAllFilters(TasksPage tasksPage) {
         String urlBeforeClear = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -838,7 +768,7 @@ public final class KanbanTest {
         tasksPage.clearAllFilters();
 
         try {
-            tasksPage.waitForCardsCount(15);
+            tasksPage.waitForCardsCount(MAX_CARDS_NUMBER);
         } catch (TimeoutException e) {
             Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
                     driver).getScreenshotAs(OutputType.BYTES)));
@@ -903,14 +833,17 @@ public final class KanbanTest {
                 "only Alice tasks should be displayed");
 
         tasksPage.clearAllFilters();
+    }
 
-        //=================================================================================
+    private void changeAssignee(TasksPage tasksPage) {
+        String urlAlice = tasksPage.getCurrentUrl();
 
-        //======================================SaveFilterAlice=================================
         tasksPage.waitForCardsToLoad();
-        String targetWorker12 = "alice@hotmail.com";
+        String targetWorker4 = "alice@hotmail.com";
 
-        tasksPage.filterByAssignee(targetWorker12);
+        tasksPage.filterByAssignee(targetWorker4);
+
+        tasksPage.waitForUrlToChange(urlAlice);
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -922,50 +855,45 @@ public final class KanbanTest {
 
         tasksPage.waitForCardsToLoad();
 
-        String myFilterName = "Alice_Custom_Filter";
-        tasksPage.openSaveQueryModal();
-        tasksPage.saveCurrentQueryAs(myFilterName);
-
-        tasksPage.waitForCardsToLoad();
-
-        tasksPage.clearAllFilters();
-
-        tasksPage.waitForCardsCount(15);
-
-        tasksPage.applySavedQuery(myFilterName);
+        String targetWorker5 = "john@google.com";
+        tasksPage.filterByAssignee(targetWorker5);
 
         try {
-            tasksPage.waitForCardsCount(2);
+            tasksPage.waitForCardsCount(JOHN_CARDS_COUNT);
         } catch (TimeoutException e) {
             Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
                     driver).getScreenshotAs(OutputType.BYTES)));
-            fail("custom filter hasn't been applied");
+            fail(" filter hasn't been applied");
         }
 
-        List<String> savedQueryCards = tasksPage.getVisibleStatusesInTable();
-        assertEquals(2, savedQueryCards.size(), "number of cards is not 2");
-        assertTrue(savedQueryCards.stream().allMatch(c -> c.contains("Task 8") || c.contains("Task 9")),
-                "only Alice tasks should be displayed");
-        //=================================================================================
+        List<String> johnCards = tasksPage.getVisibleStatusesInTable();
+        assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
 
-        //================================DeleteCustomQuery================================
-        tasksPage.deleteSavedQuery(myFilterName);
-        boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
-        assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
+        boolean hasOnlyJohnTasks = johnCards.stream()
+                .allMatch(c -> c.contains("Task 11")
+                        ||
+                        c.contains("Task 2")
+                        ||
+                        c.contains("Task 1")
+                        ||
+                        c.contains("Task 15")
+                        ||
+                        c.contains("Task 5"));
+
+        assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
 
         tasksPage.clearAllFilters();
-        //=================================================================================
+    }
 
-        //==========================================AliceWithZeroTasks==========================
-        String urlCombo13 = tasksPage.getCurrentUrl();
+    private void filterByAssigneeAndStatus(TasksPage tasksPage) {
+        String urlCombo15 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
+        String targetWorker6 = "alice@hotmail.com";
 
-        String targetWorker13 = "alice@hotmail.com";
+        tasksPage.filterByAssignee(targetWorker6);
 
-        tasksPage.filterByAssignee(targetWorker13);
-
-        tasksPage.waitForUrlToChange(urlCombo13);
+        tasksPage.waitForUrlToChange(urlCombo15);
 
         try {
             tasksPage.waitForCardsCount(2);
@@ -977,34 +905,7 @@ public final class KanbanTest {
 
         tasksPage.waitForCardsToLoad();
 
-        tasksPage.filterByStatus("Draft");
-
-        try {
-            tasksPage.waitForCardsCount(0);
-        } catch (TimeoutException e) {
-            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
-                    driver).getScreenshotAs(OutputType.BYTES)));
-            fail(" filter hasn't been applied");
-        }
-
-        List<String> visibleCards = tasksPage.getVisibleStatusesInTable();
-
-        assertTrue(visibleCards.isEmpty(), "The table should be empty");
-
-        tasksPage.clearAllFilters();
-        //======================================================================================
-
-        //=============================ThreeFilters========================================
-
-        tasksPage.waitForCardsToLoad();
-
-        String targetWorker14 = "alice@hotmail.com";
-        String targetStatus14 = "To Be Fixed";
-        String targetLabel14 = " feature";
-
-        tasksPage.filterByAssignee(targetWorker14);
-        tasksPage.filterByStatus(targetStatus14);
-        tasksPage.filterByLabel(targetLabel14);
+        tasksPage.filterByStatus("To Be Fixed");
 
         try {
             tasksPage.waitForCardsCount(1);
@@ -1014,9 +915,145 @@ public final class KanbanTest {
             fail(" filter hasn't been applied");
         }
 
-        List<String> visibleCardAlice = tasksPage.getVisibleStatusesInTable();
-        assertEquals(1, visibleCardAlice.size(), "number of cards is not 1");
-        assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
+        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
+        assertEquals(1, comboCardsNew.size(), "1 task should be on board");
+        assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
+
+        tasksPage.clearAllFilters();
+    }
+
+    private void filterByAssigneeWithNoCards(TasksPage tasksPage) {
+        String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
+
+        tasksPage.waitForCardsToLoad();
+
+        String targetWorker2 = "emily@example.com";
+
+        tasksPage.filterByAssignee(targetWorker2);
+
+        tasksPage.waitForUrlToChange(urlBeforeAssignee2);
+        try {
+            tasksPage.waitForCardsCount(0);
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail("no cards should be displayed");
+        }
+        List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
+        assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
+
+        tasksPage.clearAllFilters();
+    }
+
+    private void filterByLabel(TasksPage tasksPage) {
+        String urlBeforeLabel = tasksPage.getCurrentUrl();
+        String targetLabel = "bug";
+
+        tasksPage.waitForCardsToLoad();
+
+        tasksPage.filterByLabel(targetLabel);
+
+        tasksPage.waitForUrlToChange(urlBeforeLabel);
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
+        }
+
+        List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+        assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
+
+        assertEquals(2, labelFilteredCards.size(), "improper number of cards");
+
+        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
+        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
+
+        boolean onlyBugTasks = labelFilteredCards.stream()
+                .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
+        assertTrue(onlyBugTasks, "error: an improper task is shown");
+
+        tasksPage.clearAllFilters();
+    }
+
+    private void filterByAssignee(TasksPage tasksPage) {
+        String urlBeforeAssignee = tasksPage.getCurrentUrl();
+        tasksPage.waitForCardsToLoad();
+
+        String targetWorker = "alice@hotmail.com";
+
+        tasksPage.waitForCardsToLoad();
+
+        tasksPage.rememberOldCard();
+        tasksPage.filterByAssignee(targetWorker);
+        tasksPage.waitForOldCardToDisappear();
+
+        tasksPage.waitForUrlToChange(urlBeforeAssignee);
+
+        try {
+            tasksPage.waitForCardsCount(2);
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot", new ByteArrayInputStream(((TakesScreenshot)
+                    driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
+        }
+
+        tasksPage.waitForOldCardToDisappear();
+        List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+        assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
+
+        assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
+
+        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
+        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
+
+        boolean onlyAliceTasks = assigneeFilteredCards.stream()
+                .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
+        assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
+
+        tasksPage.clearAllFilters();
+    }
+
+    private void filterByStatus(TasksPage tasksPage) {
+        int initialCardsCount = tasksPage.getTaskCardsCount();
+
+        assertTrue(initialCardsCount > 0, "the table is blank");
+
+        String urlBeforeFilter = tasksPage.getCurrentUrl();
+
+        tasksPage.waitForCardsToLoad();
+
+        String targetStatus = "Draft";
+        tasksPage.filterByStatus(targetStatus);
+        tasksPage.waitForUrlToBe(urlBeforeFilter);
+
+        try {
+            tasksPage.waitForCardsCount(NUMBER_OF_DRAFT_CARDS);
+        } catch (TimeoutException e) {
+            Allure.addAttachment("Screenshot",
+                    new ByteArrayInputStream(((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES)));
+            fail(" filter hasn't been applied");
+        }
+
+        List<String> statusFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+        assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
+
+        assertEquals(NUMBER_OF_DRAFT_CARDS, statusFilteredCards.size(), "error: incorrect numbers of cards");
+
+        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
+        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
+        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
+
+        boolean onlyDraftTasks = statusFilteredCards.stream()
+                .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
+        assertTrue(onlyDraftTasks, "improper tasks are displayed");
+
+        tasksPage.clearAllFilters();
     }
     //=================================================================================
 
@@ -1088,11 +1125,11 @@ public final class KanbanTest {
 
         tasksPage.changeTaskStatus(newStatusId);
 
-        tasksPage.waitForTasksUpdate(5);
+        tasksPage.waitForTasksUpdate(NUMBER_OF_CARDS_TO_REVIEW);
 
         tasksPage.filterByStatus(newStatusId);
 
-        tasksPage.waitForTasksUpdate(5);
+        tasksPage.waitForTasksUpdate(NUMBER_OF_CARDS_TO_REVIEW);
 
         boolean isCardMoved = tasksPage.isTaskVisible(taskToMove);
 
@@ -1116,11 +1153,11 @@ public final class KanbanTest {
 
         int initialCount = tasksPage.getVisibleTasksCount();
 
+        System.out.println(initialCount);
+
         tasksPage.openTaskForEditing(taskToDelete);
 
         tasksPage.clickDelete();
-
-        tasksPage.waitForTasksUpdate(5);
 
         int currentTasksCount = tasksPage.getVisibleTasksCount();
 
@@ -1275,7 +1312,7 @@ public final class KanbanTest {
 
         usersPage.fillLastNameField("Smith");
         usersPage.fillEmailField("newemail@test.com");
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
@@ -1284,7 +1321,7 @@ public final class KanbanTest {
         usersPage.clearLastNameField();
         usersPage.fillFirstNameField("John");
 
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
@@ -1292,7 +1329,7 @@ public final class KanbanTest {
 
         usersPage.fillLastNameField("Smith");
         usersPage.clearEmailField();
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
@@ -1301,7 +1338,7 @@ public final class KanbanTest {
         String badEmail = "notAnEmail";
 
         usersPage.fillEmailField(badEmail);
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");
 
@@ -1330,7 +1367,7 @@ public final class KanbanTest {
 
         labelsPage.clickCreateLabel();
         labelsPage.triggerValidationOnNameField();
-        labelsPage.clickSaveButton();
+        labelsPage.clickSaveButtonForLabels();
 
         assertTrue(labelsPage.getCurrentUrl().contains("/create"), "Empty label has been created");
 
@@ -1363,7 +1400,7 @@ public final class KanbanTest {
         statusesPage.clickCreateStatus();
 
         statusesPage.fillNameField("Temp status name");
-        statusesPage.clickSaveButton();
+        statusesPage.clickSaveButtonForStatuses();
 
         assertTrue(statusesPage.getCurrentUrl().contains("/create"), "Empty slug has been created");
 
@@ -1372,7 +1409,7 @@ public final class KanbanTest {
         statusesPage.clearNameField();
 
         statusesPage.fillSlugField("Temp slug name");
-        statusesPage.clickSaveButton();
+        statusesPage.clickSaveButtonForStatuses();
 
         assertTrue(statusesPage.getCurrentUrl().contains("/create"), "Empty slug has been created");
 
@@ -1411,7 +1448,7 @@ public final class KanbanTest {
 
         tasksPage.selectAssignee(assigneeName);
         tasksPage.selectStatus(taskStatus);
-        tasksPage.clickSaveButton();
+        tasksPage.clickSaveButtonForTasks();
 
         assertTrue(tasksPage.getCurrentUrl().contains("/create"), "Empty task has been created");
 
@@ -1422,7 +1459,7 @@ public final class KanbanTest {
         tasksPage.fillTaskTitle(taskTitle);
         tasksPage.selectStatus(taskStatus);
 
-        tasksPage.clickSaveButton();
+        tasksPage.clickSaveButtonForTasks();
 
         assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o assignee");
 
@@ -1432,7 +1469,7 @@ public final class KanbanTest {
 
         tasksPage.fillTaskTitle(taskTitle);
         tasksPage.selectAssignee(assigneeName);
-        tasksPage.clickSaveButton();
+        tasksPage.clickSaveButtonForTasks();
 
         assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o status");
 
@@ -1471,7 +1508,7 @@ public final class KanbanTest {
 
         usersPage.clearFirstNameField();
 
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         usersPage.waitForSnackBar();
 
@@ -1506,7 +1543,7 @@ public final class KanbanTest {
 
         usersPage.clearLastNameField();
 
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
@@ -1540,7 +1577,7 @@ public final class KanbanTest {
 
         usersPage.clearEmailField();
 
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
@@ -1576,7 +1613,7 @@ public final class KanbanTest {
 
         usersPage.fillEmailField(testIncorrectEmail);
 
-        usersPage.clickSaveButton();
+        usersPage.clickSaveButtonForUsers();
 
         assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
@@ -1611,7 +1648,7 @@ public final class KanbanTest {
 
         tasksPage.clearTitleField();
 
-        tasksPage.clickSaveButton();
+        tasksPage.clickSaveButtonForTasks();
 
         tasksPage.waitForSnackBar();
 
@@ -1643,7 +1680,7 @@ public final class KanbanTest {
 
         labelsPage.clearLabelField();
 
-        labelsPage.clickSaveButton();
+        labelsPage.clickSaveButtonForLabels();
 
         labelsPage.waitForSnackBar();
 
@@ -1676,7 +1713,7 @@ public final class KanbanTest {
 
         statusesPage.clearNameField();
 
-        statusesPage.clickSaveButton();
+        statusesPage.clickSaveButtonForStatuses();
 
         assertFalse(statusesPage.getCurrentUrl().endsWith("/statuses"), "status w/o name was saved");
 
@@ -1707,7 +1744,7 @@ public final class KanbanTest {
 
         statusesPage.clearSlugField();
 
-        statusesPage.clickSaveButton();
+        statusesPage.clickSaveButtonForStatuses();
 
         statusesPage.waitForSnackBar();
 

@@ -1,6 +1,11 @@
 package hexlet.code.pages;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -24,7 +29,9 @@ public final class TasksPage extends BasePage {
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By contentInput = By.name("content");
     private final By cardLocator = By.cssSelector(".MuiCard-root");
-    private final By statusDropdownLocator = By.xpath("//div[@data-source='status_id']");
+    private static final int MINIMAL_SLEEP = 500;
+    private static final int MIN_WAIT_TIME_SECS = 5;
+    private static final int MAX_WAIT_DURATION = 5000;
 
     public TasksPage(WebDriver driver) {
 
@@ -32,14 +39,14 @@ public final class TasksPage extends BasePage {
     }
 
     public void clickCreateTask() {
-        wait.until(ExpectedConditions.elementToBeClickable(createTaskButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(createTaskButton)).click();
     }
 
     public boolean isTaskFormDisplayed() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(assigneeDropdown));
-            wait.until(ExpectedConditions.presenceOfElementLocated(titleInput));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(statusDropdown));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(assigneeDropdown));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(titleInput));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(statusDropdown));
             return true;
         } catch (Exception e) {
             return false;
@@ -48,13 +55,13 @@ public final class TasksPage extends BasePage {
 
     public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue) {
 
-        wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
+        getWait().until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
 
         selectDropdownOption(assigneeDropdown, assigneeValue);
         selectDropdownOption(statusDropdown, statusValue);
 
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     public boolean isTaskInColumn(String taskTitle, String columnName) {
@@ -63,7 +70,7 @@ public final class TasksPage extends BasePage {
                         "'MuiBox-root') and contains(., '%s')]//div[contains(., '%s')]",
                 columnName, taskTitle);
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(taskInColumnXPath)));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath(taskInColumnXPath)));
             return true;
         } catch (Exception e) {
             return false;
@@ -71,44 +78,45 @@ public final class TasksPage extends BasePage {
     }
 
     public void selectDropdownOption(By dropdownLocator, String dataValue) {
-        org.openqa.selenium.WebElement combobox = wait.until(ExpectedConditions.elementToBeClickable(dropdownLocator));
+        org.openqa.selenium.WebElement combobox = getWait().until(ExpectedConditions.
+                elementToBeClickable(dropdownLocator));
         combobox.click();
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(MINIMAL_SLEEP);
         } catch (InterruptedException ignored) {
         }
 
         String optionXPath = "//*[@role='option' and @data-value='" + dataValue + "']";
 
-        org.openqa.selenium.WebElement option = wait.until(ExpectedConditions
+        org.openqa.selenium.WebElement option = getWait().until(ExpectedConditions
                 .presenceOfElementLocated(By.xpath(optionXPath)));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", option);
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", option);
 
     }
 
     public void forceGoToTasks() {
         By usersIcon = By.xpath("(//*[@data-testid='ViewListIcon'])[1]");
 
-        wait.until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
     }
 
     private final By taskCards = By.cssSelector(".RaList-content .MuiCard-root");
 
     public int getVisibleTasksCount() {
-        return driver.findElements(taskCards).size();
+        return getDriver().findElements(taskCards).size();
     }
 
     public void waitForTasksUpdate(int initialCount) {
 
 
-        wait.until(d -> getVisibleTasksCount() != initialCount);
+        getWait().until(d -> getVisibleTasksCount() != initialCount);
     }
 
     public void clearAllFilters() {
-        driver.findElement(addFilterButton).click();
+        getDriver().findElement(addFilterButton).click();
 
-        WebElement removeBtn = wait.until(ExpectedConditions.elementToBeClickable(removeAllFiltersOption));
+        WebElement removeBtn = getWait().until(ExpectedConditions.elementToBeClickable(removeAllFiltersOption));
         removeBtn.click();
     }
 
@@ -117,14 +125,14 @@ public final class TasksPage extends BasePage {
                 +
                 " '%s')]/ancestor::div[contains(@class, 'MuiCard-root')][1]//*[contains(text(), 'Edit')]", taskName);
 
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(By.xpath(xpath))).click();
     }
 
     public void updateTaskName(String newName) {
 
-        WebElement input = driver.findElement(titleInEditForm);
+        WebElement input = getDriver().findElement(titleInEditForm);
 
-        Actions actions = new Actions(driver);
+        Actions actions = new Actions(getDriver());
         actions.click(input)
                 .keyDown(Keys.CONTROL)
                 .sendKeys("a")
@@ -132,24 +140,24 @@ public final class TasksPage extends BasePage {
                 .sendKeys(Keys.BACK_SPACE)
                 .sendKeys(newName)
                 .perform();
-        driver.findElement(saveButton).click();
+        getDriver().findElement(saveButton).click();
     }
 
     public void changeTaskStatus(String statusId) {
         selectDropdownOption(formStatusDropdown, statusId);
 
-        driver.findElement(By.xpath("//*[contains(text(), 'Save')]")).click();
+        getDriver().findElement(By.xpath("//*[contains(text(), 'Save')]")).click();
     }
 
     public void clickDelete() {
 
-        wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
     }
 
     public boolean isAssigneeCorrectInDetails(String assigneeName) {
         try {
             String assigneeXPath = String.format("//*[contains(., '%s')]", assigneeName);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(assigneeXPath)));
             return true;
         } catch (Exception e) {
@@ -160,7 +168,7 @@ public final class TasksPage extends BasePage {
     public boolean isColumnCorrectInDetails(String columnName) {
         try {
             String assigneeXPath = String.format("//*[contains(., '%s')]", columnName);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(assigneeXPath)));
             return true;
         } catch (Exception e) {
@@ -171,7 +179,7 @@ public final class TasksPage extends BasePage {
     public boolean isTaskCorrectInDetails(String taskTitle) {
         try {
             String assigneeXPath = String.format("//*[contains(., '%s')]", taskTitle);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(assigneeXPath)));
             return true;
         } catch (Exception e) {
@@ -180,12 +188,11 @@ public final class TasksPage extends BasePage {
     }
 
     public String getDescriptionInputValue() {
-        return driver.findElement(By.name
-                ("content")).getAttribute("value");
+        return getDriver().findElement(By.name("content")).getAttribute("value");
     }
 
     public String getAssigneeDropdownValue() {
-        return driver.findElement(assigneeDropdown).getText();
+        return getDriver().findElement(assigneeDropdown).getText();
     }
 
     public void openTaskForViewing(String taskName) {
@@ -194,7 +201,7 @@ public final class TasksPage extends BasePage {
                 +
                 " 'MuiCard-root')][1]//*[contains(text(), 'Show')]", taskName);
         By showIconLocator = By.xpath(xpath);
-        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showIconLocator));
+        WebElement showButton = getWait().until(ExpectedConditions.elementToBeClickable(showIconLocator));
         showButton.click();
     }
 
@@ -203,7 +210,7 @@ public final class TasksPage extends BasePage {
                 +
                 " 'MuiTypography-body2') and text()='" + expectedText + "']");
         try {
-            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
+            WebElement element = getWait().until(ExpectedConditions.visibilityOfElementLocated(textLocator));
             return element.isDisplayed();
         } catch (Exception e) {
             return false;
@@ -213,135 +220,124 @@ public final class TasksPage extends BasePage {
     public void fillAndSubmitTaskForm(String title, String statusValue, String assigneeValue,
                                       String description) {
 
-        wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
-        wait.until(ExpectedConditions.elementToBeClickable(contentInput)).sendKeys(description);
+        getWait().until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
+        getWait().until(ExpectedConditions.elementToBeClickable(contentInput)).sendKeys(description);
 
         selectDropdownOption(assigneeDropdown, assigneeValue);
         selectDropdownOption(statusDropdown, statusValue);
 
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     public void selectAssignee(String assigneeValue) {
         selectDropdownOption(assigneeDropdown, assigneeValue);
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     public void selectStatus(String statusValue) {
         selectDropdownOption(statusDropdown, statusValue);
 
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     public void fillTaskTitle(String title) {
-        wait.until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
+        getWait().until(ExpectedConditions.elementToBeClickable(titleInput)).sendKeys(title);
 
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
-    public void clickSaveButton() {
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
-    }
-
-    public boolean isRequiredErrorDisplayed() {
-        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
-
-        try {
-            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
-            return errorMessage.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
+    public void clickSaveButtonForTasks() {
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     public void clearTitleField() {
         By titleLocator = By.name("title");
-        WebElement titleInput = wait.until(ExpectedConditions.elementToBeClickable(titleLocator));
-        titleInput.click();
-        titleInput.sendKeys(Keys.END);
-        titleInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
-        titleInput.sendKeys(Keys.BACK_SPACE);
+        WebElement titleInputInField = getWait().until(ExpectedConditions.elementToBeClickable(titleLocator));
+        titleInputInField.click();
+        titleInputInField.sendKeys(Keys.END);
+        titleInputInField.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+        titleInputInField.sendKeys(Keys.BACK_SPACE);
     }
 
     public void filterByStatus(String statusName) {
         By filterDropdownLocator = By.cssSelector("[class*='status_id'] div");
-        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        WebElement dropdown = getWait().until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
 
         By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + statusName + "')]");
         By optionValue = By.xpath("//li[@data-value='" + statusName + "']");
 
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(optionByText));
-            wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
+            getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));
+            getWait().until(ExpectedConditions.elementToBeClickable(optionByText)).click();
         } catch (Exception e) {
-            wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
+            getWait().until(ExpectedConditions.elementToBeClickable(optionValue)).click();
         }
     }
 
     public void filterByAssignee(String assigneeName) {
         By filterDropdownLocator = By.cssSelector("[class*='assignee_id'] div");
-        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        WebElement dropdown = getWait().until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
 
         By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + assigneeName + "')]");
 
         By optionValue = By.xpath("//li[@data-value='" + assigneeName + "']");
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(MAX_WAIT_DURATION);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(optionByText));
-            wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
+            getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));
+            getWait().until(ExpectedConditions.elementToBeClickable(optionByText)).click();
         } catch (Exception e) {
-            wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
+            getWait().until(ExpectedConditions.elementToBeClickable(optionValue)).click();
         }
     }
 
     public void filterByLabel(String labelName) {
         By filterDropdownLocator = By.cssSelector("[class*='label_id'] div");
-        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        WebElement dropdown = getWait().until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
 
         By menuListLocator = By.cssSelector(".MuiMenu-list, [role='listbox']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(menuListLocator));
 
         By optionByText = By.xpath("//li[contains(., '" + labelName + "')]");
         By optionValue = By.xpath("//li[@data-value='" + labelName + "']");
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(MAX_WAIT_DURATION);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(optionByText));
-            wait.until(ExpectedConditions.elementToBeClickable(optionByText)).click();
+            getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));
+            getWait().until(ExpectedConditions.elementToBeClickable(optionByText)).click();
         } catch (Exception e) {
-            wait.until(ExpectedConditions.elementToBeClickable(optionValue)).click();
+            getWait().until(ExpectedConditions.elementToBeClickable(optionValue)).click();
         }
     }
 
     public List<String> getVisibleStatusesInTable() {
 
         try {
-            return driver.findElements(cardLocator).stream()
+            return getDriver().findElements(cardLocator).stream()
                     .map(WebElement::getText)
                     .collect(Collectors.toList());
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
@@ -350,13 +346,13 @@ public final class TasksPage extends BasePage {
     }
 
     public void waitForCardsCount(int expectedCount) {
-        wait.until(ExpectedConditions.numberOfElementsToBe(cardLocator, expectedCount));
+        getWait().until(ExpectedConditions.numberOfElementsToBe(cardLocator, expectedCount));
     }
 
     public int getTaskCardsCount() {
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(cardLocator));
-            return driver.findElements(cardLocator).size();
+            getWait().until(ExpectedConditions.presenceOfElementLocated(cardLocator));
+            return getDriver().findElements(cardLocator).size();
         } catch (Exception e) {
             return 0;
         }
@@ -364,77 +360,77 @@ public final class TasksPage extends BasePage {
 
     public void removeStatusFilter() {
         By filterDropdownLocator = By.cssSelector("[class*='status_id'] div");
-        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
+        WebElement dropdown = getWait().until(ExpectedConditions.elementToBeClickable(filterDropdownLocator));
         dropdown.click();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[role='listbox']")));
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[role='listbox']")));
 
-        WebElement emptyOption = wait.until(ExpectedConditions.
+        WebElement emptyOption = getWait().until(ExpectedConditions.
                 elementToBeClickable(By.cssSelector("li[data-value='']")));
         emptyOption.click();
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("[role='listbox']")));
+        getWait().until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("[role='listbox']")));
     }
 
     public void openSaveQueryModal() {
-        driver.findElement(addFilterButton).click();
+        getDriver().findElement(addFilterButton).click();
 
-        driver.findElement(saveCurrentQueryButton).click();
+        getDriver().findElement(saveCurrentQueryButton).click();
     }
 
     public void saveCurrentQueryAs(String queryName) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("form-dialog-title")));
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(By.id("form-dialog-title")));
 
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(By.id("name")));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(By.id("name")));
 
         nameInput.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         nameInput.sendKeys(Keys.BACK_SPACE);
         nameInput.sendKeys(queryName);
 
-        WebElement saveBtn = driver.findElement(By.xpath("//button[contains(., 'Save')]"));
+        WebElement saveBtn = getDriver().findElement(By.xpath("//button[contains(., 'Save')]"));
         saveBtn.click();
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h2[contains(.,"
+        getWait().until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h2[contains(.,"
                 +
                 " 'Save current query as')]")));
     }
 
     public void applySavedQuery(String queryName) {
 
-        driver.findElement(addFilterButton).click();
+        getDriver().findElement(addFilterButton).click();
 
-        WebElement savedQueryTab = wait.until(ExpectedConditions.
+        WebElement savedQueryTab = getWait().until(ExpectedConditions.
                 elementToBeClickable(By.xpath("//*[contains(text(), '" + queryName + "')]")));
         savedQueryTab.click();
     }
 
     public void deleteSavedQuery(String queryName) {
-        driver.findElement(addFilterButton).click();
+        getDriver().findElement(addFilterButton).click();
 
         String xpath = String.format("//li[contains(., 'Remove query') and contains(., '%s')]", queryName);
-        WebElement removeOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
+        WebElement removeOption = getWait().until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
 
         removeOption.click();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),"
+        getWait().until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(),"
                 +
                 " 'Remove saved query?')]")));
 
-        WebElement confirmBtn = wait.until(ExpectedConditions.
+        WebElement confirmBtn = getWait().until(ExpectedConditions.
                 elementToBeClickable(By.xpath("//button[contains(., 'Confirm')]")));
         confirmBtn.click();
 
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(),"
+        getWait().until(ExpectedConditions.invisibilityOfElementLocated(By.xpath("//*[contains(text(),"
                 +
                 " 'Remove saved query?')]")));
     }
 
     public boolean isSavedQueryPresent(String queryName) {
-        driver.findElement(addFilterButton).click();
+        getDriver().findElement(addFilterButton).click();
 
         boolean isPresent = false;
         try {
-            WebDriverWait shortWait = new WebDriverWait(driver, java.time.Duration.ofSeconds(2));
+            WebDriverWait shortWait = new WebDriverWait(getDriver(), java.time.Duration.ofSeconds(2));
             shortWait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//li[contains(., '"
                     +
                     queryName + "')]")));
@@ -442,35 +438,35 @@ public final class TasksPage extends BasePage {
         } catch (org.openqa.selenium.TimeoutException e) {
             isPresent = false;
         } finally {
-            driver.findElement(By.tagName("body")).click();
+            getDriver().findElement(By.tagName("body")).click();
         }
         return isPresent;
     }
 
     public String getCurrentUrl() {
-        return driver.getCurrentUrl();
+        return getDriver().getCurrentUrl();
     }
 
     public void waitForCardsToLoad() {
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
+        getWait().until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")));
     }
 
     public void waitForUrlToBe(String expectedUrl) {
-        wait.until(ExpectedConditions.urlToBe(expectedUrl));
+        getWait().until(ExpectedConditions.urlToBe(expectedUrl));
     }
 
     public void waitForUrlToChange(String oldUrl) {
-        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(oldUrl)));
+        getWait().until(ExpectedConditions.not(ExpectedConditions.urlToBe(oldUrl)));
     }
 
     private WebElement oldCard;
 
     public void rememberOldCard() {
-        oldCard = driver.findElement(By.cssSelector(".MuiCard-root"));
+        oldCard = getDriver().findElement(By.cssSelector(".MuiCard-root"));
     }
 
     public void waitForOldCardToDisappear() {
-        wait.until(ExpectedConditions.stalenessOf(oldCard));
+        getWait().until(ExpectedConditions.stalenessOf(oldCard));
     }
 
     private By getCardLocatorByTitle(String taskTitle) {
@@ -481,26 +477,26 @@ public final class TasksPage extends BasePage {
 
     public void waitForCardWithTitle(String taskTitle) {
         By dynamicLocator = getCardLocatorByTitle(taskTitle);
-        wait.until(ExpectedConditions.presenceOfElementLocated(dynamicLocator));
+        getWait().until(ExpectedConditions.presenceOfElementLocated(dynamicLocator));
     }
 
     public boolean isCardPresent(String taskTitle) {
         By dynamicLocator = getCardLocatorByTitle(taskTitle);
-        return !driver.findElements(dynamicLocator).isEmpty();
+        return !getDriver().findElements(dynamicLocator).isEmpty();
     }
 
     public void waitForNewCardToAppear(String updatedName) {
         By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
                 +
                 updatedName + "']");
-        wait.until(ExpectedConditions.presenceOfElementLocated(newCardLocator));
+        getWait().until(ExpectedConditions.presenceOfElementLocated(newCardLocator));
     }
 
     public boolean isNewCardDisplayed(String updatedName) {
         By newCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
                 +
                 updatedName + "']");
-        WebElement newCard = wait.until(ExpectedConditions.visibilityOfElementLocated(newCardLocator));
+        WebElement newCard = getWait().until(ExpectedConditions.visibilityOfElementLocated(newCardLocator));
         return newCard.isDisplayed();
     }
 
@@ -508,52 +504,46 @@ public final class TasksPage extends BasePage {
         By oldCardLocator = By.xpath("//div[contains(@class, 'RaList-content')]//*[text()='"
                 +
                 taskTitle + "']");
-        return driver.findElements(oldCardLocator).isEmpty();
-    }
-
-    public boolean isTaskMovedToStatus(String taskToMove) {
-        By moveCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='" + taskToMove
-                +
-                "']");
-        WebElement moveCard = wait.until(ExpectedConditions.visibilityOfElementLocated(moveCardLocator));
-        return moveCard.isDisplayed();
+        return getDriver().findElements(oldCardLocator).isEmpty();
     }
 
     public boolean isTaskGone(String taskToDelete) {
         By deleteCardLocator = By.xpath("//div[contains(@class, 'MuiCard-root')]//*[text()='"
                 +
                 taskToDelete + "']");
-        return driver.findElements(deleteCardLocator).isEmpty();
+        return getDriver().findElements(deleteCardLocator).isEmpty();
     }
 
     public void waitForListToLoad() {
-        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiCard-root")),
+        getWait().until(ExpectedConditions.or(ExpectedConditions.
+                        presenceOfElementLocated(By.cssSelector(".MuiCard-root")),
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-content"))));
     }
 
     public int getInitialTasksCount() {
-        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
 
     public int getFinalTasksCount() {
-        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
 
     public void waitForSnackBar() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+        getWait().until(ExpectedConditions.
+                visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
     }
 
     public boolean isTaskVisible(String taskTitle) {
         By taskLocator = By.xpath("//*[text()='" + taskTitle + "']");
         try {
-            WebElement task = wait.until(ExpectedConditions.visibilityOfElementLocated(taskLocator));
+            WebElement task = getWait().until(ExpectedConditions.visibilityOfElementLocated(taskLocator));
             return task.isDisplayed();
         } catch (TimeoutException e) {
             return false;
         }
     }
     public void refreshPage() {
-        driver.navigate().refresh();
+        getDriver().navigate().refresh();
     }
 }
 

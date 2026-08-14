@@ -16,6 +16,8 @@ public final class KanbanPage extends BasePage {
     private final By dashboardButton = By.xpath("//*[contains(text(), 'Dashboard')]");
     private final By tasksButton = By.xpath("//*[contains(text(), 'Tasks')]");
     private final By usersButton = By.xpath("//*[contains(text(), 'Users')]");
+    private static final int MAX_WAIT_TIME_SECS = 15;
+    private static final int MIN_WAIT_TIME_SECS = 5;
 
     public KanbanPage(WebDriver driver) {
         super(driver);
@@ -24,7 +26,7 @@ public final class KanbanPage extends BasePage {
     public boolean isWelcomeTitleDisplayed() {
 
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MAX_WAIT_TIME_SECS));
             wait.until(ExpectedConditions.visibilityOfElementLocated(title));
             wait.until(ExpectedConditions.visibilityOfElementLocated(searchField));
             wait.until(ExpectedConditions.visibilityOfElementLocated(dashboardButton));
@@ -37,7 +39,7 @@ public final class KanbanPage extends BasePage {
 
     public void goToUsers() {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
         wait.until(ExpectedConditions.elementToBeClickable(burger)).click();
 
@@ -46,15 +48,15 @@ public final class KanbanPage extends BasePage {
     }
 
     public void clickLogout() {
-        driver.findElement(avatarButton).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        getDriver().findElement(avatarButton).click();
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
-        driver.findElement(logoutButton).click();
+        getDriver().findElement(logoutButton).click();
     }
 
     public void goToTasks() {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
         wait.until(ExpectedConditions.elementToBeClickable(burger)).click();
 

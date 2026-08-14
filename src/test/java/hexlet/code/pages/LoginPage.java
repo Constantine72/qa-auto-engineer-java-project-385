@@ -7,8 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 
-public final class LoginPage {
-    private final WebDriver driver;
+public final class LoginPage extends BasePage {
     private final By usernameField = By.name("username");
     private final By passwordField = By.name("password");
     private final By signInButton = By.cssSelector("button");
@@ -20,15 +19,15 @@ public final class LoginPage {
             By.xpath("//input[@name='password']/ancestor::div[contains(@class, "
                     +
                     "'MuiFormControl-root')]//p[contains(@class, 'Mui-error')]");
+    private static final int MIN_WAIT_TIME_SECS = 5;
 
     public LoginPage(WebDriver driver) {
-        this.driver = driver;
-
+        super(driver);
     }
 
     public void login(String username, String password) {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
         WebElement usernameEl = wait.until(ExpectedConditions.elementToBeClickable(usernameField));
         usernameEl.clear();
@@ -44,7 +43,7 @@ public final class LoginPage {
 
     public boolean isUsernameFieldDisplayed() {
         try {
-            return driver.findElement(usernameField).isDisplayed();
+            return getDriver().findElement(usernameField).isDisplayed();
         } catch (Exception e) {
             return false;
         }
@@ -52,7 +51,7 @@ public final class LoginPage {
 
     public String getUsernameErrorMessage() {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
         WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameErrorLocator));
         return error.getText();
@@ -61,27 +60,16 @@ public final class LoginPage {
     public String getPasswordErrorMessage() {
 
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
         WebElement error = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordErrorLocator));
         return error.getText();
     }
 
-    public boolean isRequiredErrorDisplayed() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
-
-        try {
-            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
-            return errorMessage.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
     public String getCurrentUrl() {
-        return driver.getCurrentUrl();
+        return getDriver().getCurrentUrl();
     }
     public void refreshPage() {
-        driver.navigate().refresh();
+        getDriver().navigate().refresh();
     }
 }
 

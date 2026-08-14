@@ -1,6 +1,10 @@
 package hexlet.code.pages;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -16,23 +20,25 @@ public final class StatusesPage extends BasePage {
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
     private final By deleteAllStatusesButton = By.xpath("//*[contains(text(), 'Delete')]");
+    private static final int MAX_WAIT_DURATION = 5000;
+    private static final int MINIMAL_SLEEP = 500;
 
     public StatusesPage(WebDriver driver) {
         super(driver);
     }
 
     public void clickCreateStatus() {
-        wait.until(ExpectedConditions.elementToBeClickable(createStatusButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(createStatusButton)).click();
     }
 
     public void fillAndSubmitStatusForm(String name, String slug) {
 
-        wait.until(ExpectedConditions.elementToBeClickable(nameField)).sendKeys(name);
-        wait.until(ExpectedConditions.elementToBeClickable(slugField)).sendKeys(slug);
-        wait.until(ExpectedConditions.elementToBeClickable(saveButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(nameField)).sendKeys(name);
+        getWait().until(ExpectedConditions.elementToBeClickable(slugField)).sendKeys(slug);
+        getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(MINIMAL_SLEEP);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -41,11 +47,11 @@ public final class StatusesPage extends BasePage {
     public boolean isStatusInList(String expectedStatus) {
         try {
             By statusesListContainer = By.className("list-page");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(statusesListContainer));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(statusesListContainer));
 
             By statusesCard = By.xpath("//*[contains(text(), '" + expectedStatus + "')]");
 
-            wait.until(ExpectedConditions.visibilityOf(driver.findElement(statusesCard)));
+            getWait().until(ExpectedConditions.visibilityOf(getDriver().findElement(statusesCard)));
 
             return true;
 
@@ -57,13 +63,13 @@ public final class StatusesPage extends BasePage {
     public void forceGoToStatuses() {
         By usersIcon = By.xpath("(//*[@data-testid='ViewListIcon'])[4]");
 
-        wait.until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
     }
 
     public boolean areHeaderDisplayed() {
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(nameHeader));
-            wait.until(ExpectedConditions.presenceOfElementLocated(slugHeader));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(nameHeader));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(slugHeader));
             return true;
 
         } catch (Exception e) {
@@ -76,7 +82,7 @@ public final class StatusesPage extends BasePage {
         String complexRowXPath = "//tr[contains(., '" + expectedName + "') and contains(., '" + expectedSlug + "')]";
 
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(complexRowXPath)));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(By.xpath(complexRowXPath)));
             return true;
         } catch (Exception e) {
             return false;
@@ -85,8 +91,8 @@ public final class StatusesPage extends BasePage {
 
     public int getRowsCount() {
         try {
-            wait.until(webDriver -> webDriver.findElements(tableRows).size() > 0);
-            return driver.findElements(tableRows).size();
+            getWait().until(webDriver -> webDriver.findElements(tableRows).size() > 0);
+            return getDriver().findElements(tableRows).size();
         } catch (Exception e) {
             return 0;
         }
@@ -94,24 +100,24 @@ public final class StatusesPage extends BasePage {
 
     public void clickEditStatus(String statusName) {
         String rowXPath = "//*[contains(text(), '" + statusName + "')]/ancestor::tr";
-        WebElement row = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(rowXPath)));
+        WebElement row = getWait().until(ExpectedConditions.elementToBeClickable(By.xpath(rowXPath)));
 
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", row);
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", row);
     }
 
     public void fillAndSubmitEditForm(String newName, String newSlug) {
         clearAndType(nameField, newName);
         clearAndType(slugField, newSlug);
 
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     private void clearAndType(By fieldLocator, String text) {
-        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fieldLocator));
+        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(fieldLocator));
         input.click();
 
-        new Actions(driver)
+        new Actions(getDriver())
                 .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
                 .sendKeys(Keys.BACK_SPACE)
                 .sendKeys(text)
@@ -119,17 +125,17 @@ public final class StatusesPage extends BasePage {
     }
 
     public void clickDeleteButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
     }
 
     public void clickDeleteAllUsersButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(deleteAllStatusesButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(deleteAllStatusesButton)).click();
 
     }
 
     public void clickSelectAllUsersButton() {
-        WebElement checkbox = wait.until(ExpectedConditions.presenceOfElementLocated(selectAllCheckbox));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
+        WebElement checkbox = getWait().until(ExpectedConditions.presenceOfElementLocated(selectAllCheckbox));
+        JavascriptExecutor js = (JavascriptExecutor) getDriver();
         js.executeScript("arguments[0].click();", checkbox);
     }
 
@@ -137,14 +143,14 @@ public final class StatusesPage extends BasePage {
 
         long startTime = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() - startTime < 5000) {
-            String pageSource = driver.getPageSource();
+        while (System.currentTimeMillis() - startTime < MAX_WAIT_DURATION) {
+            String pageSource = getDriver().getPageSource();
 
             if (pageSource.contains("No Task statuses yet.") && pageSource.contains("Do you want to add one?")) {
                 return true;
             }
             try {
-                Thread.sleep(300);
+                Thread.sleep(MINIMAL_SLEEP);
             } catch (InterruptedException ignored) {
             }
         }
@@ -152,9 +158,11 @@ public final class StatusesPage extends BasePage {
     }
 
     public boolean isTextPresentOnViewPage(String expectedText) {
-        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
+        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='"
+                +
+                expectedText + "']");
         try {
-            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
+            WebElement element = getWait().until(ExpectedConditions.visibilityOfElementLocated(textLocator));
             return element.isDisplayed();
         } catch (Exception e) {
             return false;
@@ -163,42 +171,32 @@ public final class StatusesPage extends BasePage {
 
     public void clickUpperShowButton() {
         By showButtonLocator = By.xpath("//a[contains(@href, '/show')]");
-        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
+        WebElement showButton = getWait().until(ExpectedConditions.elementToBeClickable(showButtonLocator));
         showButton.click();
     }
 
     public void clickUpperEditButton() {
-        By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
-        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
+        By editButtonLocator =
+                By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
+        WebElement showButton = getWait().until(ExpectedConditions.elementToBeClickable(editButtonLocator));
         showButton.click();
-    }
-
-    public boolean isRequiredErrorDisplayed() {
-        By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
-
-        try {
-            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
-            return errorMessage.isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public void fillNameField(String name) {
         By nameLocator = By.name("name");
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(name);
     }
 
     public void fillSlugField(String slug) {
         By slugLocator = By.name("slug");
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(slugLocator));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(slugLocator));
         nameInput.sendKeys(slug);
     }
 
     public void clearNameField() {
         By nameLocator = By.name("name");
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
 
         nameInput.click();
 
@@ -208,15 +206,15 @@ public final class StatusesPage extends BasePage {
         nameInput.sendKeys(Keys.BACK_SPACE);
     }
 
-    public void clickSaveButton() {
+    public void clickSaveButtonForStatuses() {
 
-        WebElement btn = wait.until(ExpectedConditions.presenceOfElementLocated(saveButton));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+        WebElement btn = getWait().until(ExpectedConditions.presenceOfElementLocated(saveButton));
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", btn);
     }
 
     public void clearSlugField() {
         By slugLocator = By.name("slug");
-        WebElement slugInput = wait.until(ExpectedConditions.elementToBeClickable(slugLocator));
+        WebElement slugInput = getWait().until(ExpectedConditions.elementToBeClickable(slugLocator));
         slugInput.click();
         slugInput.sendKeys(Keys.END);
         slugInput.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
@@ -224,32 +222,35 @@ public final class StatusesPage extends BasePage {
     }
     public String getNameInputValue() {
         By nameInputLocator = By.cssSelector("input[name='name']");
-        WebElement editNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(nameInputLocator));
+        WebElement editNameInput = getWait().until(ExpectedConditions.visibilityOfElementLocated(nameInputLocator));
         return editNameInput.getAttribute("value");
     }
     public String getSlugInputValue() {
         By slugInputLocator = By.cssSelector("input[name='slug']");
-        WebElement editSlugInput = wait.until(ExpectedConditions.visibilityOfElementLocated(slugInputLocator));
+        WebElement editSlugInput = getWait().until(ExpectedConditions.visibilityOfElementLocated(slugInputLocator));
         return editSlugInput.getAttribute("value");
     }
     public void waitForListToLoad() {
-        wait.until(ExpectedConditions.or(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
+        getWait().until(ExpectedConditions.or(ExpectedConditions.
+                        presenceOfElementLocated(By.cssSelector(".MuiTableRow-root")),
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RaList-noResults"))));
     }
     public int getInitialStatusesCount() {
-        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
     public int getFinalStatusesCount() {
-        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        return
+                getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
     public void waitForSnackBar() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+        getWait().until(ExpectedConditions.
+                visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
     }
     public String getCurrentUrl() {
-        return driver.getCurrentUrl();
+        return getDriver().getCurrentUrl();
     }
     public boolean isStatusPresent(String oldXPath) {
         By statusLocator = By.xpath("//*[contains(., '" + oldXPath + "')]");
-        return !driver.findElements(statusLocator).isEmpty();
+        return !getDriver().findElements(statusLocator).isEmpty();
     }
 }

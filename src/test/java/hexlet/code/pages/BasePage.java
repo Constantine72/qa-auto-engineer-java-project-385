@@ -1,6 +1,8 @@
 package hexlet.code.pages;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.JavascriptExecutor;
@@ -8,31 +10,39 @@ import java.time.Duration;
 
 public class BasePage {
 
-    protected final WebDriver driver;
-    protected final WebDriverWait wait;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+    private static final int TIMEOUT_SECONDS = 10;
 
-    public  BasePage(WebDriver driver) {
-        this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    public BasePage(WebDriver webDriver) {
+        this.driver = webDriver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(TIMEOUT_SECONDS));
+    }
+
+    protected final WebDriver getDriver() {
+        return driver;
+    }
+    protected final WebDriverWait getWait() {
+        return wait;
     }
 
     public final int getTableRowsCount() {
         By rowsLocator = By.xpath("//tbody/tr");
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(rowsLocator));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(rowsLocator));
         } catch (Exception e) {
             return 0;
         }
-        return driver.findElements(rowsLocator).size();
+        return getDriver().findElements(rowsLocator).size();
     }
 
-    public void selectFirstRowCheckbox() {
+    public final void selectFirstRowCheckbox() {
 
         By firstRowCheckbox = By.cssSelector("tbody .PrivateSwitchBase-input");
 
-        WebElement checkbox = wait.until(ExpectedConditions.presenceOfElementLocated(firstRowCheckbox));
+        WebElement checkbox = getWait().until(ExpectedConditions.presenceOfElementLocated(firstRowCheckbox));
 
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", checkbox);
     }
 
     public final void clickBulkDeleteButton() {
@@ -41,7 +51,7 @@ public class BasePage {
         deleteButton.click();
     }
 
-    public boolean isRequiredErrorDisplayed() {
+    public final boolean isRequiredErrorDisplayed() {
         By errorLocator = By.xpath("//*[contains(text(), 'Required')]");
 
         try {
@@ -50,10 +60,6 @@ public class BasePage {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public void clickSaveButton() {
-        By saveButtonLocator = By.xpath("//*[contains(text(), 'Save')]");
     }
 
     public final void clickUnselectCrossButton() {
@@ -104,8 +110,5 @@ public class BasePage {
         By nextButtonLocator = By.xpath("//button[@aria-label='Go to previous page']");
         WebElement prevBtn = wait.until(ExpectedConditions.elementToBeClickable(nextButtonLocator));
         prevBtn.click();
-    }
-    public String getCurrentUrl() {
-        return driver.getCurrentUrl();
     }
 }

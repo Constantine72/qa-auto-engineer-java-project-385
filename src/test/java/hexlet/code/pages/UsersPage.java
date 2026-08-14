@@ -1,6 +1,8 @@
 package hexlet.code.pages;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.WebDriver;
@@ -19,6 +21,8 @@ public final class UsersPage extends BasePage {
     private final By userRow = By.className("MuiTableRow-root");
     private final By emailErrorMessage = By.xpath("//*[contains(text(), 'Incorrect email format')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
+    private static final int MINIMAL_SLEEP = 500;
+    private static final int MAX_WAIT_DURATION = 5000;
 
     public UsersPage(WebDriver driver) {
 
@@ -26,15 +30,15 @@ public final class UsersPage extends BasePage {
     }
 
     public void clickCreateUser() {
-        wait.until(ExpectedConditions.elementToBeClickable(createUserButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(createUserButton)).click();
     }
 
     public boolean isUserFormDisplayed() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(emailField));
-            wait.until(ExpectedConditions.visibilityOfElementLocated(saveButton));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(emailField));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(saveButton));
             return true;
         } catch (Exception e) {
             return false;
@@ -46,10 +50,10 @@ public final class UsersPage extends BasePage {
         clearAndType(firstNameField, firstName);
         clearAndType(lastNameField, lastName);
 
-        wait.until(ExpectedConditions.elementToBeClickable(saveButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(MINIMAL_SLEEP);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -57,14 +61,13 @@ public final class UsersPage extends BasePage {
 
     public boolean isUserInList(String expectedFirstName, String expectedLastName, String expectedEmail) {
         try {
-            By userListContainer = By.className("list-page");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
 
             String xpathQuery = String.format(
                     "//*[contains(., '%s') and contains(., '%s')]", expectedFirstName, expectedLastName, expectedEmail);
             By userCard = By.xpath(xpathQuery);
 
-            wait.until(ExpectedConditions.visibilityOf(driver.findElement(userCard)));
+            getWait().until(ExpectedConditions.visibilityOf(getDriver().findElement(userCard)));
 
             return true;
 
@@ -75,9 +78,9 @@ public final class UsersPage extends BasePage {
 
     public boolean isUserTableLoaded() {
         try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
 
-            wait.until(ExpectedConditions.presenceOfElementLocated(userRow));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(userRow));
             return true;
         } catch (Exception e) {
             return false;
@@ -86,7 +89,7 @@ public final class UsersPage extends BasePage {
 
     public boolean areKeyFieldsDisplayed() {
         try {
-            String tableText = wait.until(ExpectedConditions.visibilityOfElementLocated(userListContainer))
+            String tableText = getWait().until(ExpectedConditions.visibilityOfElementLocated(userListContainer))
                     .getText();
 
             boolean hasId = tableText.contains("Id");
@@ -104,12 +107,12 @@ public final class UsersPage extends BasePage {
     public void clickEditUser(String expectedName) {
         By userRowToEdit = By.xpath("//*[contains(text(), '" + expectedName + "')]");
 
-        wait.until(ExpectedConditions.elementToBeClickable(userRowToEdit)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(userRowToEdit)).click();
     }
 
     public boolean isEmailValidationErrorDisplayed() {
         try {
-            wait.until(ExpectedConditions.presenceOfElementLocated(emailErrorMessage));
+            getWait().until(ExpectedConditions.presenceOfElementLocated(emailErrorMessage));
             return true;
         } catch (Exception e) {
             return false;
@@ -117,34 +120,35 @@ public final class UsersPage extends BasePage {
     }
 
     public String getFirstNameValue() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField)).getAttribute("value");
+        return getWait().until(ExpectedConditions.
+                visibilityOfElementLocated(firstNameField)).getAttribute("value");
     }
 
     public String getEmailValue() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(emailField)).getAttribute("value");
+        return getWait().until(ExpectedConditions.visibilityOfElementLocated(emailField)).getAttribute("value");
     }
 
     public void fillEmailOnly(String email) {
         clearAndType(emailField, email);
     }
 
-    public void clickSaveButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(saveButton)).click();
+    public void clickSaveButtonForUsers() {
+        getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
     }
 
     public void forceGoToUsers() {
         By usersIcon = By.xpath("(//*[@data-testid='ViewListIcon'])[2]");
 
-        wait.until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(usersIcon)).click();
     }
 
     private void clearAndType(By fieldLocator, String text) {
-        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fieldLocator));
+        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(fieldLocator));
 
         input.click();
 
 
-        new Actions(driver)
+        new Actions(getDriver())
                 .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
                 .sendKeys(Keys.BACK_SPACE)
                 .sendKeys(text)
@@ -152,16 +156,16 @@ public final class UsersPage extends BasePage {
     }
 
     public void clickDeleteButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(deleteButton)).click();
     }
 
     public void clickDeleteAllUsersButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(deleteAllUsersButton)).click();
+        getWait().until(ExpectedConditions.elementToBeClickable(deleteAllUsersButton)).click();
     }
 
     public void clickSelectAllUsersButton() {
-        WebElement checkbox = wait.until(ExpectedConditions.presenceOfElementLocated(selectAllCheckbox));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
+        WebElement checkbox = getWait().until(ExpectedConditions.presenceOfElementLocated(selectAllCheckbox));
+        JavascriptExecutor js = (JavascriptExecutor) getDriver();
         js.executeScript("arguments[0].click();", checkbox);
     }
 
@@ -169,14 +173,14 @@ public final class UsersPage extends BasePage {
 
         long startTime = System.currentTimeMillis();
 
-        while (System.currentTimeMillis() - startTime < 5000) {
-            String pageSource = driver.getPageSource();
+        while (System.currentTimeMillis() - startTime < MAX_WAIT_DURATION) {
+            String pageSource = getDriver().getPageSource();
 
             if (pageSource.contains("No Users yet.") && pageSource.contains("Do you want to add one?")) {
                 return true;
             }
             try {
-                Thread.sleep(300);
+                Thread.sleep(MINIMAL_SLEEP);
             } catch (InterruptedException ignored) {
             }
         }
@@ -185,20 +189,24 @@ public final class UsersPage extends BasePage {
 
     public void clickUpperShowButton() {
         By showButtonLocator = By.xpath("//a[contains(@href, '/show')]");
-        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(showButtonLocator));
+        WebElement showButton = getWait().until(ExpectedConditions.elementToBeClickable(showButtonLocator));
         showButton.click();
     }
 
     public void clickUpperEditButton() {
-        By editButtonLocator = By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
-        WebElement showButton = wait.until(ExpectedConditions.elementToBeClickable(editButtonLocator));
+        By editButtonLocator =
+                By.xpath("//a[contains(@class, 'MuiButton-root') and (contains(text(), 'Edit'))]");
+        WebElement showButton = getWait().until(ExpectedConditions.elementToBeClickable(editButtonLocator));
         showButton.click();
     }
 
     public boolean isTextPresentOnViewPage(String expectedText) {
-        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='" + expectedText + "']");
+        By textLocator = By.xpath("//span[contains(@class, 'MuiTypography-body2') and text()='"
+                +
+                expectedText + "']");
         try {
-            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(textLocator));
+            WebElement element =
+                    getWait().until(ExpectedConditions.visibilityOfElementLocated(textLocator));
             return element.isDisplayed();
         } catch (Exception e) {
             return false;
@@ -207,7 +215,7 @@ public final class UsersPage extends BasePage {
 
     public void clearFirstNameField() {
         By locator = By.name("firstName");
-        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
@@ -216,7 +224,7 @@ public final class UsersPage extends BasePage {
 
     public void clearLastNameField() {
         By locator = By.name("lastName");
-        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
@@ -225,7 +233,7 @@ public final class UsersPage extends BasePage {
 
     public void clearEmailField() {
         By locator = By.name("email");
-        WebElement input = wait.until(ExpectedConditions.elementToBeClickable(locator));
+        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
@@ -236,7 +244,7 @@ public final class UsersPage extends BasePage {
         By errorLocator = By.xpath("//*[contains(text(), 'Incorrect email format')]");
 
         try {
-            WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
+            WebElement errorMessage = getWait().until(ExpectedConditions.visibilityOfElementLocated(errorLocator));
             return errorMessage.isDisplayed();
         } catch (Exception e) {
             return false;
@@ -245,71 +253,65 @@ public final class UsersPage extends BasePage {
 
     public void fillFirstNameField(String firstName) {
         By nameLocator = By.name("firstName");
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(firstName);
     }
 
     public void fillLastNameField(String lastName) {
         By nameLocator = By.name("lastName");
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(lastName);
     }
 
     public void fillEmailField(String email) {
         By nameLocator = By.name("email");
-        WebElement nameInput = wait.until(ExpectedConditions.elementToBeClickable(nameLocator));
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(email);
-    }
-
-    public void selectFirstRowCheckbox() {
-
-        By firstRowCheckbox = By.cssSelector("tbody .PrivateSwitchBase-input");
-
-        WebElement checkbox = wait.until(ExpectedConditions.presenceOfElementLocated(firstRowCheckbox));
-
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
     }
 
     public String getFirstNameInputValue() {
         By firstNameInputLocator = By.cssSelector("input[name='firstName']");
-        WebElement editFirstNameInput = wait.until(ExpectedConditions.
+        WebElement editFirstNameInput = getWait().until(ExpectedConditions.
                 visibilityOfElementLocated(firstNameInputLocator));
         return editFirstNameInput.getAttribute("value");
     }
 
     public String getLastNameInputValue() {
         By firstNameInputLocator = By.cssSelector("input[name='lastName']");
-        WebElement editLastNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameInputLocator));
+        WebElement editLastNameInput =
+                getWait().until(ExpectedConditions.visibilityOfElementLocated(firstNameInputLocator));
         return editLastNameInput.getAttribute("value");
     }
 
     public String getEmailInputValue() {
         By emailInputLocator = By.cssSelector("input[name='email']");
-        WebElement editFirstNameInput = wait.until(ExpectedConditions.visibilityOfElementLocated(emailInputLocator));
+        WebElement editFirstNameInput =
+                getWait().until(ExpectedConditions.visibilityOfElementLocated(emailInputLocator));
         return editFirstNameInput.getAttribute("value");
     }
     public int getUsersCount() {
-        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
     public int getFinalUsersCount() {
-        return driver.findElements(By.cssSelector(".MuiTableRow-root")).size();
+        return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
     public void waitForSnackBar() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
+        getWait().until(ExpectedConditions.
+                visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
     }
     public void waitForPaginationTextOneToFive() {
         By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
+        getWait().until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
     }
     public void waitForPaginationTextSixToMore() {
         By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "6-"));
+        getWait().until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "6-"));
     }
     public String getCurrentUrl() {
-        return driver.getCurrentUrl();
+        return getDriver().getCurrentUrl();
     }
     public boolean isTextPresentOnPage(String text) {
-        return driver.getPageSource().contains(text);
+        return getDriver().getPageSource().contains(text);
     }
 }
 
