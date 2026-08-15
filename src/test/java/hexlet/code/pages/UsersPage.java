@@ -21,7 +21,6 @@ public final class UsersPage extends BasePage {
     private final By userRow = By.className("MuiTableRow-root");
     private final By emailErrorMessage = By.xpath("//*[contains(text(), 'Incorrect email format')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
-    private static final int MINIMAL_SLEEP = 500;
     private static final int MAX_WAIT_DURATION = 5000;
 
     public UsersPage(WebDriver driver) {
@@ -51,12 +50,6 @@ public final class UsersPage extends BasePage {
         clearAndType(lastNameField, lastName);
 
         getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
-
-//        try {
-//            Thread.sleep(MINIMAL_SLEEP);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public boolean isUserInList(String expectedFirstName, String expectedLastName, String expectedEmail) {
@@ -179,10 +172,6 @@ public final class UsersPage extends BasePage {
             if (pageSource.contains("No Users yet.") && pageSource.contains("Do you want to add one?")) {
                 return true;
             }
-//            try {
-//                Thread.sleep(MINIMAL_SLEEP);
-//            } catch (InterruptedException ignored) {
-//            }
         }
         return false;
     }
@@ -289,27 +278,34 @@ public final class UsersPage extends BasePage {
                 getWait().until(ExpectedConditions.visibilityOfElementLocated(emailInputLocator));
         return editFirstNameInput.getAttribute("value");
     }
+
     public int getUsersCount() {
         return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
+
     public int getFinalUsersCount() {
         return getDriver().findElements(By.cssSelector(".MuiTableRow-root")).size();
     }
+
     public void waitForSnackBar() {
         getWait().until(ExpectedConditions.
                 visibilityOfElementLocated(By.cssSelector(".MuiAlert-root, .MuiSnackbar-root")));
     }
+
     public void waitForPaginationTextOneToFive() {
         By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
         getWait().until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "1-5"));
     }
+
     public void waitForPaginationTextSixToMore() {
         By paginationTextLocator = By.xpath("//p[contains(@class, 'MuiTablePagination-displayedRows')]");
         getWait().until(ExpectedConditions.textToBePresentInElementLocated(paginationTextLocator, "6-"));
     }
+
     public String getCurrentUrl() {
         return getDriver().getCurrentUrl();
     }
+
     public boolean isTextPresentOnPage(String text) {
         return getDriver().getPageSource().contains(text);
     }

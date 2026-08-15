@@ -36,12 +36,6 @@ public final class StatusesPage extends BasePage {
         getWait().until(ExpectedConditions.elementToBeClickable(nameField)).sendKeys(name);
         getWait().until(ExpectedConditions.elementToBeClickable(slugField)).sendKeys(slug);
         getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
-
-//        try {
-//            Thread.sleep(MINIMAL_SLEEP);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public boolean isStatusInList(String expectedStatus) {

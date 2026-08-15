@@ -1,11 +1,15 @@
 package hexlet.code.pages;
 
+import io.qameta.allure.Allure;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.JavascriptExecutor;
+import java.io.ByteArrayInputStream;
 import java.time.Duration;
 
 public class BasePage {
@@ -110,5 +114,10 @@ public class BasePage {
         By nextButtonLocator = By.xpath("//button[@aria-label='Go to previous page']");
         WebElement prevBtn = wait.until(ExpectedConditions.elementToBeClickable(nextButtonLocator));
         prevBtn.click();
+    }
+    protected final void takesScreenshot() {
+        Allure.addAttachment(
+                "Screenshot on failure",
+                new ByteArrayInputStream(((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.BYTES)));
     }
 }

@@ -9,6 +9,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.Duration;
@@ -29,9 +30,7 @@ public final class TasksPage extends BasePage {
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By contentInput = By.name("content");
     private final By cardLocator = By.cssSelector(".MuiCard-root");
-    private static final int MINIMAL_SLEEP = 500;
     private static final int MIN_WAIT_TIME_SECS = 5;
-    private static final int MAX_WAIT_DURATION = 5000;
 
     public TasksPage(WebDriver driver) {
 
@@ -81,11 +80,6 @@ public final class TasksPage extends BasePage {
         org.openqa.selenium.WebElement combobox = getWait().until(ExpectedConditions.
                 elementToBeClickable(dropdownLocator));
         combobox.click();
-
-//        try {
-//            Thread.sleep(MINIMAL_SLEEP);
-//        } catch (InterruptedException ignored) {
-//        }
 
         String optionXPath = "//*[@role='option' and @data-value='" + dataValue + "']";
 
@@ -295,12 +289,6 @@ public final class TasksPage extends BasePage {
 
         By optionValue = By.xpath("//li[@data-value='" + assigneeName + "']");
 
-//        try {
-//            Thread.sleep(MAX_WAIT_DURATION);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         try {
             getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));
             getWait().until(ExpectedConditions.elementToBeClickable(optionByText)).click();
@@ -319,12 +307,6 @@ public final class TasksPage extends BasePage {
 
         By optionByText = By.xpath("//li[contains(., '" + labelName + "')]");
         By optionValue = By.xpath("//li[@data-value='" + labelName + "']");
-
-//        try {
-//            Thread.sleep(MAX_WAIT_DURATION);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
         try {
             getWait().until(ExpectedConditions.presenceOfElementLocated(optionByText));
@@ -346,7 +328,14 @@ public final class TasksPage extends BasePage {
     }
 
     public void waitForCardsCount(int expectedCount) {
-        getWait().until(ExpectedConditions.numberOfElementsToBe(cardLocator, expectedCount));
+        try {
+            getWait().until(ExpectedConditions.numberOfElementsToBe(cardLocator, expectedCount));
+        } catch (TimeoutException e) {
+            takesScreenshot();
+            throw new AssertionError("Filter hasn't been applied. Expected count: "
+                    + expectedCount, e);
+
+        }
     }
 
     public int getTaskCardsCount() {
@@ -542,6 +531,7 @@ public final class TasksPage extends BasePage {
             return false;
         }
     }
+
     public void refreshPage() {
         getDriver().navigate().refresh();
     }
