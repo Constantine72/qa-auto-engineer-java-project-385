@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LoginTest extends BaseTest {
+class LoginTest extends BaseTest {
 
     @Test
     void testSuccessfulLogin() {

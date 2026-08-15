@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class UsersTest extends BaseTest {
+final class UsersTest extends BaseTest {
 
     @Test
     void testCreateNewUser() {

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public final class TasksTest extends BaseTest {
+final class TasksTest extends BaseTest {
 
     private static final int MAX_CARDS_NUMBER = 15;
     private static final int JOHN_CARDS_COUNT = 5;

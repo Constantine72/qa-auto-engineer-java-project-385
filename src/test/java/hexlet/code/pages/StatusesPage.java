@@ -143,10 +143,6 @@ public final class StatusesPage extends BasePage {
             if (pageSource.contains("No Task statuses yet.") && pageSource.contains("Do you want to add one?")) {
                 return true;
             }
-            try {
-                Thread.sleep(MINIMAL_SLEEP);
-            } catch (InterruptedException ignored) {
-            }
         }
         return false;
     }
