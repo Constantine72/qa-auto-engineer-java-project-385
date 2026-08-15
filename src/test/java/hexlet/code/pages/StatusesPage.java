@@ -21,7 +21,6 @@ public final class StatusesPage extends BasePage {
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
     private final By deleteAllStatusesButton = By.xpath("//*[contains(text(), 'Delete')]");
     private static final int MAX_WAIT_DURATION = 5000;
-    private static final int MINIMAL_SLEEP = 500;
 
     public StatusesPage(WebDriver driver) {
         super(driver);
