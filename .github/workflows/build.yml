@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Debug environment
         run: |
-          echo "JAVA_HOME=$JAVA_HOME
+          echo "JAVA_HOME=$JAVA_HOME"
           java -version
           ./gradlew --version
       - name: Gradle help
@@ -23,7 +23,7 @@ jobs:
       - name: Environment
         run: |
           uname -a
-          echo "JAVA_HOME=$JAVA_HOME
+          echo "JAVA_HOME=$JAVA_HOME"
           java -version
           javac -version
           ./gradlew --version
