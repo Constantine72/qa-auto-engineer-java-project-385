@@ -36,11 +36,7 @@ jobs:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      - name: Build and analyze
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          APP_BASE_URL: http://localhost:5173
-        run: |
-          chmod +x gradlew
-          ./gradlew build sonar --stacktrace --info
+      - name: test gradle build
+        run: ./gradlew build --stacktrace --info
+
 
