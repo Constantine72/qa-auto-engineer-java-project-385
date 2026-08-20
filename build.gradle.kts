@@ -37,6 +37,3 @@ sonar {
     }
 }
 
-dependencyLocking {
-    unlockAllConfigurations()
-}
