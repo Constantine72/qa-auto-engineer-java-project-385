@@ -29,6 +29,20 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.test {
+    useJUnitPlatform()
+    finalizedBy("jacocoTestReport")
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required.set(true)
+    }
+}
+
+
 sonar {
     properties {
         property ("sonar.projectKey", "Constantine72_qa-auto-engineer-java-project-385")
