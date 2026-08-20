@@ -20,6 +20,7 @@ dependencies {
     testImplementation("org.seleniumhq.selenium:selenium-java:4.40.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.testng:testng:7.10.2")
+    testImplementation("io.qameta.allure:allure-junit5:2.24.0")
 }
 
 tasks.test {
