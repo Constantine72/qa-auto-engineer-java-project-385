@@ -2,6 +2,8 @@ plugins {
     java
     id("org.sonarqube") version "7.2.2.6593"
     checkstyle
+    jacoco
+    id("io.qameta.allure") version "2.11.2"
 }
 
 repositories {
@@ -14,15 +16,13 @@ java {
     }
 }
 
-val allureVersion = "2.24.0"
-
 dependencies {
     testImplementation(platform("org.junit:junit-bom:6.0.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.seleniumhq.selenium:selenium-java:4.40.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.testng:testng:7.10.2")
-    testImplementation("io.qameta.allure:allure-junit5:$allureVersion")
+    testImplementation("io.qameta.allure:allure-junit5:2.24.0")
 }
 
 tasks.test {
