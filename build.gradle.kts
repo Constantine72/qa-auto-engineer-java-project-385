@@ -15,9 +15,9 @@ java {
 }
 
 dependencies {
-    testImplementation(platform("org.junit:junit-bom:6.0.2"))
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.seleniumhq.selenium:selenium-java:4.40.0")
+    testImplementation("org.seleniumhq.selenium:selenium-java:4.24.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.testng:testng:7.10.2")
     testImplementation("io.qameta.allure:allure-junit5:2.24.0")
