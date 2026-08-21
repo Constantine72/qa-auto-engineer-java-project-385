@@ -28,20 +28,5 @@ jobs:
           restore-keys: ${{ runner.os }}-sonar
       - name: Start target application
         run: docker run -d --rm -p 5173:5173 hexletprojects/qa_auto_java_testing_kanban_board_project_ru_app
-      - name: Sleep for 5 seconds
-        run: sleep 5
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
-      - name: Debug and verify files
-        run: |
-          echo "=== What's in build.gradle.kts ==="
-          cat build.gradle.kts
-          
-          echo "=== Gradle Help launch ==="
-          chmod +x gradlew
-          ./gradlew help --stacktrace
+
 
