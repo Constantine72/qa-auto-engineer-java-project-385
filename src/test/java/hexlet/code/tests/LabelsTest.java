@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-final class LabelsTest extends BaseTest {
+class LabelsTest extends BaseTest {
 
     @Test
     void testCreateNewLabel() {
