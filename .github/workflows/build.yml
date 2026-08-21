@@ -42,5 +42,5 @@ jobs:
           APP_BASE_URL: http://localhost:5173
         run: |
           chmod +x gradlew
-          ./gradlew clean test --scan
+          ./gradlew clean test --debug
 
