@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class StatusesTest extends BaseTest {
 
     @Test
-    void testCreateNewStatus() {
+    public void testCreateNewStatus() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -35,7 +35,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testDefaultStatusesArePresent() {
+    public  void testDefaultStatusesArePresent() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -62,7 +62,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testStatusesListView() {
+    public void testStatusesListView() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -82,7 +82,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testEditStatus() {
+    public  void testEditStatus() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -126,7 +126,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testDeleteStatus() {
+    public  void testDeleteStatus() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -155,7 +155,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testDeleteAllStatuses() {
+    public  void testDeleteAllStatuses() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -172,7 +172,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testShowStatus() {
+    public void testShowStatus() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -201,7 +201,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testCreateStatusValidation() {
+    public  void testCreateStatusValidation() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -243,7 +243,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testEditStatusWithoutName() {
+    public void testEditStatusWithoutName() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -274,7 +274,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testEditStatusWithoutSlug() {
+    public  void testEditStatusWithoutSlug() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -307,7 +307,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testBulkDeleteStatus() {
+    public  void testBulkDeleteStatus() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -332,7 +332,7 @@ class StatusesTest extends BaseTest {
     }
 
     @Test
-    void testCancelStatusCheckboxSelection() {
+    public void testCancelStatusCheckboxSelection() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");

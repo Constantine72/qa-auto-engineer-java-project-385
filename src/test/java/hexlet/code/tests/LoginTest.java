@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LoginTest extends BaseTest {
 
     @Test
-    void testSuccessfulLogin() {
+    public void testSuccessfulLogin() {
 
         LoginPage loginPage = new LoginPage(getDriver());
 
@@ -20,7 +20,7 @@ class LoginTest extends BaseTest {
     }
 
     @Test
-    void testLoginWithEmptyFields() {
+    public void testLoginWithEmptyFields() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("", "");
@@ -33,7 +33,7 @@ class LoginTest extends BaseTest {
     }
 
     @Test
-    void testLoginWithEmptyFieldsConsecutively() {
+    public void testLoginWithEmptyFieldsConsecutively() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("qwe", "");
@@ -52,7 +52,7 @@ class LoginTest extends BaseTest {
     }
 
     @Test
-    void testSuccessfulLogout() {
+    public  void testSuccessfulLogout() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");

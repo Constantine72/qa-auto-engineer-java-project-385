@@ -23,7 +23,7 @@ class TasksTest extends BaseTest {
     private static final int NUMBER_OF_DRAFT_CARDS = 3;
 
     @Test
-    void testCreateNewTask() {
+    public void testCreateNewTask() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -57,7 +57,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testTaskViewingAndFiltering() {
+    public void testTaskViewingAndFiltering() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -136,7 +136,7 @@ class TasksTest extends BaseTest {
         assertTrue(visibleCardAlice.get(0).contains("Task 8"), "an improper task is returned");
     }
 
-    void aliceWithZeroTasks(TasksPage tasksPage) {
+    public void aliceWithZeroTasks(TasksPage tasksPage) {
         String urlCombo13 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -162,7 +162,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    static void deleteCustomQuery(TasksPage tasksPage, String myFilterName) {
+    public static void deleteCustomQuery(TasksPage tasksPage, String myFilterName) {
         tasksPage.deleteSavedQuery(myFilterName);
         boolean isFilterStillThere = tasksPage.isSavedQueryPresent(myFilterName);
         assertFalse(isFilterStillThere, myFilterName + " has not been deleted");
@@ -170,7 +170,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void removeAllFilters(TasksPage tasksPage) {
+    public void removeAllFilters(TasksPage tasksPage) {
         String urlBeforeClear = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -220,7 +220,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void changeAssignee(TasksPage tasksPage) {
+    public void changeAssignee(TasksPage tasksPage) {
         String urlAlice = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -258,7 +258,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void filterByAssigneeAndStatus(TasksPage tasksPage) {
+    public void filterByAssigneeAndStatus(TasksPage tasksPage) {
         String urlCombo15 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -283,7 +283,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void filterByAssigneeWithNoCards(TasksPage tasksPage) {
+    public  void filterByAssigneeWithNoCards(TasksPage tasksPage) {
         String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
 
         tasksPage.waitForCardsToLoad();
@@ -302,7 +302,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void filterByLabel(TasksPage tasksPage) {
+    public void filterByLabel(TasksPage tasksPage) {
         String urlBeforeLabel = tasksPage.getCurrentUrl();
         String targetLabel = "bug";
 
@@ -330,7 +330,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void filterByAssignee(TasksPage tasksPage) {
+    public void filterByAssignee(TasksPage tasksPage) {
         String urlBeforeAssignee = tasksPage.getCurrentUrl();
         tasksPage.waitForCardsToLoad();
 
@@ -363,7 +363,7 @@ class TasksTest extends BaseTest {
         tasksPage.clearAllFilters();
     }
 
-    void filterByStatus(TasksPage tasksPage) {
+    public void filterByStatus(TasksPage tasksPage) {
         int initialCardsCount = tasksPage.getTaskCardsCount();
 
         assertTrue(initialCardsCount > 0, "the table is blank");
@@ -396,7 +396,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testEditTask() {
+    public void testEditTask() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -446,7 +446,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testMoveTaskToAnotherStatus() {
+    public void testMoveTaskToAnotherStatus() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -477,7 +477,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testDeleteTask() {
+    public  void testDeleteTask() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -505,7 +505,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testShowTask() {
+    public void testShowTask() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -537,7 +537,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testCreateTaskValidation() {
+    public  void testCreateTaskValidation() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String taskTitle = "SomeTask_" + uniqueId;
         String taskStatus = "2";
@@ -595,7 +595,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testEditTaskWithoutTitle() {
+    public  void testEditTaskWithoutTitle() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -632,7 +632,7 @@ class TasksTest extends BaseTest {
     }
 
     @Test
-    void testTasksFilterByStatusOnGrid() {
+    public void testTasksFilterByStatusOnGrid() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");

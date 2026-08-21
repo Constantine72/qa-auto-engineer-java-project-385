@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class UsersTest extends BaseTest {
 
     @Test
-    void testCreateNewUser() {
+    public void testCreateNewUser() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String testEmail = "test@mail.com" + uniqueId;
         String testFirstName = "test" + uniqueId;
@@ -38,7 +38,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testUserListLoadingAndFields() {
+    public  void testUserListLoadingAndFields() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -54,7 +54,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testEditUserAndValidation() {
+    public void testEditUserAndValidation() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -100,7 +100,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testEditFormPopulatedDataCorrectly() {
+    public void testEditFormPopulatedDataCorrectly() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -135,7 +135,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testDeleteUser() {
+    public void testDeleteUser() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -169,7 +169,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testDeleteAllUsers() {
+    public void testDeleteAllUsers() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -186,7 +186,7 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
     @Test
-    void testShowUser() {
+    public void testShowUser() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -222,7 +222,7 @@ class UsersTest extends BaseTest {
         assertFalse(usersPage.getCurrentUrl().contains("/show"), "Show page is still displayed");
     }
     @Test
-    void testCreateUserValidation() {
+    public void testCreateUserValidation() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -280,7 +280,7 @@ class UsersTest extends BaseTest {
         assertFalse(isUserCreatedAnyway, "improper user has been saved");
     }
     @Test
-    void testEditUserValidationWithoutFirstName() {
+    public  void testEditUserValidationWithoutFirstName() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -315,7 +315,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testEditUserValidationWithoutLastName() {
+    public void testEditUserValidationWithoutLastName() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -349,7 +349,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testEditUserValidationWithoutEmail() {
+    public void testEditUserValidationWithoutEmail() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -382,7 +382,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    void testEditUserValidationWithIncorrectEmail() {
+    public  void testEditUserValidationWithIncorrectEmail() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -417,7 +417,7 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "no error message for improper email");
     }
     @Test
-    void testBulkDeleteUser() {
+    public void testBulkDeleteUser() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -441,7 +441,7 @@ class UsersTest extends BaseTest {
         assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
     }
     @Test
-    void testCancelUserCheckboxSelection() {
+    public  void testCancelUserCheckboxSelection() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -459,7 +459,7 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
     @Test
-    void testPaginationFullFlow() {
+    public  void testPaginationFullFlow() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");

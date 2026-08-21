@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class LabelsTest extends BaseTest {
 
     @Test
-    void testCreateNewLabel() {
+    public void testCreateNewLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -31,7 +31,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testLabelsListView() {
+    public void testLabelsListView() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -49,7 +49,7 @@ class LabelsTest extends BaseTest {
 
 
     @Test
-    void testEditLabel() {
+    public void testEditLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -89,7 +89,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testDeleteLabel() {
+    public void testDeleteLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -117,7 +117,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testShowLabel() {
+    public void testShowLabel() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelName = "Label " + uniqueId;
 
@@ -147,7 +147,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testCreateLabelValidation() {
+    public void testCreateLabelValidation() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -176,7 +176,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testEditLabelWithoutName() {
+    public void testEditLabelWithoutName() {
         String uniqueId = String.valueOf(System.currentTimeMillis());
         String labelName = "Label " + uniqueId;
 
@@ -208,7 +208,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testBulkDeleteLabel() {
+    public void testBulkDeleteLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -230,7 +230,7 @@ class LabelsTest extends BaseTest {
     }
 
     @Test
-    void testCancelLabelCheckboxSelection() {
+    public void testCancelLabelCheckboxSelection() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
