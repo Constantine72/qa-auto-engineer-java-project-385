@@ -19,7 +19,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.seleniumhq.selenium:selenium-java:4.24.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.testng:testng:7.10.2")
     testImplementation("io.qameta.allure:allure-junit5:2.24.0")
 }
 
@@ -39,7 +38,6 @@ sonar {
     properties {
         property ("sonar.projectKey", "Constantine72_qa-auto-engineer-java-project-385")
         property ("sonar.organization", "constantine72")
-        property ("sonar.coverage.jacoco.xmlReportPaths", "hexlet.code/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 
