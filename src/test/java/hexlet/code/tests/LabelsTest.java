@@ -3,6 +3,7 @@ package hexlet.code.tests;
 import hexlet.code.pages.LabelsPage;
 import hexlet.code.pages.LoginPage;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -210,6 +211,9 @@ class LabelsTest extends BaseTest {
     @Test
     public void testBulkDeleteLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
+
+        assertTrue(getDriver().findElements(By.name("username")).size() > 0,
+                "application has not loaded: username field is not found");
 
         loginPage.login("admin", "admin");
 

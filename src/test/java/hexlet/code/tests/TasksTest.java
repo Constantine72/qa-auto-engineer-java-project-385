@@ -12,7 +12,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 class TasksTest extends BaseTest {
@@ -21,6 +26,7 @@ class TasksTest extends BaseTest {
     private static final int JOHN_CARDS_COUNT = 5;
     private static final int NUMBER_OF_CARDS_TO_REVIEW = 5;
     private static final int NUMBER_OF_DRAFT_CARDS = 3;
+    private static final int WAIT_SECONDS = 15;
 
     @Test
     public void testCreateNewTask() {
@@ -557,6 +563,13 @@ class TasksTest extends BaseTest {
         int initialTasksCount = tasksPage.getInitialTasksCount();
 
         tasksPage.clickCreateTask();
+
+        try {
+            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(WAIT_SECONDS));
+            wait.until(ExpectedConditions.elementToBeClickable(By.name("title")));
+        } catch (TimeoutException e) {
+            fail("create task form hasn't opened: title field is not found");
+        }
 
         tasksPage.selectAssignee(assigneeName);
         tasksPage.selectStatus(taskStatus);
