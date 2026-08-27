@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LabelsTest extends BaseTest {
 
+    private static final int MIN_WAIT_TIME_SECS = 5;
+
     @Test
     public void testCreateNewLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
@@ -216,7 +218,7 @@ class LabelsTest extends BaseTest {
     public void testBulkDeleteLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
 
-        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")));
 

@@ -26,7 +26,7 @@ class TasksTest extends BaseTest {
     private static final int JOHN_CARDS_COUNT = 5;
     private static final int NUMBER_OF_CARDS_TO_REVIEW = 5;
     private static final int NUMBER_OF_DRAFT_CARDS = 3;
-    private static final int WAIT_SECONDS = 15;
+    private static final int WAIT_SECONDS = 10;
 
     @Test
     public void testCreateNewTask() {
