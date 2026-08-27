@@ -4,6 +4,10 @@ import hexlet.code.pages.LabelsPage;
 import hexlet.code.pages.LoginPage;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -211,6 +215,10 @@ class LabelsTest extends BaseTest {
     @Test
     public void testBulkDeleteLabel() {
         LoginPage loginPage = new LoginPage(getDriver());
+
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")));
 
         assertTrue(getDriver().findElements(By.name("username")).size() > 0,
                 "application has not loaded: username field is not found");
