@@ -10,7 +10,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import java.time.Duration;
 
 public class WebDriverFactory {
-    private static final int MIN_WAIT_TIME_SECS = 20;
+    private static final int MIN_WAIT_TIME_SECS = 15;
     private static final int WIDTH_IN_PIXELS = 1920;
     private static final int HEIGHT_IN_PIXELS = 1080;
 

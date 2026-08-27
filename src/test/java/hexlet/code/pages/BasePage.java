@@ -16,7 +16,7 @@ public class BasePage {
 
     private final WebDriver driver;
     private final WebDriverWait wait;
-    private static final int TIMEOUT_SECONDS = 20;
+    private static final int TIMEOUT_SECONDS = 15;
 
     public BasePage(WebDriver webDriver) {
         this.driver = webDriver;
