@@ -564,13 +564,6 @@ class TasksTest extends BaseTest {
 
         tasksPage.clickCreateTask();
 
-        try {
-            WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(WAIT_SECONDS));
-            wait.until(ExpectedConditions.elementToBeClickable(By.name("title")));
-        } catch (TimeoutException e) {
-            fail("create task form hasn't opened: title field is not found");
-        }
-
         tasksPage.selectAssignee(assigneeName);
         tasksPage.selectStatus(taskStatus);
         tasksPage.clickSaveButtonForTasks();
@@ -581,7 +574,11 @@ class TasksTest extends BaseTest {
 
         tasksPage.refreshPage();
 
-        tasksPage.fillTaskTitle(taskTitle);
+        try {
+            tasksPage.fillTaskTitle(taskTitle);
+        } catch (TimeoutException e) {
+            fail("the form is not complete: title is missing");
+        }
         tasksPage.selectStatus(taskStatus);
 
         tasksPage.clickSaveButtonForTasks();
