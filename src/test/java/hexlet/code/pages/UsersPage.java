@@ -318,5 +318,14 @@ public final class UsersPage extends BasePage {
         WebElement emailHeader = getDriver().findElement(By.cssSelector("[data-field='email']"));
         emailHeader.click();
     }
+    public String getEmailFromFirstRow() {
+        WebElement firstRowEmailCell = getDriver().findElement(By.cssSelector("tbody .column-email"));
+        return firstRowEmailCell.getText().trim();
+    }
+    public boolean isSaveButtonEnabled() {
+        WebElement saveBtn = getDriver().findElement(By.xpath("//*[contains(text(), 'Save')]"));
+
+        return saveBtn.isEnabled();
+    }
 }
 

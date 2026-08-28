@@ -440,7 +440,10 @@ class UsersTest extends BaseTest {
 
         int initialRowCount = usersPage.getTableRowsCount();
         assertTrue(initialRowCount > 0, "The table is empty");
+
+        String targetEmail = usersPage.getEmailFromFirstRow();
         System.out.println(initialRowCount);
+        System.out.println(targetEmail);
         usersPage.selectFirstRowCheckbox();
 
         usersPage.clickBulkDeleteButton();
@@ -450,6 +453,8 @@ class UsersTest extends BaseTest {
         int finalRowsCount = usersPage.getTableRowsCount();
 
         assertEquals(initialRowCount - 1, finalRowsCount, "Rows count hasn't changed");
+
+        assertFalse(usersPage.isTextPresentOnPage(targetEmail), targetEmail + " is still displayed");
     }
     @Test
     public  void testCancelUserCheckboxSelection() {
@@ -542,5 +547,20 @@ class UsersTest extends BaseTest {
         String urlAfterSort = usersPage.getCurrentUrl();
 
         assertNotEquals(urlBeforeSort, urlAfterSort, "Sorting does not work");
+    }
+    @Test
+    public void testSaveButtonDisabledOnEmptyForm() {
+        LoginPage loginPage = new LoginPage(getDriver());
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(getDriver());
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((getDriver()));
+
+        usersPage.clickCreateUser();
+
+        assertFalse(usersPage.isSaveButtonEnabled(), "Save button is enabled");
     }
 }
