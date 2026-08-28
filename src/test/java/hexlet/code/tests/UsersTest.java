@@ -4,11 +4,20 @@ import hexlet.code.pages.KanbanPage;
 import hexlet.code.pages.LoginPage;
 import hexlet.code.pages.UsersPage;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 
 class UsersTest extends BaseTest {
+
+    private static final int MIN_WAIT_TIME_SECS = 5;
 
     @Test
     public void testCreateNewUser() {
@@ -178,6 +187,8 @@ class UsersTest extends BaseTest {
         kanbanPage.goToUsers();
 
         UsersPage usersPage = new UsersPage((getDriver()));
+
+        assertTrue(usersPage.getTableRowsCount() > 0, "The table is empty");
 
         usersPage.clickSelectAllUsersButton();
 
@@ -494,5 +505,42 @@ class UsersTest extends BaseTest {
 
         assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"),
                 "page 1 hasn't been opened");
+    }
+    @Test
+    public void testExportUsers() {
+        LoginPage loginPage = new LoginPage(getDriver());
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(getDriver());
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((getDriver()));
+        usersPage.clickExportButtonForUsers();
+
+        assertTrue(usersPage.isUserTableLoaded(), "The app has crashed after clicking Export");
+    }
+    @Test
+    public void testUsersTableSorting() {
+        LoginPage loginPage = new LoginPage(getDriver());
+
+        loginPage.login("admin", "admin");
+
+        KanbanPage kanbanPage = new KanbanPage(getDriver());
+        kanbanPage.goToUsers();
+
+        UsersPage usersPage = new UsersPage((getDriver()));
+
+        assertTrue(usersPage.getTableRowsCount() > 0, "the table is empty");
+
+        String urlBeforeSort = usersPage.getCurrentUrl();
+
+        usersPage.clickEmailColumnHeader();
+
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
+        wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeSort)));
+        String urlAfterSort = usersPage.getCurrentUrl();
+
+        assertNotEquals(urlBeforeSort, urlAfterSort, "Sorting does not work");
     }
 }

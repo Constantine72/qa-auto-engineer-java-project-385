@@ -15,6 +15,7 @@ public final class UsersPage extends BasePage {
     private final By firstNameField = By.cssSelector("input[name='firstName']");
     private final By lastNameField = By.cssSelector("input[name='lastName']");
     private final By saveButton = By.xpath("//*[contains(text(), 'Save')]");
+    private final By exportButton = By.xpath("//*[contains(text(), 'Export')]");
     private final By deleteButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By deleteAllUsersButton = By.xpath("//*[contains(text(), 'Delete')]");
     private final By userListContainer = By.className("list-page");
@@ -129,6 +130,9 @@ public final class UsersPage extends BasePage {
         getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
     }
 
+    public void clickExportButtonForUsers() {
+        getWait().until(ExpectedConditions.elementToBeClickable(exportButton)).click();
+    }
     public void forceGoToUsers() {
         By usersIcon = By.xpath("(//*[@data-testid='ViewListIcon'])[2]");
 
@@ -308,6 +312,11 @@ public final class UsersPage extends BasePage {
 
     public boolean isTextPresentOnPage(String text) {
         return getDriver().getPageSource().contains(text);
+    }
+
+    public void clickEmailColumnHeader() {
+        WebElement emailHeader = getDriver().findElement(By.cssSelector("[data-field='email']"));
+        emailHeader.click();
     }
 }
 

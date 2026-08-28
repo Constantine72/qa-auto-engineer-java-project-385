@@ -3,21 +3,13 @@ package hexlet.code.tests;
 import hexlet.code.pages.LabelsPage;
 import hexlet.code.pages.LoginPage;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.fail;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LabelsTest extends BaseTest {
-
-    private static final int MIN_WAIT_TIME_SECS = 5;
 
     @Test
     public void testCreateNewLabel() {
