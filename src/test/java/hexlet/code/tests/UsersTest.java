@@ -4,15 +4,15 @@ import hexlet.code.pages.KanbanPage;
 import hexlet.code.pages.LoginPage;
 import hexlet.code.pages.UsersPage;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class UsersTest extends BaseTest {
@@ -36,15 +36,19 @@ class UsersTest extends BaseTest {
         UsersPage usersPage = new UsersPage((getDriver()));
         usersPage.clickCreateUser();
 
-        String formPageSource = getDriver().getPageSource().toLowerCase();
+        String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
-        assertTrue(formPageSource.contains("first name"), "first name placeholder is missing");
-        assertTrue(formPageSource.contains("last name"), "last name placeholder is missing");
-        assertTrue(formPageSource.contains("email"), "email placeholder is missing");
+        assertTrue(visibleText.contains("first name"), "first name placeholder is missing");
+        assertTrue(visibleText.contains("last name"), "last name placeholder is missing");
+        assertTrue(visibleText.contains("email"), "email placeholder is missing");
 
         assertTrue(usersPage.isUserFormDisplayed(), "User form hasn't opened");
 
-        usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+        try {
+            usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+        } catch (TimeoutException e) {
+            fail("error while creating a user");
+        }
 
         usersPage.waitForSnackBar();
 
@@ -64,6 +68,12 @@ class UsersTest extends BaseTest {
         kanbanPage.goToUsers();
 
         UsersPage usersPage = new UsersPage((getDriver()));
+
+        WebElement dateCell = getDriver().findElement(By.cssSelector("tbody .column-createdAt"));
+
+        String dateText = dateCell.getText();
+
+        assertTrue(!dateText.contains("T") && dateText.contains(","), "date field is broken");
 
         assertTrue(usersPage.isUserTableLoaded(), "The table has not loaded");
 
@@ -100,11 +110,11 @@ class UsersTest extends BaseTest {
 
         usersPage.clickEditUser(originalFirstName);
 
-        String formPageSource = getDriver().getPageSource().toLowerCase();
+        String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
-        assertTrue(formPageSource.contains("first name"), "first name placeholder is missing");
-        assertTrue(formPageSource.contains("last name"), "last name placeholder is missing");
-        assertTrue(formPageSource.contains("email"), "email placeholder is missing");
+        assertTrue(visibleText.contains("first name"), "first name placeholder is missing");
+        assertTrue(visibleText.contains("last name"), "last name placeholder is missing");
+        assertTrue(visibleText.contains("email"), "email placeholder is missing");
 
         assertEquals(originalFirstName, usersPage.getFirstNameValue(), "the name does not coincide");
         assertEquals(originalEmail, usersPage.getEmailValue(), "email does not coincide");
@@ -246,13 +256,13 @@ class UsersTest extends BaseTest {
 
         assertTrue(usersPage.isTextPresentOnViewPage(testLastName), "Last is not displayed");
 
-       String pageSource = getDriver().getPageSource().toLowerCase();
+       String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
-       assertTrue(pageSource.contains("id"), "no id");
-       assertTrue(pageSource.contains("email"), "no email");
-       assertTrue(pageSource.contains("first name"), "no first name");
-       assertTrue(pageSource.contains("last name"), "no last name");
-       assertTrue(pageSource.contains("created at"), "no created at");
+       assertTrue(visibleText.contains("id"), "no id");
+       assertTrue(visibleText.contains("email"), "no email");
+       assertTrue(visibleText.contains("first name"), "no first name");
+       assertTrue(visibleText.contains("last name"), "no last name");
+       assertTrue(visibleText.contains("created at"), "no created at");
 
         usersPage.clickUpperEditButton();
 
