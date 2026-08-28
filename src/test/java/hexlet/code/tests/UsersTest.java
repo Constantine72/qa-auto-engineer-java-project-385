@@ -36,9 +36,17 @@ class UsersTest extends BaseTest {
         UsersPage usersPage = new UsersPage((getDriver()));
         usersPage.clickCreateUser();
 
+        String formPageSource = getDriver().getPageSource().toLowerCase();
+
+        assertTrue(formPageSource.contains("first name"), "first name placeholder is missing");
+        assertTrue(formPageSource.contains("last name"), "last name placeholder is missing");
+        assertTrue(formPageSource.contains("email"), "email placeholder is missing");
+
         assertTrue(usersPage.isUserFormDisplayed(), "User form hasn't opened");
 
         usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
+
+        usersPage.waitForSnackBar();
 
         kanbanPage.goToUsers();
 
@@ -60,6 +68,8 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isUserTableLoaded(), "The table has not loaded");
 
         assertTrue(usersPage.areKeyFieldsDisplayed(), "Fields are missing");
+
+        assertTrue(getDriver().getPageSource().contains("Users"), "Header Users is missing");
     }
 
     @Test
@@ -81,12 +91,20 @@ class UsersTest extends BaseTest {
         usersPage.clickCreateUser();
         usersPage.fillAndSubmitUserForm(originalEmail, originalFirstName, originalLastName);
 
+        usersPage.waitForSnackBar();
+
         usersPage.forceGoToUsers();
 
         assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail),
                 "User for edit has not been created");
 
         usersPage.clickEditUser(originalFirstName);
+
+        String formPageSource = getDriver().getPageSource().toLowerCase();
+
+        assertTrue(formPageSource.contains("first name"), "first name placeholder is missing");
+        assertTrue(formPageSource.contains("last name"), "last name placeholder is missing");
+        assertTrue(formPageSource.contains("email"), "email placeholder is missing");
 
         assertEquals(originalFirstName, usersPage.getFirstNameValue(), "the name does not coincide");
         assertEquals(originalEmail, usersPage.getEmailValue(), "email does not coincide");
@@ -227,6 +245,14 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isTextPresentOnViewPage(testEmail), "Email is not displayed");
 
         assertTrue(usersPage.isTextPresentOnViewPage(testLastName), "Last is not displayed");
+
+       String pageSource = getDriver().getPageSource().toLowerCase();
+
+       assertTrue(pageSource.contains("id"), "no id");
+       assertTrue(pageSource.contains("email"), "no email");
+       assertTrue(pageSource.contains("first name"), "no first name");
+       assertTrue(pageSource.contains("last name"), "no last name");
+       assertTrue(pageSource.contains("created at"), "no created at");
 
         usersPage.clickUpperEditButton();
 
@@ -540,13 +566,19 @@ class UsersTest extends BaseTest {
 
         String urlBeforeSort = usersPage.getCurrentUrl();
 
+        String emailBefore = usersPage.getEmailFromFirstRow();
+
         usersPage.clickEmailColumnHeader();
 
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(MIN_WAIT_TIME_SECS));
         wait.until(ExpectedConditions.not(ExpectedConditions.urlToBe(urlBeforeSort)));
         String urlAfterSort = usersPage.getCurrentUrl();
 
+        String emailAfter = usersPage.getEmailFromFirstRow();
+
         assertNotEquals(urlBeforeSort, urlAfterSort, "Sorting does not work");
+
+        assertNotEquals(emailBefore, emailAfter, "sorting is broken");
     }
     @Test
     public void testSaveButtonDisabledOnEmptyForm() {

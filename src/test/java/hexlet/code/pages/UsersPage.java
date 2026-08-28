@@ -58,7 +58,8 @@ public final class UsersPage extends BasePage {
             getWait().until(ExpectedConditions.visibilityOfElementLocated(userListContainer));
 
             String xpathQuery = String.format(
-                    "//*[contains(., '%s') and contains(., '%s')]", expectedFirstName, expectedLastName, expectedEmail);
+                    "//*[contains(., '%s') and contains(., '%s') and contains(., '%s')]", expectedFirstName,
+                    expectedLastName, expectedEmail);
             By userCard = By.xpath(xpathQuery);
 
             getWait().until(ExpectedConditions.visibilityOf(getDriver().findElement(userCard)));
