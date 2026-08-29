@@ -35,15 +35,20 @@ class UsersTest extends BaseTest {
         kanbanPage.goToUsers();
 
         UsersPage usersPage = new UsersPage((getDriver()));
-        usersPage.clickCreateUser();
+
+        assertTrue(usersPage.getCurrentUrl().contains("/users"), "app is not displayed");
+        try {
+            usersPage.clickCreateUser();
+        } catch (TimeoutException e) {
+            fail("app is not displayed");
+        }
+        assertTrue(usersPage.isUserFormDisplayed(), "User form hasn't opened");
 
         String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
         assertTrue(visibleText.contains("first name"), "first name placeholder is missing");
         assertTrue(visibleText.contains("last name"), "last name placeholder is missing");
         assertTrue(visibleText.contains("email"), "email placeholder is missing");
-
-        assertTrue(usersPage.isUserFormDisplayed(), "User form hasn't opened");
 
         try {
             usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
@@ -294,8 +299,12 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is missing");
 
         usersPage.clearLastNameField();
-        usersPage.fillFirstNameField("John");
 
+        try {
+            usersPage.fillFirstNameField("John");
+        } catch (TimeoutException e) {
+            fail("the form is not displayed");
+        }
         usersPage.clickSaveButtonForUsers();
 
         assertTrue(usersPage.getCurrentUrl().contains("/create"), "empty firstName was saved");

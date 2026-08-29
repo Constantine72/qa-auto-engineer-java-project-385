@@ -24,7 +24,6 @@ public final class UsersPage extends BasePage {
     private final By userRow = By.className("MuiTableRow-root");
     private final By emailErrorMessage = By.xpath("//*[contains(text(), 'Incorrect email format')]");
     private final By selectAllCheckbox = By.className("PrivateSwitchBase-input");
-    private static final int MAX_WAIT_DURATION = 5000;
 
     public UsersPage(WebDriver driver) {
 
@@ -185,17 +184,6 @@ public final class UsersPage extends BasePage {
         } catch (Exception e) {
             return false;
         }
-
-//    long startTime = System.currentTimeMillis();
-//
-//    while (System.currentTimeMillis() - startTime < MAX_WAIT_DURATION) {
-//        String pageSource = getDriver().getPageSource();
-//
-//        if (pageSource.contains("No Users yet.") && pageSource.contains("Do you want to add one?")) {
-//            return true;
-//        }
-//    }
-//    return false;
     }
 
     public void clickUpperShowButton() {
