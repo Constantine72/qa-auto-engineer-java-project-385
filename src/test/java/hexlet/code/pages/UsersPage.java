@@ -378,5 +378,9 @@ public final class UsersPage extends BasePage {
             throw new AssertionError(elementName + " has disabled css class");
         }
     }
+    public boolean isEmailFieldEnabled() {
+        WebElement emailInput = getWait().until(ExpectedConditions.presenceOfElementLocated(By.name("email")));
+        return emailInput.isEnabled() && emailInput.getAttribute("disabled") == null;
+    }
 }
 

@@ -462,6 +462,8 @@ class UsersTest extends BaseTest {
         assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
         assertTrue(usersPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+        assertTrue(usersPage.isEmailFieldEnabled(), "error");
     }
 
     @Test
@@ -498,6 +500,8 @@ class UsersTest extends BaseTest {
         assertFalse(usersPage.getCurrentUrl().endsWith("/users"), "user w/o last name was saved");
 
         assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "no error message for improper email");
+
+        assertTrue(usersPage.isEmailFieldEnabled(), "error");
     }
 
     @Test
