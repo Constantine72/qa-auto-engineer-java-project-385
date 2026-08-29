@@ -178,8 +178,8 @@ public final class UsersPage extends BasePage {
 
     public boolean isEmptyStateDisplayed() {
         try {
-            getWait().until(ExpectedConditions.visibilityOfElementLocated(By.xpath
-                    ("//*[contains(text(), 'No Users yet')]")));
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(By.
+                    xpath("//*[contains(text(), 'No Users yet')]")));
             return true;
         } catch (Exception e) {
             return false;
@@ -317,8 +317,8 @@ public final class UsersPage extends BasePage {
     }
 
     public boolean isTextPresentOnPage(String text) {
-        List<WebElement> elements = getDriver().findElements(By.xpath
-                ("//*[contains(text(), '" + text + "')]"));
+        List<WebElement> elements = getDriver().findElements(By.
+                xpath("//*[contains(text(), '" + text + "')]"));
         return elements.stream().anyMatch(WebElement::isDisplayed);
         //return getDriver().getPageSource().contains(text);
     }
