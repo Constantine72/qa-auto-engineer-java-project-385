@@ -155,18 +155,20 @@ public final class UsersPage extends BasePage {
     }
 
     private void clearAndType(By fieldLocator, String text) {
-        try {
-            WebElement input = getWait().until(ExpectedConditions.presenceOfElementLocated(fieldLocator));
-            input.click();
 
-            new Actions(getDriver())
-                    .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
-                    .sendKeys(Keys.BACK_SPACE)
-                    .sendKeys(text)
-                    .perform();
-        } catch (Exception e) {
-            throw new AssertionError("field is disabled " + fieldLocator);
+        WebElement input = getWait().until(ExpectedConditions.presenceOfElementLocated(fieldLocator));
+        input.click();
+
+        new Actions(getDriver())
+                .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+                .sendKeys(Keys.BACK_SPACE)
+                .sendKeys(text)
+                .perform();
+
+        if (!input.getAttribute("value").contains(text)) {
+            throw new AssertionError("field is disabled");
         }
+
     }
 
     public void clickDeleteButton() {
@@ -220,16 +222,14 @@ public final class UsersPage extends BasePage {
     }
 
     public void clearFirstNameField() {
-        try {
-
-            By locator = By.name("firstName");
-            WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
-            input.click();
-            input.sendKeys(Keys.END);
-            input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
-            input.sendKeys(Keys.BACK_SPACE);
-        } catch (Exception e) {
-            throw new AssertionError("first name field is disabled");
+        By locator = By.name("firstName");
+        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+        input.click();
+        input.sendKeys(Keys.END);
+        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+        input.sendKeys(Keys.BACK_SPACE);
+        if (!input.getAttribute("value").isEmpty()) {
+            throw new AssertionError("field is disabled");
         }
     }
 
@@ -240,6 +240,10 @@ public final class UsersPage extends BasePage {
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
+
+        if (!input.getAttribute("value").isEmpty()) {
+            throw new AssertionError("field is disabled");
+        }
     }
 
     public void clearEmailField() {
@@ -249,6 +253,10 @@ public final class UsersPage extends BasePage {
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
+
+        if (!input.getAttribute("value").isEmpty()) {
+            throw new AssertionError("field is disabled");
+        }
     }
 
     public boolean isInvalidEmailErrorDisplayed() {
@@ -263,12 +271,13 @@ public final class UsersPage extends BasePage {
     }
 
     public void fillFirstNameField(String firstName) {
-        try {
-            By nameLocator = By.name("firstName");
-            WebElement nameInput = waitForClickableStrict(nameLocator);
-            nameInput.sendKeys(firstName);
-        } catch (Exception e) {
-            throw new AssertionError("can not type: field is disabled");
+
+        By nameLocator = By.name("firstName");
+        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
+        nameInput.sendKeys(firstName);
+
+        if (!nameInput.getAttribute("value").contains(firstName)) {
+            throw new AssertionError("field is disabled");
         }
     }
 
@@ -276,12 +285,20 @@ public final class UsersPage extends BasePage {
         By nameLocator = By.name("lastName");
         WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(lastName);
+
+        if (!nameInput.getAttribute("value").contains(lastName)) {
+            throw new AssertionError("field is disabled");
+        }
     }
 
     public void fillEmailField(String email) {
         By nameLocator = By.name("email");
         WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
         nameInput.sendKeys(email);
+
+        if (!nameInput.getAttribute("value").contains(email)) {
+            throw new AssertionError("field is disabled");
+        }
     }
 
     public String getFirstNameInputValue() {
