@@ -9,7 +9,9 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.time.Duration;
+
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,24 +39,20 @@ class UsersTest extends BaseTest {
         UsersPage usersPage = new UsersPage((getDriver()));
 
         assertTrue(usersPage.getCurrentUrl().contains("/users"), "app is not displayed");
+
         try {
             usersPage.clickCreateUser();
+            assertTrue(usersPage.isUserFormDisplayed(), "User form hasn't opened");
+            usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
         } catch (TimeoutException e) {
             fail("app is not displayed");
         }
-        assertTrue(usersPage.isUserFormDisplayed(), "User form hasn't opened");
 
         String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
         assertTrue(visibleText.contains("first name"), "first name placeholder is missing");
         assertTrue(visibleText.contains("last name"), "last name placeholder is missing");
         assertTrue(visibleText.contains("email"), "email placeholder is missing");
-
-        try {
-            usersPage.fillAndSubmitUserForm(testEmail, testFirstName, testLastName);
-        } catch (TimeoutException e) {
-            fail("error while creating a user");
-        }
 
         usersPage.waitForSnackBar();
 
@@ -65,7 +63,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    public  void testUserListLoadingAndFields() {
+    public void testUserListLoadingAndFields() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -85,12 +83,15 @@ class UsersTest extends BaseTest {
 
         String dateText = dateCell.getText();
 
+
         assertTrue(!dateText.contains("T") && dateText.contains(","), "date field is broken");
 
-        assertTrue(usersPage.isUserTableLoaded(), "The table has not loaded");
-
-        assertTrue(usersPage.areKeyFieldsDisplayed(), "Fields are missing");
-
+        try {
+            assertTrue(usersPage.isUserTableLoaded(), "The table has not loaded");
+            assertTrue(usersPage.areKeyFieldsDisplayed(), "Fields are missing");
+        } catch (TimeoutException e) {
+            fail("the app is not displayed");
+        }
         assertTrue(getDriver().getPageSource().contains("Users"), "Header Users is missing");
     }
 
@@ -244,6 +245,7 @@ class UsersTest extends BaseTest {
 
         assertTrue(usersPage.isEmptyStateDisplayed(), "Empty state is not displayed");
     }
+
     @Test
     public void testShowUser() {
         LoginPage loginPage = new LoginPage(getDriver());
@@ -280,18 +282,19 @@ class UsersTest extends BaseTest {
 
         assertTrue(usersPage.isTextPresentOnViewPage(testLastName), "Last is not displayed");
 
-       String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
+        String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
-       assertTrue(visibleText.contains("id"), "no id");
-       assertTrue(visibleText.contains("email"), "no email");
-       assertTrue(visibleText.contains("first name"), "no first name");
-       assertTrue(visibleText.contains("last name"), "no last name");
-       assertTrue(visibleText.contains("created at"), "no created at");
+        assertTrue(visibleText.contains("id"), "no id");
+        assertTrue(visibleText.contains("email"), "no email");
+        assertTrue(visibleText.contains("first name"), "no first name");
+        assertTrue(visibleText.contains("last name"), "no last name");
+        assertTrue(visibleText.contains("created at"), "no created at");
 
         usersPage.clickUpperEditButton();
 
         assertFalse(usersPage.getCurrentUrl().contains("/show"), "Show page is still displayed");
     }
+
     @Test
     public void testCreateUserValidation() {
         LoginPage loginPage = new LoginPage(getDriver());
@@ -308,7 +311,11 @@ class UsersTest extends BaseTest {
 
         usersPage.clickCreateUser();
 
-        usersPage.fillLastNameField("Smith");
+        try {
+            usersPage.fillLastNameField("Smith");
+        } catch (TimeoutException e) {
+            fail("the form is not displayed");
+        }
         usersPage.fillEmailField("newemail@test.com");
         usersPage.clickSaveButtonForUsers();
 
@@ -354,8 +361,9 @@ class UsersTest extends BaseTest {
         boolean isUserCreatedAnyway = usersPage.isTextPresentOnPage(badEmail);
         assertFalse(isUserCreatedAnyway, "improper user has been saved");
     }
+
     @Test
-    public  void testEditUserValidationWithoutFirstName() {
+    public void testEditUserValidationWithoutFirstName() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -457,7 +465,7 @@ class UsersTest extends BaseTest {
     }
 
     @Test
-    public  void testEditUserValidationWithIncorrectEmail() {
+    public void testEditUserValidationWithIncorrectEmail() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -491,6 +499,7 @@ class UsersTest extends BaseTest {
 
         assertTrue(usersPage.isInvalidEmailErrorDisplayed(), "no error message for improper email");
     }
+
     @Test
     public void testBulkDeleteUser() {
         LoginPage loginPage = new LoginPage(getDriver());
@@ -523,8 +532,9 @@ class UsersTest extends BaseTest {
 
         assertFalse(usersPage.isTextPresentOnPage(targetEmail), targetEmail + " is still displayed");
     }
+
     @Test
-    public  void testCancelUserCheckboxSelection() {
+    public void testCancelUserCheckboxSelection() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -541,8 +551,9 @@ class UsersTest extends BaseTest {
 
         assertTrue(usersPage.isSelectionTextHidden(), "1 item selected is still displayed");
     }
+
     @Test
-    public  void testPaginationFullFlow() {
+    public void testPaginationFullFlow() {
         LoginPage loginPage = new LoginPage(getDriver());
 
         loginPage.login("admin", "admin");
@@ -578,6 +589,7 @@ class UsersTest extends BaseTest {
         assertTrue(finalUrl.contains("page=1") || finalUrl.contains("page%22%3A1"),
                 "page 1 hasn't been opened");
     }
+
     @Test
     public void testExportUsers() {
         LoginPage loginPage = new LoginPage(getDriver());
@@ -592,6 +604,7 @@ class UsersTest extends BaseTest {
 
         assertTrue(usersPage.isUserTableLoaded(), "The app has crashed after clicking Export");
     }
+
     @Test
     public void testUsersTableSorting() {
         LoginPage loginPage = new LoginPage(getDriver());
@@ -621,6 +634,7 @@ class UsersTest extends BaseTest {
 
         assertNotEquals(emailBefore, emailAfter, "sorting is broken");
     }
+
     @Test
     public void testSaveButtonDisabledOnEmptyForm() {
         LoginPage loginPage = new LoginPage(getDriver());
