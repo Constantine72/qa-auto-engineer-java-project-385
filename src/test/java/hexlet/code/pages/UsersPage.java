@@ -136,12 +136,11 @@ public final class UsersPage extends BasePage {
     }
 
     public void clickSaveButtonForUsers() {
-        try {
-            WebElement btn = getWait().until(ExpectedConditions.visibilityOfElementLocated(saveButton));
-            btn.click();
-        } catch (Exception e) {
-            throw new AssertionError("save button is disabled");
-        }
+
+        WebElement btn = getWait().until(ExpectedConditions.visibilityOfElementLocated(saveButton));
+        checkElementNotDisabled(btn, "Save Button");
+        btn.click();
+
     }
 
     public void clickExportButtonForUsers() {
@@ -224,39 +223,34 @@ public final class UsersPage extends BasePage {
     public void clearFirstNameField() {
         By locator = By.name("firstName");
         WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+        checkElementNotDisabled(input, "First Name Field");
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
-        if (!input.getAttribute("value").isEmpty()) {
-            throw new AssertionError("field is disabled");
-        }
+
     }
 
     public void clearLastNameField() {
         By locator = By.name("lastName");
         WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+        checkElementNotDisabled(input, "Last Name Field");
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
 
-        if (!input.getAttribute("value").isEmpty()) {
-            throw new AssertionError("field is disabled");
-        }
     }
 
     public void clearEmailField() {
         By locator = By.name("email");
         WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+        checkElementNotDisabled(input, "Email Field");
         input.click();
         input.sendKeys(Keys.END);
         input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         input.sendKeys(Keys.BACK_SPACE);
 
-        if (!input.getAttribute("value").isEmpty()) {
-            throw new AssertionError("field is disabled");
-        }
     }
 
     public boolean isInvalidEmailErrorDisplayed() {
@@ -274,31 +268,22 @@ public final class UsersPage extends BasePage {
 
         By nameLocator = By.name("firstName");
         WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
+        checkElementNotDisabled(nameInput, "First Name Field");
         nameInput.sendKeys(firstName);
-
-        if (!nameInput.getAttribute("value").contains(firstName)) {
-            throw new AssertionError("field is disabled");
-        }
     }
 
     public void fillLastNameField(String lastName) {
         By nameLocator = By.name("lastName");
         WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
+        checkElementNotDisabled(nameInput, "Last Name Field");
         nameInput.sendKeys(lastName);
-
-        if (!nameInput.getAttribute("value").contains(lastName)) {
-            throw new AssertionError("field is disabled");
-        }
     }
 
     public void fillEmailField(String email) {
         By nameLocator = By.name("email");
         WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
+        checkElementNotDisabled(nameInput, "Email Field");
         nameInput.sendKeys(email);
-
-        if (!nameInput.getAttribute("value").contains(email)) {
-            throw new AssertionError("field is disabled");
-        }
     }
 
     public String getFirstNameInputValue() {
@@ -353,7 +338,6 @@ public final class UsersPage extends BasePage {
         List<WebElement> elements = getDriver().findElements(By.
                 xpath("//*[contains(text(), '" + text + "')]"));
         return elements.stream().anyMatch(WebElement::isDisplayed);
-        //return getDriver().getPageSource().contains(text);
     }
 
     public void clickEmailColumnHeader() {
@@ -377,6 +361,21 @@ public final class UsersPage extends BasePage {
             return getWait().until(ExpectedConditions.elementToBeClickable(locator));
         } catch (Exception e) {
             throw new AssertionError("the element is unavailable!" + locator);
+        }
+    }
+
+    private void checkElementNotDisabled(WebElement element, String elementName) {
+        if (!element.isEnabled()) {
+            throw new AssertionError(elementName + " is disabled");
+        }
+        if (element.getAttribute("disabled") != null
+                ||
+                "true".equals(element.getAttribute("aria-disabled"))) {
+            throw new AssertionError(elementName + " has disabled attribute");
+        }
+        String classes = element.getAttribute("class");
+        if (classes != null && (classes.contains("disabled") || classes.contains("Disabled"))) {
+            throw new AssertionError(elementName + " has disabled css class");
         }
     }
 }
