@@ -242,4 +242,20 @@ public final class StatusesPage extends BasePage {
         By statusLocator = By.xpath("//*[contains(., '" + oldXPath + "')]");
         return !getDriver().findElements(statusLocator).isEmpty();
     }
+    public boolean areKeyFieldsDisplayed() {
+        try {
+            getWait().until(ExpectedConditions.visibilityOfElementLocated(createStatusButton));
+
+            String theadText = getDriver().findElement(By.tagName("thead")).getText();
+
+            boolean hasId = theadText.contains("Id");
+            boolean hasFirstName = theadText.contains("Name");
+            boolean hasLastName = theadText.contains("Slug");
+            boolean hasCreatedAt = theadText.contains("Created at");
+
+            return hasId && hasFirstName && hasLastName && hasCreatedAt;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

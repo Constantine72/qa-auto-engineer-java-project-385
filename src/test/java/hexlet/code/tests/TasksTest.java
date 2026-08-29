@@ -237,6 +237,8 @@ class TasksTest extends BaseTest {
         String targetWorker5 = "john@google.com";
         tasksPage.filterByAssignee(targetWorker5);
 
+        tasksPage.waitForCardWithTitle("Task 15");
+
         tasksPage.waitForCardsCount(JOHN_CARDS_COUNT);
 
         List<String> johnCards = tasksPage.getVisibleStatusesInTable();

@@ -79,6 +79,8 @@ class StatusesTest extends BaseTest {
 
         assertTrue(statusesPage.areHeaderDisplayed(), "Name and Slug headers are missing");
 
+        assertTrue(statusesPage.areKeyFieldsDisplayed(), "column names are missing");
+
         assertTrue(statusesPage.isStatusRowCorrect("Draft", "draft"),
                 "improper order");
 
