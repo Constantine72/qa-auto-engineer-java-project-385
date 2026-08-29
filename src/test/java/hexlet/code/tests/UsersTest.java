@@ -75,6 +75,12 @@ class UsersTest extends BaseTest {
 
         UsersPage usersPage = new UsersPage((getDriver()));
 
+        try {
+            assertTrue(usersPage.getUsersCount() > 0, "users table is empty");
+        } catch (TimeoutException e) {
+            fail("app is not displayed");
+        }
+
         WebElement dateCell = getDriver().findElement(By.cssSelector("tbody .column-createdAt"));
 
         String dateText = dateCell.getText();
@@ -114,7 +120,11 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isUserInList(originalFirstName, originalLastName, originalEmail),
                 "User for edit has not been created");
 
-        usersPage.clickEditUser(originalFirstName);
+        try {
+            usersPage.clickEditUser(originalFirstName);
+        } catch (TimeoutException e) {
+            fail("the user is not displayed");
+        }
 
         String visibleText = getDriver().findElement(By.tagName("body")).getText().toLowerCase();
 
@@ -201,7 +211,11 @@ class UsersTest extends BaseTest {
         assertTrue(usersPage.isUserInList(userToDeleteFirstName, userToDeleteLastName, originalEmail),
                 "User for edit has not been created");
 
-        usersPage.clickEditUser(userToDeleteFirstName);
+        try {
+            usersPage.clickEditUser(userToDeleteFirstName);
+        } catch (TimeoutException e) {
+            fail("the user is not displayed");
+        }
 
         usersPage.clickDeleteButton();
 
@@ -252,7 +266,11 @@ class UsersTest extends BaseTest {
 
         kanbanPage.goToUsers();
 
-        usersPage.clickEditUser(testFirstName);
+        try {
+            usersPage.clickEditUser(testFirstName);
+        } catch (TimeoutException e) {
+            fail("the user is not displayed");
+        }
 
         usersPage.clickUpperShowButton();
 
@@ -490,10 +508,13 @@ class UsersTest extends BaseTest {
         String targetEmail = usersPage.getEmailFromFirstRow();
         System.out.println(initialRowCount);
         System.out.println(targetEmail);
-        usersPage.selectFirstRowCheckbox();
 
-        usersPage.clickBulkDeleteButton();
-
+        try {
+            usersPage.selectFirstRowCheckbox();
+            usersPage.clickBulkDeleteButton();
+        } catch (TimeoutException e) {
+            fail("the button is not displayed");
+        }
         usersPage.waitForSnackBar();
 
         int finalRowsCount = usersPage.getTableRowsCount();
