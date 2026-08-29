@@ -3,13 +3,14 @@ package hexlet.code.tests;
 import hexlet.code.pages.LoginPage;
 import hexlet.code.pages.StatusesPage;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.TimeoutException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StatusesTest extends BaseTest {
 
@@ -27,7 +28,12 @@ class StatusesTest extends BaseTest {
 
         statusesPage.forceGoToStatuses();
         statusesPage.clickCreateStatus();
-        statusesPage.fillAndSubmitStatusForm(name, slug);
+
+        try {
+            statusesPage.fillAndSubmitStatusForm(name, slug);
+        } catch (TimeoutException e) {
+            fail("error while creating a status");
+        }
 
         statusesPage.forceGoToStatuses();
 
