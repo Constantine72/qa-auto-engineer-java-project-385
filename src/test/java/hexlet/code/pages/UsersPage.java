@@ -31,7 +31,7 @@ public final class UsersPage extends BasePage {
     }
 
     public void clickCreateUser() {
-        getWait().until(ExpectedConditions.elementToBeClickable(createUserButton)).click();
+        waitForClickableStrict(createUserButton).click();
     }
 
     public boolean isUserFormDisplayed() {
@@ -136,7 +136,7 @@ public final class UsersPage extends BasePage {
     }
 
     public void clickSaveButtonForUsers() {
-        getWait().until(ExpectedConditions.elementToBeClickable(saveButton)).click();
+        waitForClickableStrict(saveButton).click();
     }
 
     public void clickExportButtonForUsers() {
@@ -150,7 +150,7 @@ public final class UsersPage extends BasePage {
     }
 
     private void clearAndType(By fieldLocator, String text) {
-        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(fieldLocator));
+        WebElement input = waitForClickableStrict(fieldLocator);
 
         input.click();
 
@@ -252,7 +252,7 @@ public final class UsersPage extends BasePage {
 
     public void fillFirstNameField(String firstName) {
         By nameLocator = By.name("firstName");
-        WebElement nameInput = getWait().until(ExpectedConditions.elementToBeClickable(nameLocator));
+        WebElement nameInput = waitForClickableStrict(nameLocator);
         nameInput.sendKeys(firstName);
     }
 
@@ -337,6 +337,14 @@ public final class UsersPage extends BasePage {
         WebElement saveBtn = getDriver().findElement(By.xpath("//*[contains(text(), 'Save')]"));
 
         return saveBtn.isEnabled();
+    }
+
+    private WebElement waitForClickableStrict(By locator) {
+        try {
+            return getWait().until(ExpectedConditions.elementToBeClickable(locator));
+        } catch (Exception e) {
+            throw new AssertionError("the element is unavailable!" + locator);
+        }
     }
 }
 

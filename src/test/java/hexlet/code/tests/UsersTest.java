@@ -651,3 +651,4 @@ class UsersTest extends BaseTest {
         assertFalse(usersPage.isSaveButtonEnabled(), "Save button is enabled");
     }
 }
+
