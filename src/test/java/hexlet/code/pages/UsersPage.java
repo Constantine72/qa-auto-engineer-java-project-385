@@ -136,7 +136,12 @@ public final class UsersPage extends BasePage {
     }
 
     public void clickSaveButtonForUsers() {
-        waitForClickableStrict(saveButton).click();
+        try {
+            WebElement btn = getWait().until(ExpectedConditions.visibilityOfElementLocated(saveButton));
+            btn.click();
+        } catch (Exception e) {
+            throw new AssertionError("save button is disabled");
+        }
     }
 
     public void clickExportButtonForUsers() {
@@ -150,16 +155,18 @@ public final class UsersPage extends BasePage {
     }
 
     private void clearAndType(By fieldLocator, String text) {
-        WebElement input = waitForClickableStrict(fieldLocator);
+        try {
+            WebElement input = getWait().until(ExpectedConditions.presenceOfElementLocated(fieldLocator));
+            input.click();
 
-        input.click();
-
-
-        new Actions(getDriver())
-                .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
-                .sendKeys(Keys.BACK_SPACE)
-                .sendKeys(text)
-                .perform();
+            new Actions(getDriver())
+                    .keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL)
+                    .sendKeys(Keys.BACK_SPACE)
+                    .sendKeys(text)
+                    .perform();
+        } catch (Exception e) {
+            throw new AssertionError("field is disabled " + fieldLocator);
+        }
     }
 
     public void clickDeleteButton() {
@@ -213,12 +220,17 @@ public final class UsersPage extends BasePage {
     }
 
     public void clearFirstNameField() {
-        By locator = By.name("firstName");
-        WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
-        input.click();
-        input.sendKeys(Keys.END);
-        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
-        input.sendKeys(Keys.BACK_SPACE);
+        try {
+
+            By locator = By.name("firstName");
+            WebElement input = getWait().until(ExpectedConditions.elementToBeClickable(locator));
+            input.click();
+            input.sendKeys(Keys.END);
+            input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+            input.sendKeys(Keys.BACK_SPACE);
+        } catch (Exception e) {
+            throw new AssertionError("first name field is disabled");
+        }
     }
 
     public void clearLastNameField() {
@@ -251,9 +263,13 @@ public final class UsersPage extends BasePage {
     }
 
     public void fillFirstNameField(String firstName) {
-        By nameLocator = By.name("firstName");
-        WebElement nameInput = waitForClickableStrict(nameLocator);
-        nameInput.sendKeys(firstName);
+        try {
+            By nameLocator = By.name("firstName");
+            WebElement nameInput = waitForClickableStrict(nameLocator);
+            nameInput.sendKeys(firstName);
+        } catch (Exception e) {
+            throw new AssertionError("can not type: field is disabled");
+        }
     }
 
     public void fillLastNameField(String lastName) {
