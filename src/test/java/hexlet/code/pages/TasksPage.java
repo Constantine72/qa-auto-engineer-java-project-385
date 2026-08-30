@@ -10,6 +10,8 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.time.Duration;
@@ -317,7 +319,6 @@ public final class TasksPage extends BasePage {
     }
 
     public List<String> getVisibleStatusesInTable() {
-
         try {
             return getDriver().findElements(cardLocator).stream()
                     .map(WebElement::getText)
@@ -334,7 +335,6 @@ public final class TasksPage extends BasePage {
             takesScreenshot();
             throw new AssertionError("Filter hasn't been applied. Expected count: "
                     + expectedCount, e);
-
         }
     }
 
@@ -465,8 +465,12 @@ public final class TasksPage extends BasePage {
     }
 
     public void waitForCardWithTitle(String taskTitle) {
-        By dynamicLocator = getCardLocatorByTitle(taskTitle);
-        getWait().until(ExpectedConditions.presenceOfElementLocated(dynamicLocator));
+        try {
+            By dynamicLocator = getCardLocatorByTitle(taskTitle);
+            getWait().until(ExpectedConditions.presenceOfElementLocated(dynamicLocator));
+        } catch (TimeoutException e) {
+            fail("task is not displayed");
+        }
     }
 
     public boolean isCardPresent(String taskTitle) {

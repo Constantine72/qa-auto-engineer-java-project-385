@@ -189,7 +189,7 @@ class TasksTest extends BaseTest {
 
         List<String> allCards = tasksPage.getVisibleStatusesInTable();
         assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 1")), "Task 1 is not shown");
-        assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 15")), "Task 1 is not shown");
+        assertTrue(allCards.stream().anyMatch(c -> c.contains("Task 15")), "Task 15 is not shown");
 
         String urlCombo11 = tasksPage.getCurrentUrl();
 
