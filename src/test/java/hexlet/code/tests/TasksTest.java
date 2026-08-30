@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.TimeoutException;
+
 import java.util.List;
 
 class TasksTest extends BaseTest {
@@ -235,14 +236,17 @@ class TasksTest extends BaseTest {
         tasksPage.waitForCardsToLoad();
 
         String targetWorker5 = "john@google.com";
+        try {
         tasksPage.filterByAssignee(targetWorker5);
 
         tasksPage.waitForCardWithTitle("Task 15");
 
         tasksPage.waitForCardsCount(JOHN_CARDS_COUNT);
 
-        List<String> johnCards = tasksPage.getVisibleStatusesInTable();
-        assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
+
+            List<String> johnCards = tasksPage.getVisibleStatusesInTable();
+            assertTrue(johnCards.stream().anyMatch(c -> c.contains("Task 15")), "task 15 is not displayed");
+
 
         boolean hasOnlyJohnTasks = johnCards.stream()
                 .allMatch(c -> c.contains("Task 11")
@@ -257,417 +261,421 @@ class TasksTest extends BaseTest {
 
         assertTrue(hasOnlyJohnTasks, "improper tasks are shown");
 
-        tasksPage.clearAllFilters();
-    }
-
-    public void filterByAssigneeAndStatus(TasksPage tasksPage) {
-        String urlCombo15 = tasksPage.getCurrentUrl();
-
-        tasksPage.waitForCardsToLoad();
-        String targetWorker6 = "alice@hotmail.com";
-
-        tasksPage.filterByAssignee(targetWorker6);
-
-        tasksPage.waitForUrlToChange(urlCombo15);
-
-        tasksPage.waitForCardsCount(2);
-
-        tasksPage.waitForCardsToLoad();
-
-        tasksPage.filterByStatus("To Be Fixed");
-
-        tasksPage.waitForCardsCount(1);
-
-        List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
-        assertEquals(1, comboCardsNew.size(), "1 task should be on board");
-        assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
-
-        tasksPage.clearAllFilters();
-    }
-
-    public  void filterByAssigneeWithNoCards(TasksPage tasksPage) {
-        String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
-
-        tasksPage.waitForCardsToLoad();
-
-        String targetWorker2 = "emily@example.com";
-
-        tasksPage.filterByAssignee(targetWorker2);
-
-        tasksPage.waitForUrlToChange(urlBeforeAssignee2);
-
-        tasksPage.waitForCardsCount(0);
-
-        List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
-        assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
-
-        tasksPage.clearAllFilters();
-    }
-
-    public void filterByLabel(TasksPage tasksPage) {
-        String urlBeforeLabel = tasksPage.getCurrentUrl();
-        String targetLabel = "bug";
-
-        tasksPage.waitForCardsToLoad();
-
-        tasksPage.filterByLabel(targetLabel);
-
-        tasksPage.waitForUrlToChange(urlBeforeLabel);
-
-        tasksPage.waitForCardsCount(2);
-
-        List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
-
-        assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
-
-        assertEquals(2, labelFilteredCards.size(), "improper number of cards");
-
-        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
-        assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
-
-        boolean onlyBugTasks = labelFilteredCards.stream()
-                .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
-        assertTrue(onlyBugTasks, "error: an improper task is shown");
-
-        tasksPage.clearAllFilters();
-    }
-
-    public void filterByAssignee(TasksPage tasksPage) {
-        String urlBeforeAssignee = tasksPage.getCurrentUrl();
-        tasksPage.waitForCardsToLoad();
-
-        String targetWorker = "alice@hotmail.com";
-
-        tasksPage.waitForCardsToLoad();
-
-        tasksPage.rememberOldCard();
-        tasksPage.filterByAssignee(targetWorker);
-        tasksPage.waitForOldCardToDisappear();
-
-        tasksPage.waitForUrlToChange(urlBeforeAssignee);
-
-        tasksPage.waitForCardsCount(2);
-
-        tasksPage.waitForOldCardToDisappear();
-        List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
-
-        assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
-
-        assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
-
-        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
-        assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
-
-        boolean onlyAliceTasks = assigneeFilteredCards.stream()
-                .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
-        assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
-
-        tasksPage.clearAllFilters();
-    }
-
-    public void filterByStatus(TasksPage tasksPage) {
-        int initialCardsCount = tasksPage.getTaskCardsCount();
-
-        assertTrue(initialCardsCount > 0, "the table is blank");
-
-        String urlBeforeFilter = tasksPage.getCurrentUrl();
-
-        tasksPage.waitForCardsToLoad();
-
-        String targetStatus = "Draft";
-        tasksPage.filterByStatus(targetStatus);
-        tasksPage.waitForUrlToBe(urlBeforeFilter);
-
-        tasksPage.waitForCardsCount(NUMBER_OF_DRAFT_CARDS);
-
-        List<String> statusFilteredCards = tasksPage.getVisibleStatusesInTable();
-
-        assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
-
-        assertEquals(NUMBER_OF_DRAFT_CARDS, statusFilteredCards.size(), "error: incorrect numbers of cards");
-
-        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
-        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
-        assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
-
-        boolean onlyDraftTasks = statusFilteredCards.stream()
-                .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
-        assertTrue(onlyDraftTasks, "improper tasks are displayed");
-
-        tasksPage.clearAllFilters();
-    }
-
-    @Test
-    public void testEditTask() {
-        LoginPage loginPage = new LoginPage(getDriver());
-
-        loginPage.login("admin", "admin");
-
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
-
-        TasksPage tasksPage = new TasksPage((getDriver()));
-
-        String updatedName = "new task" + System.currentTimeMillis();
-
-        String expectedDescription = "Description of task 15";
-        String expectedAssignee = "john@google.com";
-
-        tasksPage.clickCreateTask();
-
-        String uniqueId = String.valueOf(System.currentTimeMillis());
-        String taskTitle = "SomeTask_" + uniqueId;
-        String taskStatus = "2";
-        String taskValue = "1";
-
-        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
-
-        tasksPage.forceGoToTasks();
-
-        tasksPage.openTaskForEditing(taskTitle);
-
-        tasksPage.updateTaskName(updatedName);
-
-        tasksPage.waitForCardWithTitle(updatedName);
-
-        assertTrue(tasksPage.isCardPresent(updatedName));
-
-        tasksPage.waitForNewCardToAppear(updatedName);
-
-        assertTrue(tasksPage.isNewCardDisplayed(updatedName));
-
-        assertTrue(tasksPage.areOldCardsEmpty(taskTitle));
-
-        tasksPage.openTaskForEditing(updatedName);
-
-        String actualDescription = tasksPage.getDescriptionInputValue();
-        String actualAssignee = tasksPage.getAssigneeDropdownValue();
-
-        assertEquals(expectedDescription, actualDescription, "the description is missing");
-        assertEquals(expectedAssignee, actualAssignee, "the description is missing");
-    }
-
-    @Test
-    public void testMoveTaskToAnotherStatus() {
-        LoginPage loginPage = new LoginPage(getDriver());
-
-        loginPage.login("admin", "admin");
-
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
-
-        TasksPage tasksPage = new TasksPage((getDriver()));
-
-        String taskToMove = "Task 11";
-        String newStatusId = "2";
-
-        tasksPage.openTaskForEditing(taskToMove);
-
-        tasksPage.changeTaskStatus(newStatusId);
-
-        tasksPage.waitForTasksUpdate(NUMBER_OF_CARDS_TO_REVIEW);
-
-        tasksPage.filterByStatus(newStatusId);
-
-        tasksPage.waitForTasksUpdate(NUMBER_OF_CARDS_TO_REVIEW);
-
-        boolean isCardMoved = tasksPage.isTaskVisible(taskToMove);
-
-        Assertions.assertTrue(isCardMoved, "Card " + taskToMove + "' is not visible in the new status column");
-
-        tasksPage.clearAllFilters();
-    }
-
-    @Test
-    public  void testDeleteTask() {
-        LoginPage loginPage = new LoginPage(getDriver());
-
-        loginPage.login("admin", "admin");
-
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
-
-        TasksPage tasksPage = new TasksPage((getDriver()));
-
-        String taskToDelete = "Task 5";
-
-        int initialCount = tasksPage.getVisibleTasksCount();
-
-        System.out.println(initialCount);
-
-        tasksPage.openTaskForEditing(taskToDelete);
-
-        tasksPage.clickDelete();
-
-        int currentTasksCount = tasksPage.getVisibleTasksCount();
-
-        assertEquals(initialCount - 1, currentTasksCount, "The number of tasks hasn't changed");
-
-        assertTrue(tasksPage.isTaskGone(taskToDelete), "Error: a deleted task is still present");
-    }
-
-    @Test
-    public void testShowTask() {
-        LoginPage loginPage = new LoginPage(getDriver());
-
-        loginPage.login("admin", "admin");
-
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
-
-        TasksPage tasksPage = new TasksPage((getDriver()));
-
-        tasksPage.clickCreateTask();
-
-        String uniqueId = String.valueOf(System.currentTimeMillis());
-        String taskTitle = "test task " + uniqueId;
-        String taskDesc = "DescriptionFor " + uniqueId;
-        String taskStatus = "2";
-        String taskValue = "1";
-
-        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, taskDesc);
-
-        tasksPage.forceGoToTasks();
-
-        tasksPage.openTaskForViewing(taskTitle);
-
-        assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task "
-                + taskTitle + " is not displayed");
-
-        assertTrue(tasksPage.isTextPresentOnViewPage(taskDesc), "the task description "
-                + taskDesc + " is not displayed");
-    }
-
-    @Test
-    public  void testCreateTaskValidation() {
-        String uniqueId = String.valueOf(System.currentTimeMillis());
-        String taskTitle = "SomeTask_" + uniqueId;
-        String taskStatus = "2";
-        String assigneeName = "1";
-
-        LoginPage loginPage = new LoginPage(getDriver());
-
-        loginPage.login("admin", "admin");
-
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
-
-        TasksPage tasksPage = new TasksPage((getDriver()));
-
-        tasksPage.waitForListToLoad();
-
-        int initialTasksCount = tasksPage.getInitialTasksCount();
-
-        tasksPage.clickCreateTask();
-
-        tasksPage.selectAssignee(assigneeName);
-        tasksPage.selectStatus(taskStatus);
-        tasksPage.clickSaveButtonForTasks();
-
-        assertTrue(tasksPage.getCurrentUrl().contains("/create"), "Empty task has been created");
-
-        assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
-
-        tasksPage.refreshPage();
-
-        try {
-            tasksPage.fillTaskTitle(taskTitle);
         } catch (TimeoutException e) {
-            fail("the form is not complete: title is missing");
+            fail("something is broken");
         }
-        tasksPage.selectStatus(taskStatus);
 
-        tasksPage.clickSaveButtonForTasks();
+        tasksPage.clearAllFilters();
+}
 
-        assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o assignee");
+public void filterByAssigneeAndStatus(TasksPage tasksPage) {
+    String urlCombo15 = tasksPage.getCurrentUrl();
 
-        assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+    tasksPage.waitForCardsToLoad();
+    String targetWorker6 = "alice@hotmail.com";
 
-        tasksPage.refreshPage();
+    tasksPage.filterByAssignee(targetWorker6);
 
+    tasksPage.waitForUrlToChange(urlCombo15);
+
+    tasksPage.waitForCardsCount(2);
+
+    tasksPage.waitForCardsToLoad();
+
+    tasksPage.filterByStatus("To Be Fixed");
+
+    tasksPage.waitForCardsCount(1);
+
+    List<String> comboCardsNew = tasksPage.getVisibleStatusesInTable();
+    assertEquals(1, comboCardsNew.size(), "1 task should be on board");
+    assertTrue(comboCardsNew.get(0).contains("Task 8"), "combo hasn't returned task 8");
+
+    tasksPage.clearAllFilters();
+}
+
+public void filterByAssigneeWithNoCards(TasksPage tasksPage) {
+    String urlBeforeAssignee2 = tasksPage.getCurrentUrl();
+
+    tasksPage.waitForCardsToLoad();
+
+    String targetWorker2 = "emily@example.com";
+
+    tasksPage.filterByAssignee(targetWorker2);
+
+    tasksPage.waitForUrlToChange(urlBeforeAssignee2);
+
+    tasksPage.waitForCardsCount(0);
+
+    List<String> emptyBoardCards = tasksPage.getVisibleStatusesInTable();
+    assertTrue(emptyBoardCards.isEmpty(), "table should be empty");
+
+    tasksPage.clearAllFilters();
+}
+
+public void filterByLabel(TasksPage tasksPage) {
+    String urlBeforeLabel = tasksPage.getCurrentUrl();
+    String targetLabel = "bug";
+
+    tasksPage.waitForCardsToLoad();
+
+    tasksPage.filterByLabel(targetLabel);
+
+    tasksPage.waitForUrlToChange(urlBeforeLabel);
+
+    tasksPage.waitForCardsCount(2);
+
+    List<String> labelFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+    assertFalse(labelFilteredCards.isEmpty(), "error: bug filter is empty");
+
+    assertEquals(2, labelFilteredCards.size(), "improper number of cards");
+
+    assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 7")), "no task 7");
+    assertTrue(labelFilteredCards.stream().anyMatch(c -> c.contains("Task 3")), "no task 3");
+
+    boolean onlyBugTasks = labelFilteredCards.stream()
+            .allMatch(c -> c.contains("Task 7") || c.contains("Task 3"));
+    assertTrue(onlyBugTasks, "error: an improper task is shown");
+
+    tasksPage.clearAllFilters();
+}
+
+public void filterByAssignee(TasksPage tasksPage) {
+    String urlBeforeAssignee = tasksPage.getCurrentUrl();
+    tasksPage.waitForCardsToLoad();
+
+    String targetWorker = "alice@hotmail.com";
+
+    tasksPage.waitForCardsToLoad();
+
+    tasksPage.rememberOldCard();
+    tasksPage.filterByAssignee(targetWorker);
+    tasksPage.waitForOldCardToDisappear();
+
+    tasksPage.waitForUrlToChange(urlBeforeAssignee);
+
+    tasksPage.waitForCardsCount(2);
+
+    tasksPage.waitForOldCardToDisappear();
+    List<String> assigneeFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+    assertFalse(assigneeFilteredCards.isEmpty(), "table is empty");
+
+    assertEquals(2, assigneeFilteredCards.size(), "improper number of tasks");
+
+    assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 8")), "no task 8");
+    assertTrue(assigneeFilteredCards.stream().anyMatch(c -> c.contains("Task 9")), "no task 9");
+
+    boolean onlyAliceTasks = assigneeFilteredCards.stream()
+            .allMatch(c -> c.contains("Task 8") || c.contains("Task 9"));
+    assertTrue(onlyAliceTasks, "error: improper tasks are displayed");
+
+    tasksPage.clearAllFilters();
+}
+
+public void filterByStatus(TasksPage tasksPage) {
+    int initialCardsCount = tasksPage.getTaskCardsCount();
+
+    assertTrue(initialCardsCount > 0, "the table is blank");
+
+    String urlBeforeFilter = tasksPage.getCurrentUrl();
+
+    tasksPage.waitForCardsToLoad();
+
+    String targetStatus = "Draft";
+    tasksPage.filterByStatus(targetStatus);
+    tasksPage.waitForUrlToBe(urlBeforeFilter);
+
+    tasksPage.waitForCardsCount(NUMBER_OF_DRAFT_CARDS);
+
+    List<String> statusFilteredCards = tasksPage.getVisibleStatusesInTable();
+
+    assertFalse(statusFilteredCards.isEmpty(), "the table is empty");
+
+    assertEquals(NUMBER_OF_DRAFT_CARDS, statusFilteredCards.size(), "error: incorrect numbers of cards");
+
+    assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 11")), "no task 11");
+    assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 5")), "no task 5");
+    assertTrue(statusFilteredCards.stream().anyMatch(c -> c.contains("Task 6")), "no task 6");
+
+    boolean onlyDraftTasks = statusFilteredCards.stream()
+            .allMatch(c -> c.contains("Task 11") || c.contains("Task 5") || c.contains("Task 6"));
+    assertTrue(onlyDraftTasks, "improper tasks are displayed");
+
+    tasksPage.clearAllFilters();
+}
+
+@Test
+public void testEditTask() {
+    LoginPage loginPage = new LoginPage(getDriver());
+
+    loginPage.login("admin", "admin");
+
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
+
+    TasksPage tasksPage = new TasksPage((getDriver()));
+
+    String updatedName = "new task" + System.currentTimeMillis();
+
+    String expectedDescription = "Description of task 15";
+    String expectedAssignee = "john@google.com";
+
+    tasksPage.clickCreateTask();
+
+    String uniqueId = String.valueOf(System.currentTimeMillis());
+    String taskTitle = "SomeTask_" + uniqueId;
+    String taskStatus = "2";
+    String taskValue = "1";
+
+    tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
+
+    tasksPage.forceGoToTasks();
+
+    tasksPage.openTaskForEditing(taskTitle);
+
+    tasksPage.updateTaskName(updatedName);
+
+    tasksPage.waitForCardWithTitle(updatedName);
+
+    assertTrue(tasksPage.isCardPresent(updatedName));
+
+    tasksPage.waitForNewCardToAppear(updatedName);
+
+    assertTrue(tasksPage.isNewCardDisplayed(updatedName));
+
+    assertTrue(tasksPage.areOldCardsEmpty(taskTitle));
+
+    tasksPage.openTaskForEditing(updatedName);
+
+    String actualDescription = tasksPage.getDescriptionInputValue();
+    String actualAssignee = tasksPage.getAssigneeDropdownValue();
+
+    assertEquals(expectedDescription, actualDescription, "the description is missing");
+    assertEquals(expectedAssignee, actualAssignee, "the description is missing");
+}
+
+@Test
+public void testMoveTaskToAnotherStatus() {
+    LoginPage loginPage = new LoginPage(getDriver());
+
+    loginPage.login("admin", "admin");
+
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
+
+    TasksPage tasksPage = new TasksPage((getDriver()));
+
+    String taskToMove = "Task 11";
+    String newStatusId = "2";
+
+    tasksPage.openTaskForEditing(taskToMove);
+
+    tasksPage.changeTaskStatus(newStatusId);
+
+    tasksPage.waitForTasksUpdate(NUMBER_OF_CARDS_TO_REVIEW);
+
+    tasksPage.filterByStatus(newStatusId);
+
+    tasksPage.waitForTasksUpdate(NUMBER_OF_CARDS_TO_REVIEW);
+
+    boolean isCardMoved = tasksPage.isTaskVisible(taskToMove);
+
+    Assertions.assertTrue(isCardMoved, "Card " + taskToMove + "' is not visible in the new status column");
+
+    tasksPage.clearAllFilters();
+}
+
+@Test
+public void testDeleteTask() {
+    LoginPage loginPage = new LoginPage(getDriver());
+
+    loginPage.login("admin", "admin");
+
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
+
+    TasksPage tasksPage = new TasksPage((getDriver()));
+
+    String taskToDelete = "Task 5";
+
+    int initialCount = tasksPage.getVisibleTasksCount();
+
+    System.out.println(initialCount);
+
+    tasksPage.openTaskForEditing(taskToDelete);
+
+    tasksPage.clickDelete();
+
+    int currentTasksCount = tasksPage.getVisibleTasksCount();
+
+    assertEquals(initialCount - 1, currentTasksCount, "The number of tasks hasn't changed");
+
+    assertTrue(tasksPage.isTaskGone(taskToDelete), "Error: a deleted task is still present");
+}
+
+@Test
+public void testShowTask() {
+    LoginPage loginPage = new LoginPage(getDriver());
+
+    loginPage.login("admin", "admin");
+
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
+
+    TasksPage tasksPage = new TasksPage((getDriver()));
+
+    tasksPage.clickCreateTask();
+
+    String uniqueId = String.valueOf(System.currentTimeMillis());
+    String taskTitle = "test task " + uniqueId;
+    String taskDesc = "DescriptionFor " + uniqueId;
+    String taskStatus = "2";
+    String taskValue = "1";
+
+    tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, taskDesc);
+
+    tasksPage.forceGoToTasks();
+
+    tasksPage.openTaskForViewing(taskTitle);
+
+    assertTrue(tasksPage.isTextPresentOnViewPage(taskTitle), "the task "
+            + taskTitle + " is not displayed");
+
+    assertTrue(tasksPage.isTextPresentOnViewPage(taskDesc), "the task description "
+            + taskDesc + " is not displayed");
+}
+
+@Test
+public void testCreateTaskValidation() {
+    String uniqueId = String.valueOf(System.currentTimeMillis());
+    String taskTitle = "SomeTask_" + uniqueId;
+    String taskStatus = "2";
+    String assigneeName = "1";
+
+    LoginPage loginPage = new LoginPage(getDriver());
+
+    loginPage.login("admin", "admin");
+
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
+
+    TasksPage tasksPage = new TasksPage((getDriver()));
+
+    tasksPage.waitForListToLoad();
+
+    int initialTasksCount = tasksPage.getInitialTasksCount();
+
+    tasksPage.clickCreateTask();
+
+    tasksPage.selectAssignee(assigneeName);
+    tasksPage.selectStatus(taskStatus);
+    tasksPage.clickSaveButtonForTasks();
+
+    assertTrue(tasksPage.getCurrentUrl().contains("/create"), "Empty task has been created");
+
+    assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
+
+    tasksPage.refreshPage();
+
+    try {
         tasksPage.fillTaskTitle(taskTitle);
-        tasksPage.selectAssignee(assigneeName);
-        tasksPage.clickSaveButtonForTasks();
-
-        assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o status");
-
-        assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
-
-        kanbanPage.goToTasks();
-
-        int finalTasksCount = tasksPage.getFinalTasksCount();
-
-        assertEquals(initialTasksCount, finalTasksCount, "empty status has been saved");
+    } catch (TimeoutException e) {
+        fail("the form is not complete: title is missing");
     }
+    tasksPage.selectStatus(taskStatus);
 
-    @Test
-    public  void testEditTaskWithoutTitle() {
-        LoginPage loginPage = new LoginPage(getDriver());
+    tasksPage.clickSaveButtonForTasks();
 
-        loginPage.login("admin", "admin");
+    assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o assignee");
 
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
+    assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
-        TasksPage tasksPage = new TasksPage((getDriver()));
+    tasksPage.refreshPage();
 
-        String expectedDescription = "Description of task 15";
+    tasksPage.fillTaskTitle(taskTitle);
+    tasksPage.selectAssignee(assigneeName);
+    tasksPage.clickSaveButtonForTasks();
 
-        tasksPage.clickCreateTask();
+    assertTrue(tasksPage.getCurrentUrl().contains("/create"), "task has been created w/o status");
 
-        String uniqueId = String.valueOf(System.currentTimeMillis());
-        String taskTitle = "SomeTask_" + uniqueId;
-        String taskStatus = "2";
-        String taskValue = "1";
+    assertTrue(tasksPage.isRequiredErrorDisplayed(), "Required is not displayed");
 
-        tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
+    kanbanPage.goToTasks();
 
-        tasksPage.forceGoToTasks();
+    int finalTasksCount = tasksPage.getFinalTasksCount();
 
-        tasksPage.openTaskForEditing(taskTitle);
+    assertEquals(initialTasksCount, finalTasksCount, "empty status has been saved");
+}
 
-        tasksPage.clearTitleField();
+@Test
+public void testEditTaskWithoutTitle() {
+    LoginPage loginPage = new LoginPage(getDriver());
 
-        tasksPage.clickSaveButtonForTasks();
+    loginPage.login("admin", "admin");
 
-        tasksPage.waitForSnackBar();
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
 
-        assertFalse(tasksPage.getCurrentUrl().endsWith("/tasks"), "task w/o title was saved");
+    TasksPage tasksPage = new TasksPage((getDriver()));
 
-        assertTrue(tasksPage.isRequiredErrorDisplayed(), "no required message");
-    }
+    String expectedDescription = "Description of task 15";
 
-    @Test
-    public void testTasksFilterByStatusOnGrid() {
-        LoginPage loginPage = new LoginPage(getDriver());
+    tasksPage.clickCreateTask();
 
-        loginPage.login("admin", "admin");
+    String uniqueId = String.valueOf(System.currentTimeMillis());
+    String taskTitle = "SomeTask_" + uniqueId;
+    String taskStatus = "2";
+    String taskValue = "1";
 
-        KanbanPage kanbanPage = new KanbanPage(getDriver());
-        kanbanPage.goToTasks();
+    tasksPage.fillAndSubmitTaskForm(taskTitle, taskStatus, taskValue, expectedDescription);
 
-        TasksPage tasksPage = new TasksPage((getDriver()));
+    tasksPage.forceGoToTasks();
 
-        int cardsBefore = tasksPage.getTaskCardsCount();
+    tasksPage.openTaskForEditing(taskTitle);
 
-        assertTrue(cardsBefore > 0, "no cards on board");
+    tasksPage.clearTitleField();
 
-        String urlBeforeFilter = tasksPage.getCurrentUrl();
+    tasksPage.clickSaveButtonForTasks();
 
-        String targetStatus = "Draft";
-        tasksPage.filterByStatus(targetStatus);
+    tasksPage.waitForSnackBar();
 
-        tasksPage.waitForUrlToChange(urlBeforeFilter);
+    assertFalse(tasksPage.getCurrentUrl().endsWith("/tasks"), "task w/o title was saved");
 
-        List<String> cardsTexts = tasksPage.getVisibleStatusesInTable();
+    assertTrue(tasksPage.isRequiredErrorDisplayed(), "no required message");
+}
 
-        assertFalse(cardsTexts.isEmpty(), "table is empty: there's no " + targetStatus + "'");
+@Test
+public void testTasksFilterByStatusOnGrid() {
+    LoginPage loginPage = new LoginPage(getDriver());
 
-        for (String cardText : cardsTexts) {
-            if (cardText.contains("Published") || cardText.contains("To Publish") || cardText.contains("To Be Fixed")
-                    || cardText.contains("To Review")) {
-                fail("There's an extra card " + cardText);
-            }
+    loginPage.login("admin", "admin");
+
+    KanbanPage kanbanPage = new KanbanPage(getDriver());
+    kanbanPage.goToTasks();
+
+    TasksPage tasksPage = new TasksPage((getDriver()));
+
+    int cardsBefore = tasksPage.getTaskCardsCount();
+
+    assertTrue(cardsBefore > 0, "no cards on board");
+
+    String urlBeforeFilter = tasksPage.getCurrentUrl();
+
+    String targetStatus = "Draft";
+    tasksPage.filterByStatus(targetStatus);
+
+    tasksPage.waitForUrlToChange(urlBeforeFilter);
+
+    List<String> cardsTexts = tasksPage.getVisibleStatusesInTable();
+
+    assertFalse(cardsTexts.isEmpty(), "table is empty: there's no " + targetStatus + "'");
+
+    for (String cardText : cardsTexts) {
+        if (cardText.contains("Published") || cardText.contains("To Publish") || cardText.contains("To Be Fixed")
+                || cardText.contains("To Review")) {
+            fail("There's an extra card " + cardText);
         }
     }
+}
 }
